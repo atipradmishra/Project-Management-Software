@@ -1,0 +1,55 @@
+{% extends 'myAPP/baseplan.html' %}
+{% block title %} month #{{month.id}} {% endblock %}
+{% block content %}
+<div class="ticket">
+ <table class="styled-table">
+ <h2> Project No.{{month.id}}</h2>
+ <tbody>
+  <tr>
+   <td>component</td>
+   <td>{{month.component}}</td>
+  </tr>
+  <tr>
+    <td>Activites</td>
+    <td>{{month.activities}}</td>
+   </tr>
+   <tr>
+    <td>duration</td>
+    <td>{{month.duration}}</td>
+   </tr>
+   <tr>
+    <td>stakeholders</td>
+    <td>{{month.stakeholders}}</td>
+   </tr>
+   <tr>
+    <td>no_Of_Participants</td>
+    <td>{{month.no_Of_Participants}}</td>
+   </tr>
+   <tr>
+    <td>location_Of_Activity</td>
+    <td>{{month.location_Of_Activity}}</td>
+   </tr>
+   <tr>
+    <td>main_Responsibility</td>
+    <td>{{month.main_Responsibility}}</td>
+   </tr>
+   <tr>
+    <td>supportive_Responsibility</td>
+    <td>{{month.supportive_Responsibility}}</td>
+   </tr>
+   <tr>
+    <td>result_Expected</td>
+    <td>{{month.result_Expected}}</td>
+   </tr>
+  <tr>
+   <td>Created At</td>
+   <td>{{month.created_at}}</td>
+  </tr>
+  <tr>
+   <td>Updated At</td>
+   <td>{{month.updated_at}}</td>
+  </tr>
+ </tbody>
+ </table>
+
+{% endblock %}

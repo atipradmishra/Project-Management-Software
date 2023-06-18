@@ -1,0 +1,16 @@
+{% extends 'myAPP/baseMatrix.html' %}
+{% load post_tags %}
+{% block title %} Activity_Matrix #{{matrix.id}} {% endblock %}
+{% block content %}
+<div class="ticket">
+ <table class="styled-table">
+ <h2> Activity_Matrix No.{{matrix.id}}</h2>
+ <tbody>
+  <tr>
+   <td>Project_name</td>
+   <td>{{matrix.project_name}}</td>
+  </tr>
+ </tbody>
+ </table>
+
+{% endblock %}

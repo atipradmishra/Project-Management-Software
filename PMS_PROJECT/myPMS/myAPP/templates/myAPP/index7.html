@@ -1,0 +1,51 @@
+{% extends 'myAPP/basebudget.html' %}
+{% load post_tags %}
+{% block title %} Annual_Budget {% endblock %}
+{% block content %}
+<table class="styled-table">
+ <thead>
+  <tr>
+   <th>SL_No.</th>
+   <th>Donner Name</th>
+   <th>Name_of_the_Project</th>
+   <th>Project_Number</th>
+   <th>Project_Period</th>
+   <th>Date_budget/report</th>
+   <th>Local_Currency</th>
+   <th>Exchange_Rate</th>
+   <th>Date_Approved_Budget</th>
+   <th>Created</th>
+   <th>Last Updated</th>
+  </tr>
+ </thead>
+ <tbody>
+  {% for budget in budgets %}
+  <tr>
+   <td class="num"><a href="#">{{budget.id}}</td>
+   <td>{{budget.name_of_organization}}</td>
+   <td>{{budget.project_number.project_name}}</td>
+   <td>{{budget.project_number.id}}</td>
+   <td>{{budget.period}}</td>
+   <td>{{budget.date_of_budget}}</td>
+   <td>{{budget.local_currency}}</td>
+   <td>{{budget.exchange_rate}}</td>
+   <td>{{budget.date_approved}}</td>
+   <td>{{budget.created_at}}</td>
+   <td>{{budget.updated_at}}</td>
+  
+   {% comment %} <td><a href="{% url 'myAPP:update_event' event.id %}"><button class="update" type= "button" class="btn btn-default"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>Update</button></a></td> {% endcomment %}
+  </tr>
+  {% endfor %}
+  {% if messages %}
+   {% for message in messages %}
+   <div class="alert alert-{{ message.tags }} alert-dismissible fade show my-0" role="alert">
+       {{ message }}
+       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+         <span aria-hidden="true">&times;</span>
+       </button>
+     </div>
+       {% endfor %}
+   {% endif %}
+ </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends "myAPP/user_nav.html" %}
+
+{% block content %}
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOME</title>
+  </head>
+  <body>
+     <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+      <style>
+        /* Navbar styles */
+        nav {
+          background: linear-gradient(to right, #ff6f00, #ffcd38);
+          padding: 0.5%;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          position: sticky;
+          top: 0px;
+        }
+        
+        .logo img {
+          height: 50px;
+        }
+        
+        .menu {
+          list-style-type: none;
+          display: flex;
+          align-items: center;
+          margin: 0;
+          padding: 0;
+        }
+        
+        .menu li {
+          margin-right: 20px;
+        }
+        
+        .menu a {
+          text-decoration: none;
+          color: #333;
+          font-weight: bold;
+        }
+        
+        .dropdown-menu {
+          display: none;
+          position: absolute;
+          background-color: #f9f9f9;
+          min-width: 160px;
+          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+          z-index: 1;
+        }
+        
+        .dropdown-menu li {
+          padding: 12px 16px;
+        }
+        
+        .dropdown:hover .dropdown-menu {
+          display: block;
+        }
+        
+      </style>
+            <ul>          
+                {% comment %} <li class="a1"><a href="{%url 'myAPP:index' project.id %}"> <button>PROJECT-DIP(Detail Implementation Plan)</button></a></li> {% endcomment %}
+                {% if user == 1 %}
+                <li class="a1"> <a href="{%url 'myAPP:add-mpc-report' project.id %}"><button>Add MONTHLY PROJECT CLEARANCE</button></a></li>
+                <li class="a1"> <a href=""><button>LEAVE STATEMENT & STAFF CLEARANCE</button></a></li>
+                <center><li class="a1"> <a href="#"><button>MONTHLY STAFF CLEARANCE</button></a></li></center>
+                {% else %}
+                <li class="a1"> <a href="{%url 'myAPP:add-mpc-report' project.id %}"><button>MONTHLY PROJECT CLEARANCE</button></a></li>
+                <li class="a1"> <a href=""><button>LEAVE STATEMENT & STAFF CLEARANCE</button></a></li>
+                <center><li class="a1"> <a href="#"><button>MONTHLY STAFF CLEARANCE</button></a></li></center>
+                {% endif %}
+              </ul>
+        
+  
+  
+   
+      
+  
+    
+  
+      
+     <script>
+      $('.owl-carousel').owlCarousel({
+      loop:true,
+      margin:10,
+      dots:false,
+      nav:true,
+      mouseDrag:false,
+      autoplay:true,
+      animateOut: 'slideOutUp',
+      responsive:{
+          0:{
+              items:1
+          },
+          600:{
+              items:1
+          },
+          1000:{
+              items:1
+          }
+      }
+  });
+  
+  </script>
+  </body>
+  <footer>
+    <center><p>&copy; 2023 YCDA. All Rights Reserved.</p></center>
+    <center><p>@Powered By Sigma analytics and Computing</p></center>
+  </footer>
+{% endblock %}

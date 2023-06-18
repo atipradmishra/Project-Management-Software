@@ -1,0 +1,51 @@
+{% extends 'myAPP/baseProject.html' %}
+{% block title %} Project #{{project.id}} {% endblock %}
+{% block content %}
+<div class="ticket">
+ <table class="styled-table">
+ <h2> Project No.{{project.id}}</h2>
+ <tbody>
+  <tr>
+   <td>Component</td>
+   <td>{{project.component}}</td>
+  </tr>
+  <tr>
+    <td>Activites</td>
+    <td>{{project.activities}}</td>
+   </tr>
+   <tr>
+    <td>Objectives</td>
+    <td>{{project.objectives}}</td>
+   </tr>
+   <tr>
+    <td>Target_participants</td>
+    <td>{{project.target_participants}}</td>
+   </tr>
+   <tr>
+    <td>Coverage</td>
+    <td>{{project.coverage}}</td>
+   </tr>
+   <tr>
+    <td>Process</td>
+    <td>{{project.process}}</td>
+   </tr>
+   <tr>
+    <td>Duration</td>
+    <td>{{project.duration}}</td>
+   </tr>
+   <tr>
+    <td>Indicator</td>
+    <td>{{project.indicator}}</td>
+   </tr>
+   <tr>
+    <td>Expected_out_come</td>
+    <td>{{project.expected_out_come}}</td>
+   </tr>
+   <tr>
+    <td>MOV</td>
+    <td>{{project.mov}}</td>
+   </tr>
+ </tbody>
+ </table>
+
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'myAPP/actbase.html' %}
+{% block title %} DIP_Details {% endblock %}
+{% block content %}
+<table class="styled-table">
+ <tbody>
+    <thead>
+        <tr>
+          <th>Id</th>
+          <th>Expected Out Come</th>
+        </tr>
+      </thead>
+  {% for a in expected_out_come %}
+  <tr>
+    <td>{{a.id}}</td>
+   <td>{{a.expected_out_come}}</td>
+  </tr>
+  {% endfor %}
+  {% if messages %}
+   {% for message in messages %}
+   <div class="alert alert-{{ message.tags }} alert-dismissible fade show my-0" role="alert">
+       {{ message }}
+       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+         <span aria-hidden="true">&times;</span>
+       </button>
+     </div>
+       {% endfor %}
+   {% endif %}
+ </tbody>
+</table>
+{% endblock %}

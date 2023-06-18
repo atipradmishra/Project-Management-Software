@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  .ingredient-form {
+    border-bottom: 1px solid black;
+  }
+  .hidden {
+      display: none
+  }
+</style>
+</head>
+<body>
+
+<h2>Add Location Count</h2>
+
+<div class="form-group">
+  <form method="POST">
+    {% csrf_token %}
+    <div>
+      <div>
+        {% if formset %}
+        {{ formset.management_form}}
+        <div id='location-form-list'></div>
+          {% for form in formset %}
+          <div class="input_fields_wrap" class='location-form'>
+            {{form.as_p}}
+          </div>
+        {% endfor %}
+      </div>
+      <center><button type="submit" class="button" style="background-color: #33cc33;">Save</button></center>
+      {% endif %}
+    </div>
+  </form>
+</div>
+<script>
+  function capitalizeText(inputId) {
+    var input = document.getElementById(inputId);
+    var inputValue = input.value;
+    var capitalizedText = "";
+    var capitalizeNext = true;
+
+    for (var i = 0; i < inputValue.length; i++) {
+      var currentChar = inputValue.charAt(i);
+      
+      if (capitalizeNext && currentChar.match(/[a-z]/i)) {
+        capitalizedText += currentChar.toUpperCase();
+        capitalizeNext = false;
+      } else {
+        capitalizedText += currentChar;
+      }
+    }
+
+    input.value = capitalizedText;
+  }
+</script>
+</body>
+</html>

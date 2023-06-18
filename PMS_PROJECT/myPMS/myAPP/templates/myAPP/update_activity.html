@@ -1,0 +1,284 @@
+{% extends 'myAPP/baseActivity.html' %}
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<body>
+  {% if messages %}
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }} alert-dismissible fade show my-0" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+  </div>
+  {% endfor %}
+  {% endif %}
+  <style>
+    .ingredient-form {
+      border-bottom: 1px solid black;
+    }
+    .hidden {
+        display: none
+    }
+    .button1 {
+      border-radius: 4px;
+      background-color: #6699ff;
+      border: none;
+      color: #FFFFFF;
+      text-align: center;
+      font-size: 20px;
+      width: 80%;
+      height: 50px;
+      transition: all 0.5s;
+      cursor: pointer;
+      margin: 30px;
+    }
+    
+    .button1 span{
+      cursor: pointer;
+      display: inline-block;
+      position: relative;
+      transition: 0.5s;
+    }
+    
+    .button1 span:after{
+      content: '\002B';
+      font-size: 50px;
+      position: absolute;
+      opacity: 0;
+      top: -50px;
+      left: 10px;
+      right: -100px;
+      transition: 0.5s;
+    }
+    
+    .button1:hover span{
+      padding-right: 25px;
+    }
+    
+    .button1:hover span:after{
+      opacity: 1;
+      right: 0;
+    }
+  </style>
+  <div class="form-group">
+    <form method="POST">
+      {% csrf_token %}
+      <div>
+        <label for="activity_name">Activity Name:</label>
+        <input id="input1" onkeyup="capitalizeText('input1')" type="text" name="activity_name" id="activity_name" class='form-control' value="{{ form.instance.activity_name }}" required>
+
+        <label for="objectives">Objectives:</label>
+        <input id="input2" onkeyup="capitalizeText('input2')" name="objectives" id="objectives" class='form-control' value="{{ form.instance.objectives }}" required></input>
+    
+        <label for="target_participants">Target Participants:</label>
+        <input id="input3" onkeyup="capitalizeText('input3')" name="target_participants" id="target_participants" class='form-control' value="{{ form.instance.target_participants }}" required></input>
+  
+        <label for="coverage">Coverage :</label>
+        <input id="input4" onkeyup="capitalizeText('input4')" name="coverage" id="coverage" class='form-control' value="{{ form.instance.coverage }}" required></input>
+  
+        <label for="duration">Duration:</label>
+        <input id="input5" onkeyup="capitalizeText('input5')" name="duration" id="duration" class='form-control' value="{{ form.instance.duration }}"></input>
+      </div>
+      <div>
+        <div>
+          {% if formset1 %}
+          {{ formset1.management_form}}
+          <div id='process-form-list'></div>
+            {% for form in formset1 %}
+            <div class="input_fields_wrap" class='process-form'>
+              {{form.as_p}}
+            </div>
+          {% endfor %}
+        </div>
+        <div id= "empty-form1" class= "hidden">{{ formset1.empty_form.as_p }}</div>
+        <center><button class="button1" type="button" id = 'add-more1'>Add Process <span></span></button></center>
+        {% endif %}
+      </div>
+      <div>
+        <div>
+          {% if formset2 %}
+          {{ formset2.management_form}}
+          <div id='indicator-form-list'></div>
+            {% for form in formset2 %}
+            <div class="input_fields_wrap" class='indicator-form'>
+              {{form.as_p}}
+            </div>
+          {% endfor %}
+        </div>
+        <div id= "empty-form2" class= "hidden">{{ formset2.empty_form.as_p }}</div>
+        <center><button class="button1" type="button" id = 'add-more2'>Add Indicator <span></span></button></center>
+        {% endif %}
+      </div>
+      <div>
+        <div>
+          {% if formset3 %}
+          {{ formset3.management_form}}
+          <div id='outcome-form-list'></div>
+            {% for form in formset3 %}
+            <div class="input_fields_wrap" class='outcome-form'>
+              {{form.as_p}}
+            </div>
+          {% endfor %}
+        </div>
+        <div id= "empty-form3" class= "hidden">{{ formset3.empty_form.as_p }}</div>
+        <center><button class="button1" type="button" id = 'add-more3'>Add Expected OutCome<span></span></button></center>
+        {% endif %}
+      </div>
+      <div>
+        <div>
+          {% if formset4 %}
+          {{ formset4.management_form}}
+          <div id='mov-form-list'></div>
+            {% for form in formset4 %}
+            <div class="input_fields_wrap" class='mov-form'>
+              {{form.as_p}}
+            </div>
+          {% endfor %}
+        </div>
+        <div id= "empty-form4" class= "hidden">{{ formset4.empty_form.as_p }}</div>
+        <center><button class="button1" type="button" id = 'add-more4'>Add MOV <span></span></button></center>
+        {% endif %}
+      </div>
+      <br><input class='button' type="submit" value="Save"></input>
+    </form>
+  </div>
+  <script>
+    function capitalizeText(inputId) {
+      var input = document.getElementById(inputId);
+      var inputValue = input.value;
+      var capitalizedText = "";
+      var capitalizeNext = true;
+
+      for (var i = 0; i < inputValue.length; i++) {
+        var currentChar = inputValue.charAt(i);
+        
+        if (capitalizeNext && currentChar.match(/[a-z]/i)) {
+          capitalizedText += currentChar.toUpperCase();
+          capitalizeNext = false;
+        } else {
+          capitalizedText += currentChar;
+        }
+      }
+
+      input.value = capitalizedText;
+    }
+    document.addEventListener('click', (event)=>{
+        if (event.target.id == 'add-more1') {
+            add_new_form(event)
+        }
+      })
+      function add_new_form(event) {
+        if (event) {
+            event.preventDefault()
+        }
+      
+        const totalNewForms = document.getElementById('id_dip_process_set-TOTAL_FORMS')
+        const currentForms = document.getElementsByClassName('process-form')
+        const currentFormCount = currentForms.length // + 1
+        const formCopyTarget = document.getElementById('process-form-list')
+        const copyEmptyFormEl = document.getElementById('empty-form1').cloneNode(true)
+        copyEmptyFormEl.setAttribute('class', 'process-form')
+        copyEmptyFormEl.setAttribute('id', `form-${currentFormCount}`)
+        const regex = new RegExp('__prefix__', 'g')
+        copyEmptyFormEl.innerHTML = copyEmptyFormEl.innerHTML.replace(regex, currentFormCount)
+        totalNewForms.setAttribute('value', currentFormCount + 1)
+        // now add new empty form element to our html form
+        formCopyTarget.append(copyEmptyFormEl)
+    }
+
+    document.addEventListener('click', (event)=>{
+      if (event.target.id == 'add-more2') {
+          add_new_form2(event)
+      }
+      })
+      function add_new_form2(event) {
+      if (event) {
+          event.preventDefault()
+      }
+    
+      const totalNewForms = document.getElementById('id_dip_indicator_set-TOTAL_FORMS')
+      const currentForms = document.getElementsByClassName('indicator-form')
+      const currentFormCount = currentForms.length // + 1
+      const formCopyTarget = document.getElementById('indicator-form-list')
+      const copyEmptyFormEl = document.getElementById('empty-form2').cloneNode(true)
+      copyEmptyFormEl.setAttribute('class', 'indicator-form')
+      copyEmptyFormEl.setAttribute('id', `form-${currentFormCount}`)
+      const regex = new RegExp('__prefix__', 'g')
+      copyEmptyFormEl.innerHTML = copyEmptyFormEl.innerHTML.replace(regex, currentFormCount)
+      totalNewForms.setAttribute('value', currentFormCount + 1)
+      // now add new empty form element to our html form
+      formCopyTarget.append(copyEmptyFormEl)
+    }
+
+    document.addEventListener('click', (event)=>{
+        if (event.target.id == 'add-more3') {
+          add_new_form3(event)
+        }
+      })
+
+      function add_new_form3(event) {
+        if (event) {
+          event.preventDefault()
+        }
+  
+        const totalNewForms = document.getElementById('id_dip_expected_out_come_set-TOTAL_FORMS')
+        const currentForms = document.getElementsByClassName('outcome-form')
+        const currentFormCount = currentForms.length // + 1
+        const formCopyTarget = document.getElementById('outcome-form-list')
+        const copyEmptyFormEl = document.getElementById('empty-form3').cloneNode(true)
+        copyEmptyFormEl.setAttribute('class', 'outcome-form')
+        copyEmptyFormEl.setAttribute('id', `form-${currentFormCount}`)
+        const regex = new RegExp('__prefix__', 'g')
+        copyEmptyFormEl.innerHTML = copyEmptyFormEl.innerHTML.replace(regex, currentFormCount)
+        totalNewForms.setAttribute('value', currentFormCount + 1)
+        // now add new empty form element to our html form
+        formCopyTarget.append(copyEmptyFormEl)
+    }
+
+    document.addEventListener('click', (event)=>{
+        if (event.target.id == 'add-more4') {
+          add_new_form4(event)
+        }
+      })
+      function add_new_form4(event) {
+        if (event) {
+          event.preventDefault()
+        }
+
+        const totalNewForms = document.getElementById('id_dip_mov_set-TOTAL_FORMS')
+        const currentForms = document.getElementsByClassName('mov-form')
+        const currentFormCount = currentForms.length // + 1
+        const formCopyTarget = document.getElementById('mov-form-list')
+        const copyEmptyFormEl = document.getElementById('empty-form4').cloneNode(true)
+        copyEmptyFormEl.setAttribute('class', 'mov-form')
+        copyEmptyFormEl.setAttribute('id', `form-${currentFormCount}`)
+        const regex = new RegExp('__prefix__', 'g')
+        copyEmptyFormEl.innerHTML = copyEmptyFormEl.innerHTML.replace(regex, currentFormCount)
+        totalNewForms.setAttribute('value', currentFormCount + 1)
+        // now add new empty form element to our html form
+        formCopyTarget.append(copyEmptyFormEl)
+    }
+        // Get all input elements within the form
+        const inputElements = document.querySelectorAll('form input');
+
+        // Add event listener to each input element
+        for (let i = 0; i < inputElements.length; i++) {
+          inputElements[i].addEventListener('keydown', function(event) {
+            // Check if the pressed key is the down arrow key
+            if (event.keyCode === 40) {
+              event.preventDefault(); // Prevent default arrow behavior
+              const currentIndex = Array.from(inputElements).indexOf(this);
+              const nextIndex = currentIndex + 1;
+    
+              // Check if there's a next input element
+              if (nextIndex < inputElements.length) {
+                inputElements[nextIndex].focus(); // Move focus to the next input element
+              }
+            }
+          });
+        }
+  </script>
+  </body>
+{% endblock  %}
+
+

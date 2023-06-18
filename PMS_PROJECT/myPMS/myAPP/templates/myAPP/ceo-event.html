@@ -1,0 +1,141 @@
+{% extends 'myAPP/baseEvent.html' %}
+{% block title %} Event Plan {% endblock %}
+{% block content %}
+<style>
+  #customers {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  #customers td, #customers th {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+
+  #customers tr:nth-child(even){background-color: #f2f2f2;}
+
+  #customers tr:hover {background-color: #ddd;}
+
+  #customers th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #bdd7ee;
+    color: black;
+  }
+  .button {
+    border-radius: 4px;
+    background-color: #6699ff;
+    border: none;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 20px;
+    width: 80%;
+    height: 50px;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin: 30px;
+    position: sticky;
+  }
+  
+  .button span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+  }
+  
+  .button span:after {
+    content: '\002B';
+    font-size: 50px;
+    position: absolute;
+    opacity: 0;
+    top: -22px;
+    left: 160px;
+    right: -100px;
+    transition: 0.5s;
+  }
+  
+  .button:hover span {
+    padding-right: 25px;
+  }
+  
+  .button:hover span:after {
+    opacity: 1;
+    right: 0;
+  }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<img class="image" src="https://assets.letsendorse.com/20200111/VwBUYOZNdHaPdNqQgzsG15787235219596.png" style='margin-top: 20px;'></img>
+<div style='float:left;margin-left: 45%;'>
+  <h2 style='font-family:"Calibri", sans-serif;'><u>Event Plan</u></h2>
+</div>
+<form method="POST">
+    {% csrf_token %}
+    <table id="customers">
+    <thead>
+        <tr>
+        <th style="width: 3%;">Sl. No.</th>
+        <th style="text-align: center;width:20%">Name of the event</th>
+        <th style="text-align: center;">Date/Time</th>
+        <th style="text-align: center;">Venue</th>
+        <th style="text-align: center;width:10%">No of participants (Mention from different category)</th>
+        <th style="text-align: center;width:20%">Main objective</th>
+        <th style="text-align: center;width:20%">Key Event (Attach detail programme schedule)</th>
+        <th style="text-align: center;">Total Budget (Attach detail budget breakup)</th>
+        <th style="text-align: center;">Point person of the event</th>
+        <th style="text-align: center;">Other support persons</th>
+        <th style="text-align: center;">Any important point you want to mention</th>
+        <th style='text-align:center;width:10%'>Approve<input type="checkbox" id="select-all-checkboxs"></th>
+        <th style='text-align:center;'>Remarks if any</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for a in events %}
+        {% if a.is_submited == 1 or a.is_rejected == 1 %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ a.event_name }}</td>
+            <td>{{ a.start_date| date:"d" }} to {{ a.end_date| date:"d F Y" }}</td>
+            <td>{{ a.venue }}</td>
+            <td>{{ a.no_of_participants }}</td>
+            <td>{{ a.main_objective }}</td>
+            <td>{{ a.key_event }}</td>
+            <td>{{ a.total_budget }}</td>
+            <td>{{ a.point_person }}</td>
+            <td>{{ a.support_persons }}</td>
+            <td>{{ a.any_imp_point }}</td>
+            {% if a.is_approved == 1 and a.is_rejected == 0 %}
+            <td style="color:Green;text-align:center;"><i class="fa-solid fa-check"></i>Approved</td>
+            {% elif a.is_approved == 0 and a.is_rejected == 1 %}
+            <td style="color:red;text-align:center;"><i class="fa-solid fa-xmark"></i>Rejected</td>
+            {% else %}
+            <td style="text-align:center">
+            <input type="checkbox" name="selected_activities" value="{{ a.id }}">
+            </td>
+            {% endif %}
+            <td onclick="window.location='{% url 'myAPP:ceo_event_remark' a.id %}';" style="color:red;cursor: pointer;">&#10010; Add Remarks</td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+    </tbody>
+    </table>
+    <button type="submit" class="button" style="background-color: #33cc33; float:right;width:15%;" name="form1_submit">Approve</button>
+</form>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js" ></script>
+<script type="text/javascript">
+    var selectAllCheckboxs= document.getElementById("select-all-checkboxs");
+    selectAllCheckboxs.addEventListener("click", selectAllCheckboxClicked);
+  
+    // Function to handle the "Select All" checkbox
+    function selectAllCheckboxClicked() {
+      var checkboxes = document.querySelectorAll("input[type='checkbox']:not(#select-all-checkboxs)");
+  
+      for (var i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].checked = selectAllCheckboxs.checked;
+      }
+    }
+</script>
+
+{% endblock %}

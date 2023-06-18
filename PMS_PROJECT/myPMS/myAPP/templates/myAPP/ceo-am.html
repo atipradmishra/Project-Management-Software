@@ -1,0 +1,319 @@
+{% extends 'myAPP/base_matrix.html' %}
+{% load post_tags %}
+{% load humanize %}
+{% block title %} Activity_Matrix {% endblock %}
+{% block content %}
+<style>
+  .ingredient-form {
+    border-bottom: 1px solid black;
+  }
+  .hidden {
+      display: none
+  }
+  
+  .button {
+    border-radius: 4px;
+    background-color: #6699ff;
+    border: none;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 20px;
+    width: 80%;
+    height: 50px;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin: 30px;
+    position: sticky;
+  }
+  
+  .button span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+  }
+  
+  .button span:after {
+    content: '\002B';
+    font-size: 50px;
+    position: absolute;
+    opacity: 0;
+    top: -22px;
+    left: 160px;
+    right: -100px;
+    transition: 0.5s;
+  }
+  
+  .button:hover span {
+    padding-right: 25px;
+  }
+  
+  .button:hover span:after {
+    opacity: 1;
+    right: 0;
+  }
+
+  body {font-family: Arial, Helvetica, sans-serif;}
+  * {box-sizing: border-box;}
+
+  /* Button used to open the contact form - fixed at the bottom of the page */
+  .open-button {
+    background-color: #555;
+    color: white;
+    padding: 16px 20px;
+    border: none;
+    cursor: pointer;
+    opacity: 0.8;
+    position: fixed;
+    bottom: 23px;
+    right: 28px;
+    width: 280px;
+  }
+
+  #customers {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  #customers td, #customers th {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+
+  #customers tr:nth-child(even){background-color: #f2f2f2;}
+
+  #customers th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #f4b083;
+    color: black;
+  }
+  .popup2 {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  .popup2-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+  }
+  
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  @media print {
+    .no-print {
+        display: none; /* Hide elements with the "no-print" class */
+    }
+  } 
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<body>
+  <center><h2 style='font-family:"Calibri", sans-serif;'><u>Activities Matrix ({{project.start_date|date:"F. Y"}} to {{project.end_date|date:"F. Y"}})</u></h1></center>
+  <form method="POST">
+    {% csrf_token %}
+    <table id="customers">
+        <thead>
+        <tr>
+            <th style="width: 10px;font-size: 12px;">Sl. No.</th>
+            <th style="text-align: center;width: 20%;">Activities</th>
+            <th style="text-align: center;width: 10%;">Target</th>
+            <th style="text-align: center;width: 15%;">Location</th>
+            {% for next_month in next_months %}
+            <th style="width: 2%;text-align:center;">{{ next_month|date:"M" }}</th>
+            {% endfor %}
+            <th style='text-align:center;width:8%'>Approve<input type="checkbox" id="select-all-checkboxs"></th>
+            <th style='text-align:center;'>Remarks if any</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for a in component %}
+        <tr>
+            {% ifchanged %}
+            <td colspan="18" style="color: blue; font-weight: bold;">{{a.component}}</td>
+            {% endifchanged %}
+        </tr>
+        {% for x in a.dip_activities_set.all %}
+        {% if x.is_am_submited == 1 or x.is_am_rejected == 1 %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td style="max-width: 50px;">{{ x.activity_name }}</td>
+                <td style="width: 150px;">{{ x.target_participants }}</td>
+                {% if x.activity_location_set.all %}
+                <ul>
+                <td style="width: 200px;">
+                {% for b in x.activity_location_set.all %}
+                <li>{{b.location_name}} - {{ b.count }}</li>
+                {% endfor %}
+                </td>
+                </ul>
+                {% else %}
+                    <td class="no-print" style='text-align:center'>No Location Added</td>
+                {% endif %}
+                {% if x.activity_timeframe_set.all %}
+                {% for c in x.activity_timeframe_set.all %}
+                    {% if c.m1 == 0 %}
+                    <td style='background-color:#ffffff'></td>
+                    {% else %}
+                    <td style='background-color:#548dd4'></td>
+                    {% endif %}
+                {% endfor %}
+                {% for c in x.activity_timeframe_set.all %}
+                    {% if c.m2 == 0 %}
+                    <td style='background-color:#ffffff'></td>
+                    {% else %}
+                    <td style='background-color:#548dd4'></td>
+                    {% endif %}
+                {% endfor %}
+                {% for c in x.activity_timeframe_set.all %}
+                    {% if c.m3 == 0 %}
+                    <td style='background-color:#ffffff'></td>
+                    {% else %}
+                    <td style='background-color:#548dd4'></td>
+                    {% endif %}
+                {% endfor %}
+                {% for c in x.activity_timeframe_set.all %}
+                {% if c.m4 == 0 %}
+                    <td style='background-color:#ffffff'></td>
+                {% else %}
+                    <td style='background-color:#548dd4'></td>
+                {% endif %}
+                {% endfor %}
+                {% for c in x.activity_timeframe_set.all %}
+                {% if c.m5 == 0 %}
+                    <td style='background-color:#ffffff'></td>
+                {% else %}
+                    <td style='background-color:#548dd4'></td>
+                {% endif %}
+                {% endfor %}
+                {% for c in x.activity_timeframe_set.all %}
+                    {% if c.m6 == 0 %}
+                    <td style='background-color:#ffffff'></td>
+                    {% else %}
+                    <td style='background-color:#548dd4'></td>
+                    {% endif %}
+                {% endfor %}
+                {% for c in x.activity_timeframe_set.all %}
+                    {% if c.m7 == 0 %}
+                        <td style='background-color:#ffffff'></td>
+                    {% else %}
+                        <td style='background-color:#548dd4'></td>
+                    {% endif %}
+                {% endfor %}
+                {% for c in x.activity_timeframe_set.all %}
+                        {% if c.m8 == 0 %}
+                        <td style='background-color:#ffffff'></td>
+                        {% else %}
+                        <td style='background-color:#548dd4'></td>
+                        {% endif %}
+                {% endfor %}
+                        {% for c in x.activity_timeframe_set.all %}
+                        {% if c.m9 == 0 %}
+                        <td style='background-color:#ffffff'></td>
+                        {% else %}
+                        <td style='background-color:#548dd4'></td>
+                        {% endif %}
+                    {% endfor %}
+                    {% for c in x.activity_timeframe_set.all %}
+                    {% if c.m10 == 0 %}
+                        <td style='background-color:#ffffff'></td>
+                    {% else %}
+                        <td style='background-color:#548dd4'></td>
+                    {% endif %}
+                    {% endfor %}
+                    {% for c in x.activity_timeframe_set.all %}
+                    {% if c.m11 == 0 %}
+                        <td style='background-color:#ffffff'></td>
+                    {% else %}
+                        <td style='background-color:#548dd4'></td>
+                    {% endif %}
+                    {% endfor %}
+                    {% for c in x.activity_timeframe_set.all %}
+                    {% if c.m12 == 0 %}
+                    <td style='background-color:#ffffff'></td>
+                    {% else %}
+                    <td style='background-color:#548dd4'></td>
+                    {% endif %}
+                    {% endfor %}
+                    {% if x.is_am_approved == 1 and x.is_am_rejected == 0 %}
+                    <td style="color:Green;text-align:center;"><i class="fa-solid fa-check"></i>Approved</td>
+                    {% elif x.is_am_approved == 0 and x.is_am_rejected == 1 %}
+                    <td style="color:red;text-align:center;"><i class="fa-solid fa-xmark"></i>Rejected</td>
+                    {% else %}
+                    <td style="text-align:center">
+                    <input type="checkbox" name="selected_activities" value="{{ x.id }}">
+                    </td>
+                    {% endif %}
+                    <td onclick="window.location='{% url 'myAPP:ceo_am_remark' x.id %}';" style="color:red;cursor: pointer;">&#10010; Add Remarks</td>
+                {% else %}
+                <td style='background-color:#ffffff'></td>
+                <td style='background-color:#ffffff'></td>
+                <td style='background-color:#ffffff'></td>
+                <td style='background-color:#ffffff'></td>
+                <td style='background-color:#ffffff'></td>
+                <td style='background-color:#ffffff'></td>
+                <td style='background-color:#ffffff'></td>
+                <td style='background-color:#ffffff'></td>
+                <td style='background-color:#ffffff'></td>
+                <td style='background-color:#ffffff'></td>
+                <td style='background-color:#ffffff'></td>
+                <td style='background-color:#ffffff'></td>
+                {% if x.is_am_approved == 1 and x.is_am_rejected == 0 %}
+                <td>Approved</td>
+                {% elif x.is_am_approved == 0 and x.is_am_rejected == 1 %}
+                <td>Rejected</td>
+                {% else %}
+                <td style="text-align:center">
+                <input type="checkbox" name="selected_activities" value="{{ x.id }}">
+                </td>
+                {% endif %}
+                <td></td>
+                {% endif %}
+            </tr>
+            {% endif %}
+        {% endfor %}
+        {% endfor %}
+        </tbody> 
+    </table>
+    <button type="submit" class="button" style="background-color: #33cc33; float:right;width:15%;" name="form1_submit">Approve</button>
+  </form>
+  <div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js" ></script>
+    <script type="text/javascript">
+        var selectAllCheckboxs= document.getElementById("select-all-checkboxs");
+        selectAllCheckboxs.addEventListener("click", selectAllCheckboxClicked);
+      
+        // Function to handle the "Select All" checkbox
+        function selectAllCheckboxClicked() {
+          var checkboxes = document.querySelectorAll("input[type='checkbox']:not(#select-all-checkboxs)");
+      
+          for (var i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = selectAllCheckboxs.checked;
+          }
+        }
+    </script>
+  </div>
+</body>
+{% endblock %}

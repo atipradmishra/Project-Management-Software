@@ -1,0 +1,175 @@
+{% extends 'myAPP/baseweek.html' %}
+{% block title %} Weekly Report {% endblock %}
+{% block content %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .month-list {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+    }
+    
+    .month-list button {
+        font-size: 16px;
+        font-weight: bold;
+        padding: 10px;
+        margin-right: 10px;
+        background-color: #f2f2f2;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    
+    .month-list button:hover {
+        background-color: #e6e6e6;
+    }
+    
+    .month-list button.selected {
+        background-color: #4CAF50;
+        color: white;
+    }
+    
+    .data {
+        margin-top: 20px;
+        padding: 20px;
+        background-color: #f2f2f2;
+    }
+    
+    .data h2 {
+        font-size: 24px;
+        font-weight: bold;
+        margin: 0 0 10px;
+    }
+    
+    .data p {
+        font-size: 16px;
+        margin: 0 0 10px;
+    }
+    #customers {
+        font-family: Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+      }
+    
+      #customers td, #customers th {
+        border: 1px solid #ddd;
+        padding: 8px;
+      }
+    
+      #customers tr:nth-child(even){background-color: #f2f2f2;}
+    
+      #customers tr:hover {background-color: #ddd;}
+    
+      #customers th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+        background-color: #ead1dc;
+        color: black;
+      }
+      .image{
+        border-radius: 8px;
+        width: 150px;
+        float:right;
+        margin-right: 20px;
+        margin-top: 50px;
+      }
+      @media print {
+        @page {
+          size: auto; /* Use the default paper size */
+          margin: 5mm; /* Set the margins to create a printable area */
+        }
+        
+        body {
+          margin: 0; /* Remove any body margin */
+        }
+        .wrap-text {
+            font-size: 10px;
+            margin: 0;
+          }
+        .printable {
+          width: 100%; /* Make the printable content occupy the full width */
+        }
+      }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<body>
+<img class="image" src="https://assets.letsendorse.com/20200111/VwBUYOZNdHaPdNqQgzsG15787235219596.png" style='margin-top: 20px;'></img>
+<div style='float:left;margin-left: 35%;'>
+    <h2 style="text-align:center;"><u>Weekly Reporting</u>({{month| date:"F"}})</h2>
+</div>
+<table id="customers" class="printable">
+    <thead>
+        <tr>
+            <th style="width: 3%;font-size:12px">Sl. No.</th>
+            <th style="width: 15%;text-align:center;font-size:15px">Activities</th>
+            <th style="width: 5%;text-align:center;font-size:15px">No. of Unit</th>
+            <th style="text-align:center;font-size:15px">Approved Budget</th>
+            <th style="width: 8%;text-align:center;font-size:15px">Week 1 Progress</th>
+            <th style="width: 8%;text-align:center;font-size:15px">Week 2 Progress</th>
+            <th style="width: 8%;text-align:center;font-size:15px">Week 3 Progress</th>
+            <th style="width: 8%;text-align:center;font-size:15px">Week 4 Progress</th>
+            <th style="width: 8%;text-align:center;font-size:15px">Week 5 Progress</th>
+            <th style="width: 10%;text-align:center;font-size:15px">Cumulative Progress</th>
+            <th style="width: 10%;text-align:center;font-size:15px">Cumulative Utilisation</th>
+            <th style="text-align: center;font-size:15px" class='no-print'>Remarks if any</th>
+            {% if user == 1 %}
+            <th style="font-size:15px" class='no-print'>Edit</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for x in Plans %}
+        <tr>
+            <td style="text-align:center;">{{ forloop.counter }}</td>
+            <td style="text-align:center;">{{ x.activity_id.activity_name }}</td>
+            <td style="text-align:center;">{{ x.unit }}</td>
+            <td style="text-align:center;">{{ x.approved_budget }}</td>
+            {% if x.w1 != null %}
+            <td style="text-align:center;">{{ x.w1 }}</td>
+            {% else %}
+              <td style="text-align:center;">N/A</td>
+            {% endif %}
+            {% if x.w2 != null %}
+            <td style="text-align:center;">{{ x.w2 }}</td>
+            {% else %}
+              <td style="text-align:center;">N/A</td>
+            {% endif %}
+            {% if x.w3 != null %}
+            <td style="text-align:center;">{{ x.w3 }}</td>
+            {% else %}
+              <td style="text-align:center;">N/A</td>
+            {% endif %}
+            {% if x.w4 != null %}
+            <td style="text-align:center;">{{ x.w4 }}</td>
+            {% else %}
+              <td style="text-align:center;">N/A</td>
+            {% endif %}
+            {% if x.w5 != null %}
+            <td style="text-align:center;">{{ x.w5 }}</td>
+            {% else %}
+              <td style="text-align:center;">N/A</td>
+            {% endif %}
+            <td style="text-align:center;">{{ x.cumulative_progress }}</td>
+            <td style="text-align:center;">{{ x.cumulative_utilisation }}</td>
+            {% if x.remarks %}
+              <td class='no-print' style="text-align: center;">{{ x.remarks }}</td>
+            {% else %}
+              <td style="text-align: center;" class='no-print'>No Remarks</td>
+            {% endif %}
+            {% if user == 1 %}
+            <td onclick="window.location='{% url 'myAPP:update-weekly-report' x.id %}';" style="cursor: pointer;text-align: center;" class="no-print"><label style="color: red;cursor: pointer;" >&#9998;Edit</label></td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</body>
+{% endblock %}

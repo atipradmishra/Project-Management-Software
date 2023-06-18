@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  .ingredient-form {
+    border-bottom: 1px solid black;
+  }
+  .hidden {
+      display: none
+  }
+</style>
+</head>
+<body>
+
+<h2>Add Location Count</h2>
+
+<div class="form-group">
+  <form method="POST">
+    {% csrf_token %}
+    <div>
+      <div>
+        {% if formset %}
+        {{ formset.management_form}}
+        <div id='location-form-list'></div>
+          {% for form in formset %}
+          <div class="input_fields_wrap" class='location-form'>
+            {{form.as_p}}
+          </div>
+        {% endfor %}
+      </div>
+      <div id= "empty-form" class= "hidden">{{ formset.empty_form.as_p }}</div><br>
+      <button id = 'add-more' type="button" style="color:red">&#10010; Add More</button>
+      <center><button type="submit" class="button" style="background-color: #33cc33;">Save</button></center>
+      {% endif %}
+    </div>
+  </form>
+</div>
+<script>
+  document.addEventListener('click', (event)=>{
+    if (event.target.id == 'add-more') {
+      add_new_form(event)
+    }
+  })
+  function add_new_form(event) {
+    if (event) {
+        event.preventDefault()
+    }
+  
+    const totalNewForms = document.getElementById('id_activity_location_set-TOTAL_FORMS')
+    const currentForms = document.getElementsByClassName('location-form')
+    const currentFormCount = currentForms.length + 1// + 1
+    const formCopyTarget = document.getElementById('location-form-list')
+    const copyEmptyFormEl = document.getElementById('empty-form').cloneNode(true)
+    copyEmptyFormEl.setAttribute('class', 'location-form')
+    copyEmptyFormEl.setAttribute('id', `form-${currentFormCount}`)
+    const regex = new RegExp('__prefix__', 'g')
+    copyEmptyFormEl.innerHTML = copyEmptyFormEl.innerHTML.replace(regex, currentFormCount)
+    totalNewForms.setAttribute('value', currentFormCount + 1)
+    // now add new empty form element to our html form
+    formCopyTarget.append(copyEmptyFormEl)
+  }
+  function capitalizeText(inputId) {
+    var input = document.getElementById(inputId);
+    var inputValue = input.value;
+    var capitalizedText = "";
+    var capitalizeNext = true;
+
+    for (var i = 0; i < inputValue.length; i++) {
+      var currentChar = inputValue.charAt(i);
+      
+      if (capitalizeNext && currentChar.match(/[a-z]/i)) {
+        capitalizedText += currentChar.toUpperCase();
+        capitalizeNext = false;
+      } else {
+        capitalizedText += currentChar;
+      }
+    }
+
+    input.value = capitalizedText;
+  }
+</script>
+</body>
+</html>

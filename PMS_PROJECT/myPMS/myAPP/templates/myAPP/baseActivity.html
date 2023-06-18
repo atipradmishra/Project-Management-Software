@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Activity_Matrix{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+    .update { 
+      color:white; background:blue; border-radius:2vh; padding:1vh;
+     }
+  
+     .update:hover{ 
+      color:white; background:darkblue; border-radius:2vh; padding:1vh;
+  
+     }
+  
+     .delete { 
+      color:white; background:red; border-radius:2vh; padding:1vh;
+     }
+  
+     .delete:hover { 
+      color:white; background:darkred; border-radius:2vh; padding:1vh;
+     }
+  
+     .num{ color: blue;
+     }
+
+     .num:hover{
+      text-decoration:underline blue 2px;
+     }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <a class="logo">{{ component.component }}</a>
+      <div class="header-right">
+        {% comment %} <a href="#" class=sel>Add Location</a> {% endcomment %}
+        <a href="{% url 'myAPP:add_DIP_Details' component.project_id.pk %}" class=sel>Back</a>
+        {% comment %} <a href="{% url 'myAPP:add_ActivityMatrix' %}" class=sel>Add_New_Activity_Matrix</a> {% endcomment %}
+      </div>
+    </div>
+    <div id="body">
+      {% block content %}{% endblock %}
+    </div>
+  </body>
+  </html>

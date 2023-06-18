@@ -1,0 +1,560 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="{% static 'css/style1.css' %}">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  </head>
+  <style media="all">
+    @import url(https://fonts.googleapis.com/css?family=Fira+Sans:100,200,300,400,500,600,700,800,900|Nunito:200,300,400,600,700,800,900|Roboto:100,300,400,500,700,900&display=swap);@import url(https://fonts.googleapis.com/css?family=Cabin:400,500,600,700&display=swap);
+    html {
+        height: 100%;
+    }
+    body {
+        margin: 0;
+        background: white;
+        min-height: 100%;
+    }
+    .top-bar{
+      background:#1f1c2c;
+      padding:0;
+      overflow:hidden;
+      font-family:'Fira Sans',sans-serif;
+    }
+    .top-bar .top-bar-content{
+      display:flex;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+    .top-bar .social-links{
+      width:300px;
+      padding:5px 0;
+    }
+    .top-bar .social-links .social-list{
+      display:flex;
+      justify-content:flex-start;
+      line-height:20px;
+    }
+    .top-bar .social-links .social-list .social-title{
+      color:#fff;
+      font-size:12px;
+      text-transform:uppercase;
+      font-weight:400;
+      margin-right:50px;
+    }
+    .top-bar .social-links .social-list .social-item{
+      color:#fff;
+      display:block;
+      width:20px;
+      height:20px;
+      line-height:20px;
+      text-align:center;
+      margin:0 5px;
+    }
+    .top-bar .social-links .social-list .social-item:hover{color:#ff5722}
+    .top-bar .contact-links{
+      -ms-flex:0 0 100%;
+      flex:0 0 100%;
+      max-width:calc(100% - 300px);
+      padding:5px 0;
+      position:relative;
+      z-index:0;
+    }
+    .top-bar .contact-links:before{
+      content:'';
+      position:absolute;
+      width:4000px;
+      height:100%;
+      top:0;
+      left:0;
+      background:#ff5722;
+      z-index:-1;
+    }
+    .top-bar .contact-links .contact-list{
+      display:flex;
+      justify-content:flex-end;
+      line-height:20px;
+      margin:0 -20px;
+    }
+    .top-bar .contact-links .contact-list .contact-item{
+      color:#fff;
+      display:block;
+      line-height:20px;
+      text-align:center;
+      margin:0 20px;
+      font-size:12px;
+      font-weight:400;
+    }
+    nav {
+      background: linear-gradient(to right, #ff6f00, #ffcd38);
+      position: relative;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0px;
+    }
+    
+    nav::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to right, #1abc9c, #3498db);
+      opacity: 0.8;
+      z-index: -1;
+    }
+    
+    .logo img {
+      height: 45px;
+    }
+    
+    .menu {
+      list-style-type: none;
+      display: flex;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .menu li {
+      margin-right: 20px;
+    }
+    
+    .menu a {
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+    }
+
+    .options:hover{
+      color: white;
+    }
+    
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      background-color: #f9f9f9;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      z-index: 1;
+    }
+    
+    .dropdown-menu li {
+      padding: 12px 16px;
+    }
+    
+    .dropdown:hover .dropdown-menu {
+      display: block;
+    }
+    .noticeboard {
+      width: 25%;
+      height: 50%;
+      margin: 10px 70%;
+      padding: 10px 20px 20px 20px;
+      background-color: #f2f2f2;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-family: Arial, sans-serif;
+      overflow: auto;
+      position: fixed;
+    }
+    
+    .notice {
+      margin-bottom: 15px;
+      padding: 10px 5px 5px 10px;
+      background-color: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 5px;
+    }
+    
+    .notice .title {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .notice .content {
+      font-size: 14px;
+    }
+    #welcome-message {
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+      background-color: #ffc56f;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    #welcome-message h2 {
+      color: #333;
+      font-size: 24px;
+    }
+    
+    #welcome-message.show {
+      opacity: 1;
+    }
+    #scroll-container {
+      overflow: hidden;
+    }
+    
+    #scroll-text {
+      color:red;
+      /* animation properties */
+      -moz-transform: translateX(100%);
+      -webkit-transform: translateX(100%);
+      transform: translateX(100%);
+      
+      -moz-animation: my-animation 15s linear infinite;
+      -webkit-animation: my-animation 15s linear infinite;
+      animation: my-animation 10s linear infinite;
+    }
+    
+    /* for Firefox */
+    @-moz-keyframes my-animation {
+      from { -moz-transform: translateX(100%); }
+      to { -moz-transform: translateX(-100%); }
+    }
+    
+    /* for Chrome */
+    @-webkit-keyframes my-animation {
+      from { -webkit-transform: translateX(100%); }
+      to { -webkit-transform: translateX(-100%); }
+    }
+    
+    @keyframes my-animation {
+      from {
+        -moz-transform: translateX(100%);
+        -webkit-transform: translateX(100%);
+        transform: translateX(100%);
+      }
+      to {
+        -moz-transform: translateX(-100%);
+        -webkit-transform: translateX(-100%);
+        transform: translateX(-100%);
+      }
+    }
+    .bottom-bar .bottom-bar-content{display:flex;justify-content:flex-start}header .bottom-bar .brand{width:260px}header .bottom-bar .brand .logo{display:block;max-width:200px;height:60px;margin:10px 0}header .bottom-bar .brand .logo>img{width:100%;height:100%;object-fit:contain;object-position:center}header .bottom-bar .brand .logo .logo-wrap{width:80px;height:80px;overflow:hidden;margin-right:10px;padding:5px}header .bottom-bar .brand .logo .logo-wrap img{width:100%;height:100%;object-fit:contain;object-position:center}header .bottom-bar .brand .logo .logo-content{margin:auto 0;text-align:center;font-family:'Fira Sans',sans-serif;color:#1f1c2c}header .bottom-bar .brand .logo .logo-content .logo-title{font-size:40px;line-height:40px;font-weight:800;letter-spacing:4px;background:-webkit-linear-gradient(0deg,#694399 5%,#00a7e9,#4db146,#febf10,#c61c2c 95%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}header .bottom-bar .brand .logo .logo-content .logo-slogan{font-weight:500;font-size:9px;line-height:9px;text-transform:uppercase;letter-spacing:.5px}header .bottom-bar .navigations{-ms-flex:0 0 100%;flex:0 0 100%;max-width:calc(100% - 260px)}header .bottom-bar .navigations .menu-trigger{width:30px;height:30px;margin:25px 0;margin-left:auto;display:none;flex-direction:column}header .bottom-bar .navigations .menu-trigger span{display:block;width:100%;height:4px;background:#ff5722;margin:auto 0;transition:all .3s ease}header .bottom-bar .navigations .menu-trigger.active span{opacity:0;transform-origin:center}header .bottom-bar .navigations .menu-trigger.active span:first-child{opacity:1;transform:rotate(45deg);margin-bottom:-17px}header .bottom-bar .navigations .menu-trigger.active span:last-child{opacity:1;transform:rotate(-45deg);margin-top:-17px}header .bottom-bar .navigations .navigation-wrap{height:100%}header .bottom-bar .navigations .navigation-wrap .navigation-menu{display:flex;justify-content:flex-end;margin:0 -10px;height:100%}header .bottom-bar .navigations .navigation-wrap .navigation-menu>li{margin:0 10px}header .bottom-bar .navigations .navigation-wrap .navigation-menu>li>a{color:#1f1c2c;font-weight:700;font-size:14px;text-transform:uppercase;display:block;height:80px;line-height:80px;padding:0;font-family:'Roboto',sans-serif}header .bottom-bar .navigations .navigation-wrap .navigation-menu>li>a:hover{color:#ff5722}header .bottom-bar .navigations .navigation-wrap .navigation-menu>li.show>a,header .bottom-bar .navigations .navigation-wrap .navigation-menu>li>a.active{color:#ff5722}header .bottom-bar .navigations .navigation-wrap .navigation-menu>li.link-button{margin:0 5px}header .bottom-bar .navigations .navigation-wrap .navigation-menu>li.link-button.first{margin-left:20px}header .bottom-bar .navigations .navigation-wrap .navigation-menu>li>a.btn-action{background:#1f1c2c;text-align:center;color:#fff;font-weight:400;height:40px;line-height:40px;padding-left:10px;padding-right:10px;border-radius:30px;margin:calc(80px/2 - 40px/2) 0;position:relative;overflow:hidden;z-index:0;font-size:13px}header .bottom-bar .navigations .navigation-wrap .navigation-menu>li>a.btn-action:before{content:'';position:absolute;width:100%;height:100%;top:0;left:0;background:#ff5722;transform:scale(0,1);transition:all .3s ease;z-index:-1}header .bottom-bar .navigations .navigation-wrap .navigation-menu>li>a.btn-action:hover:before{transform:scale(1,1)}header .bottom-bar .navigations .navigation-wrap .navigation-menu .dropdown-menu{border:0;box-shadow:rgba(0,0,0,.2) 0 5px 10px;border-radius:0;margin:0;border-top:4px solid #ff5722;background:#f6f6f6}header .bottom-bar .navigations .navigation-wrap .navigation-menu .dropdown-menu .menu-list>li{margin:5px 0}header .bottom-bar .navigations .navigation-wrap .navigation-menu .dropdown-menu .menu-list .menu-item{padding:10px 15px;font-size:15px;display:block;font-weight:700;color:#1f1c2c}header .bottom-bar .navigations .navigation-wrap .navigation-menu .dropdown-menu .menu-list .menu-item:hover,header .bottom-bar .navigations .navigation-wrap .navigation-menu .dropdown-menu .menu-list .menu-item:active,header .bottom-bar .navigations .navigation-wrap .navigation-menu .dropdown-menu .menu-list .menu-item:focus,header .bottom-bar .navigations .navigation-wrap .navigation-menu .dropdown-menu .menu-list .menu-item.active{background:#1f1c2c;color:#fff}header .mega-dropdown .mega-dropdown-menu .parent-menu{padding:0 15px;font-weight:700;font-family:'Roboto',sans-serif;margin:0 0 10px;padding-bottom:10px;border-bottom:1px solid #ddd;color:#ff5722;font-size:20px}
+    header .mega-dropdown-menu .menu-content{display:flex;justify-content:flex-start;flex-wrap:wrap;margin:0 -5px}header .mega-dropdown-menu .menu-content .menu-block-item{display:flex;justify-content:flex-start;flex-direction:column;width:120px;height:120px;padding:10px;margin:5px;background:#fff;box-shadow:rgba(0,0,0,.1) 0 2px 10px;border-radius:6px;transition:all .3s ease}header .mega-dropdown-menu .menu-content .menu-block-item .menu-image{width:50px;height:50px;overflow:hidden;margin:auto auto 10px;background:#fff;transition:all .3s ease}header .mega-dropdown-menu .menu-content .menu-block-item .menu-image img{width:100%;height:100%;object-fit:cover;object-position:center;transition:all .3s ease}header .mega-dropdown-menu .menu-content .menu-block-item .menu-block-title{display:block;color:#1f1c2c;font-size:13px;font-weight:400;line-height:1;text-align:center;text-transform:uppercase;margin:0 auto auto;font-family:'Fira Sans';letter-spacing:-.5px;word-break:break-word;transition:all .3s ease}header .mega-dropdown-menu .menu-content .menu-block-item:hover,header .mega-dropdown-menu .menu-content .menu-block-item.active{background:#ff5722;box-shadow:none}header .mega-dropdown-menu .menu-content .menu-block-item:hover .menu-image,header .mega-dropdown-menu .menu-content .menu-block-item.active .menu-image{background:#ff5722}header .mega-dropdown-menu .menu-content .menu-block-item:hover .menu-image img,header .mega-dropdown-menu .menu-content .menu-block-item.active .menu-image img{-webkit-filter:grayscale(1) brightness(3);filter:grayscale(1) brightness(3)}header .mega-dropdown-menu .menu-content .menu-block-item:hover .menu-block-title,header .mega-dropdown-menu .menu-content .menu-block-item.active .menu-block-title{color:#fff}header .mega-dropdown-menu .btn-donate{display:inline-block;min-width:200px;text-align:center;background:#1f1c2c;color:#fff;font-weight:600;height:40px;line-height:40px;padding-left:20px;padding-right:20px;border-radius:30px;margin:20px 0 0;position:relative;overflow:hidden;z-index:0;font-size:14px}header .mega-dropdown-menu .btn-donate:before{content:'';position:absolute;width:100%;height:100%;top:0;left:0;background:#ff5722;transform:scale(0,1);transition:all .3s ease;z-index:-1}header .mega-dropdown-menu .btn-donate:hover:before{transform:scale(1,1)}header .mega-dropdown-menu .btn-newsroom{display:inline-block;min-width:200px;text-align:center;background:#1f1c2c;color:#fff;font-weight:600;height:40px;line-height:40px;padding-left:20px;padding-right:20px;border-radius:30px;margin:20px 0 0;position:relative;overflow:hidden;z-index:0;font-size:14px}header .mega-dropdown-menu .btn-newsroom:before{content:'';position:absolute;width:100%;height:100%;top:0;left:0;background:#ff5722;transform:scale(0,1);transition:all .3s ease;z-index:-1}header .mega-dropdown-menu .btn-newsroom:hover:before{transform:scale(1,1)}.sec-banner-slider .banner-slider{position:relative}.sec-banner-slider .banner-slider .item-slides{position:relative;width:100%;height:calc(100vh - 110px);}
+  </style>
+  <body style='background-color: white'>
+    <header>
+      <div class="top-bar">
+        <div class="container">
+          <div class="top-bar-content">
+            <div class="social-links">
+              <div class="social-list">
+                <div class="social-title">Follow us</div>
+                  <a href="https://www.facebook.com/ycdaodishaindia/" class="social-item" target="_blank"><i class="fab fa-fw fa-facebook-f"></i></a>
+                  <a href="https://twitter.com/YCDAOdisha" class="social-item" target="_blank"><i class="fab fa-fw fa-twitter"></i></a>
+                  <a href="https://www.instagram.com/ycdaodisha/" class="social-item" target="_blank"><i class="fa-brands fa-instagram"></i></i></a>
+                  <a href="https://ycdaindia.org/" class="social-item" target="_blank"><i class="fab fa-fw fa-google"></i></a>
+                  <a href="https://www.linkedin.com/in/youth-council-for-development-alternatives-662951255/" class="social-item" target="_blank"><i class="fab fa-fw fa-linkedin-in"></i></a>
+                </div>
+              </div>
+            <div class="contact-links">
+              <div class="contact-list">
+                <a href="tel:07750018377" class="contact-item"><i class="fas fa-fw fa-phone fa-flip-horizontal"></i> 07750018377</a>
+                <a href="mailto:info@ycda.in" class="contact-item"><i class="fas fa-fw fa-envelope"></i> info@ycda.in</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% comment %} <div class="bottom-bar">
+        <div class="container">
+          <div class="bottom-bar-content">
+            <div class="brand">
+                <a href="#" class="logo">
+                <img src="https://assets.letsendorse.com/20200111/VwBUYOZNdHaPdNqQgzsG15787235219596.png" alt="">
+              </a>
+            </div>
+            <div class="navigations">
+              <a href="javascript:void(0)" class="menu-trigger">
+                <span></span>
+                <span></span>
+                <span></span>
+              </a>
+              <div class="navigation-wrap">
+                              <ul class="navigation-menu">
+                  <li class="dropdown mega-dropdown">
+                                      <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" data-parent="parent" data-slug="about-us">About Us</a>
+                    <div class="dropdown-menu mega-dropdown-menu container">
+                      <h4 class="parent-menu">About Us</h4>
+                                          <div class="row">
+                        <div class="col-xl-4 order-2 order-xl-1">
+                          <ul class="menu-list">
+                            <li><a class="menu-item" href="#" data-parent="child" data-slug="organisation-profile">Organisation Profile</a></li>
+                            <li><a class="menu-item" href="https://ycdaindia.org/about-us/governing-body/" data-parent="child" data-slug="governing-body">Governing Body</a></li>
+                            <li><a class="menu-item" href="https://ycdaindia.org/about-us/photo-gallery/" data-parent="child" data-slug="photo-gallery">Photo Gallery</a></li>
+                            <li><a class="menu-item" href="https://ycdaindia.org/about-us/financial-info/" data-parent="child" data-slug="financial-info">Financial Info</a></li>
+                          </ul>
+                        </div>
+                        <div class="col-xl-8 order-1 order-xl-2">
+                          <div class="menu-content">
+                                                      <a href="https://ycdaindia.org/about-us/organisation-profile/" class="menu-block-item" data-parent="child" data-slug="organisation-profile">
+                              <div class="menu-image">
+                                <noscript><img decoding="async" src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/organization.png" alt=""/></noscript><img decoding="async" class=" lazyloaded" src="./Youth Council for Development Alternatives (YCDA) _ Homepage_files/organization.png" data-src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/organization.png" alt="">
+                              </div>
+                              <div class="menu-block-title">Organisation Profile</div>
+                            </a>
+                                                      <a href="https://ycdaindia.org/about-us/governing-body/" class="menu-block-item" data-parent="child" data-slug="governing-body">
+                              <div class="menu-image">
+                                <noscript><img decoding="async" src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/governing.png" alt=""/></noscript><img decoding="async" class=" lazyloaded" src="./Youth Council for Development Alternatives (YCDA) _ Homepage_files/governing.png" data-src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/governing.png" alt="">
+                              </div>
+                              <div class="menu-block-title">Governing Body</div>
+                            </a>
+                                                      <a href="https://ycdaindia.org/about-us/photo-gallery/" class="menu-block-item" data-parent="child" data-slug="photo-gallery">
+                              <div class="menu-image">
+                                <noscript><img decoding="async" src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/gallery.png" alt=""/></noscript><img decoding="async" class=" lazyloaded" src="./Youth Council for Development Alternatives (YCDA) _ Homepage_files/gallery.png" data-src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/gallery.png" alt="">
+                              </div>
+                              <div class="menu-block-title">Photo Gallery</div>
+                            </a>
+                                                      <a href="https://ycdaindia.org/about-us/financial-info/" class="menu-block-item" data-parent="child" data-slug="financial-info">
+                              <div class="menu-image">
+                                <noscript><img decoding="async" src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/financial-info.png" alt=""/></noscript><img decoding="async" class=" lazyloaded" src="./Youth Council for Development Alternatives (YCDA) _ Homepage_files/financial-info.png" data-src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/financial-info.png" alt="">
+                              </div>
+                              <div class="menu-block-title">Financial Info</div>
+                            </a>
+                                                    </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                  <li class="dropdown mega-dropdown">
+                                      <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" data-parent="parent" data-slug="our-work">Our Work</a>
+                    <div class="dropdown-menu mega-dropdown-menu container">
+                      <h4 class="parent-menu">Our Work</h4>
+                                          <div class="row">
+                        <div class="col-xl-4 order-2 order-xl-1">
+                          <ul class="menu-list">
+                                                      <li><a class="menu-item" href="https://ycdaindia.org/our-work/family-based-care/" data-parent="child" data-slug="family-based-care">Family Based Care</a></li>
+                                                      <li><a class="menu-item" href="https://ycdaindia.org/our-work/family-strengthening-gatekeeping/" data-parent="child" data-slug="family-strengthening-gatekeeping">Family Strengthening &amp; Gatekeeping</a></li>
+                                                      <li><a class="menu-item" href="https://ycdaindia.org/our-work/education/" data-parent="child" data-slug="education">Education</a></li>
+                                                      <li><a class="menu-item" href="https://ycdaindia.org/our-work/adolescent-health/" data-parent="child" data-slug="adolescent-health">Adolescent Health</a></li>
+                                                      <li><a class="menu-item" href="https://ycdaindia.org/our-work/child-protection/" data-parent="child" data-slug="child-protection">Child Protection</a></li>
+                                                      <li><a class="menu-item" href="https://ycdaindia.org/our-work/livelihood-promotion/" data-parent="child" data-slug="livelihood-promotion">Livelihood Promotion</a></li>
+                                                      <li><a class="menu-item" href="https://ycdaindia.org/our-work/aftercare-program/" data-parent="child" data-slug="aftercare-program">Aftercare &amp; Care Leavers</a></li>
+                                                      <li><a class="menu-item" href="https://ycdaindia.org/our-work/skill-development/" data-parent="child" data-slug="skill-development">Skill Development</a></li>
+                                                    </ul>
+                        </div>
+                        <div class="col-xl-8 order-1 order-xl-2">
+                          <div class="menu-content">
+                                                      <a href="https://ycdaindia.org/our-work/family-based-care/" class="menu-block-item" data-parent="child" data-slug="family-based-care">
+                              <div class="menu-image">
+                                <noscript><img decoding="async" src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/family-care.png" alt=""/></noscript><img decoding="async" class=" ls-is-cached lazyloaded" src="./Youth Council for Development Alternatives (YCDA) _ Homepage_files/family-care.png" data-src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/family-care.png" alt="">
+                              </div>
+                              <div class="menu-block-title">Family Based Care</div>
+                            </a>
+                                                      <a href="https://ycdaindia.org/our-work/family-strengthening-gatekeeping/" class="menu-block-item" data-parent="child" data-slug="family-strengthening-gatekeeping">
+                              <div class="menu-image">
+                                <noscript><img decoding="async" src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/family-strength.png" alt=""/></noscript><img decoding="async" class=" ls-is-cached lazyloaded" src="./Youth Council for Development Alternatives (YCDA) _ Homepage_files/family-strength.png" data-src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/family-strength.png" alt="">
+                              </div>
+                              <div class="menu-block-title">Family Strengthening &amp; Gatekeeping</div>
+                            </a>
+                                                      <a href="https://ycdaindia.org/our-work/education/" class="menu-block-item" data-parent="child" data-slug="education">
+                              <div class="menu-image">
+                                <noscript><img decoding="async" src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/education.png" alt=""/></noscript><img decoding="async" class=" lazyloaded" src="./Youth Council for Development Alternatives (YCDA) _ Homepage_files/education.png" data-src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/education.png" alt="">
+                              </div>
+                              <div class="menu-block-title">Education</div>
+                            </a>
+                                                      <a href="https://ycdaindia.org/our-work/adolescent-health/" class="menu-block-item" data-parent="child" data-slug="adolescent-health">
+                              <div class="menu-image">
+                                <noscript><img decoding="async" src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/health.png" alt=""/></noscript><img decoding="async" class=" ls-is-cached lazyloaded" src="./Youth Council for Development Alternatives (YCDA) _ Homepage_files/health.png" data-src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/health.png" alt="">
+                              </div>
+                              <div class="menu-block-title">Adolescent Health</div>
+                            </a>
+                                                      <a href="https://ycdaindia.org/our-work/child-protection/" class="menu-block-item" data-parent="child" data-slug="child-protection">
+                              <div class="menu-image">
+                                <noscript><img decoding="async" src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/child-protection.png" alt=""/></noscript><img decoding="async" class=" lazyloaded" src="./Youth Council for Development Alternatives (YCDA) _ Homepage_files/child-protection.png" data-src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/child-protection.png" alt="">
+                              </div>
+                              <div class="menu-block-title">Child Protection</div>
+                            </a>
+                                                      <a href="https://ycdaindia.org/our-work/livelihood-promotion/" class="menu-block-item" data-parent="child" data-slug="livelihood-promotion">
+                              <div class="menu-image">
+                                <noscript><img decoding="async" src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/livelihood.png" alt=""/></noscript><img decoding="async" class=" lazyloaded" src="./Youth Council for Development Alternatives (YCDA) _ Homepage_files/livelihood.png" data-src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/livelihood.png" alt="">
+                              </div>
+                              <div class="menu-block-title">Livelihood Promotion</div>
+                            </a>
+                                                      <a href="https://ycdaindia.org/our-work/aftercare-program/" class="menu-block-item" data-parent="child" data-slug="aftercare-program">
+                              <div class="menu-image">
+                                <noscript><img decoding="async" src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/after-care.png" alt=""/></noscript><img decoding="async" class=" lazyloaded" src="./Youth Council for Development Alternatives (YCDA) _ Homepage_files/after-care.png" data-src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/after-care.png" alt="">
+                              </div>
+                              <div class="menu-block-title">Aftercare &amp; Care Leavers</div>
+                            </a>
+                                                      <a href="https://ycdaindia.org/our-work/skill-development/" class="menu-block-item" data-parent="child" data-slug="skill-development">
+                              <div class="menu-image">
+                                <noscript><img decoding="async" src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/deinstitutionalization.png" alt=""/></noscript><img decoding="async" class=" lazyloaded" src="./Youth Council for Development Alternatives (YCDA) _ Homepage_files/deinstitutionalization.png" data-src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/deinstitutionalization.png" alt="">
+                              </div>
+                              <div class="menu-block-title">Skill Development</div>
+                            </a>
+                                                    </div>
+                        </div>
+                      </div>
+                                        </div>
+                  </li>
+                  <li class="dropdown mega-dropdown">
+                                      <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" data-parent="parent" data-slug="get-involved">Get Involved</a>
+                    <div class="dropdown-menu mega-dropdown-menu container">
+                      <h4 class="parent-menu">Get Involved</h4>
+                                          <div class="row">
+                        <div class="col-xl-4 order-2 order-xl-1">
+                          <ul class="menu-list">
+                                                      <li><a class="menu-item" href="https://ycdaindia.org/get-involved/volunteer-internship/" data-parent="child" data-slug="volunteer-internship">Volunteer/Internship</a></li>
+                                                      <li><a class="menu-item" href="https://ycdaindia.org/get-involved/career/" data-parent="child" data-slug="career">Career</a></li>
+                                                      <li><a class="menu-item" href="https://ycdaindia.org/get-involved/sponsor/" data-parent="child" data-slug="sponsor">Sponsor</a></li>
+                                                      <li><a class="menu-item" href="https://ycdaindia.org/get-involved/donate/" data-parent="child" data-slug="donate">Donate</a></li>
+                                                    </ul>
+                        </div>
+                        <div class="col-xl-8 order-1 order-xl-2">
+                          <div class="menu-content">
+                                                      <a href="https://ycdaindia.org/get-involved/volunteer-internship/" class="menu-block-item" data-parent="child" data-slug="volunteer-internship">
+                              <div class="menu-image">
+                                <noscript><img decoding="async" src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/volunteer.png" alt=""/></noscript><img decoding="async" class=" lazyloaded" src="./Youth Council for Development Alternatives (YCDA) _ Homepage_files/volunteer.png" data-src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/volunteer.png" alt="">
+                              </div>
+                              <div class="menu-block-title">Volunteer/Internship</div>
+                            </a>
+                                                      <a href="https://ycdaindia.org/get-involved/career/" class="menu-block-item" data-parent="child" data-slug="career">
+                              <div class="menu-image">
+                                <noscript><img decoding="async" src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/career.png" alt=""/></noscript><img decoding="async" class=" lazyloaded" src="./Youth Council for Development Alternatives (YCDA) _ Homepage_files/career.png" data-src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/career.png" alt="">
+                              </div>
+                              <div class="menu-block-title">Career</div>
+                            </a>
+                                                      <a href="https://ycdaindia.org/get-involved/sponsor/" class="menu-block-item" data-parent="child" data-slug="sponsor">
+                              <div class="menu-image">
+                                <noscript><img decoding="async" src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/partners.png" alt=""/></noscript><img decoding="async" class=" lazyloaded" src="./Youth Council for Development Alternatives (YCDA) _ Homepage_files/partners.png" data-src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/partners.png" alt="">
+                              </div>
+                              <div class="menu-block-title">Sponsor</div>
+                            </a>
+                                                      <a href="https://ycdaindia.org/get-involved/donate/" class="menu-block-item" data-parent="child" data-slug="donate">
+                              <div class="menu-image">
+                                <noscript><img decoding="async" src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/donation.png" alt=""/></noscript><img decoding="async" class=" lazyloaded" src="./Youth Council for Development Alternatives (YCDA) _ Homepage_files/donation.png" data-src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/donation.png" alt="">
+                              </div>
+                              <div class="menu-block-title">Donate</div>
+                            </a>
+                                                    </div>
+                        </div>
+                      </div>
+                                        </div>
+                  </li>
+                  <li class="dropdown mega-dropdown">
+                                      <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" data-parent="parent" data-slug="knowledge-hub">Knowledge Hub</a>
+                    <div class="dropdown-menu mega-dropdown-menu container">
+                      <h4 class="parent-menu">Knowledge Hub</h4>
+                                          <div class="row">
+                        <div class="col-xl-4 order-2 order-xl-1">
+                          <ul class="menu-list">
+                                                      <li><a class="menu-item" href="https://ycdaindia.org/knowledge-hub/annual-report/" data-parent="child" data-slug="annual-report">Annual Report</a></li>
+                                                    </ul>
+                        </div>
+                        <div class="col-xl-8 order-1 order-xl-2">
+                          <div class="menu-content">
+                                                      <a href="https://ycdaindia.org/knowledge-hub/annual-report/" class="menu-block-item" data-parent="child" data-slug="annual-report">
+                              <div class="menu-image">
+                                <noscript><img decoding="async" src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/annual-report.png" alt=""/></noscript><img decoding="async" class=" lazyloaded" src="./Youth Council for Development Alternatives (YCDA) _ Homepage_files/annual-report.png" data-src="https://sp-ao.shortpixel.ai/client/to_auto,q_lossy,ret_img/https://ycdaindia.org/wp-content/uploads/2019/10/annual-report.png" alt="">
+                              </div>
+                              <div class="menu-block-title">Annual Report</div>
+                            </a>
+                                                    </div>
+                        </div>
+                      </div>
+                                        </div>
+                  </li>
+                  <li>
+                    <a href="https://ycdaindia.org/contact-us/" data-parent="parent" data-slug="contact-us">Contact Us</a>
+                  </li>
+                  <li class="link-button first">
+                    <a href="https://ycdaindia.org/about-us/news-room/" class="btn-action">News Room</a>
+                  </li>
+                  <li class="link-button">
+                    <a href="https://ycdaindia.org/get-involved/donate/" class="btn-action">Donate</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> {% endcomment %}
+    </header>
+    <div>
+      {% if user == 1 %}
+      <nav>
+        <div class="logo">
+          <a href="#"><img src="https://assets.letsendorse.com/20200111/VwBUYOZNdHaPdNqQgzsG15787235219596.png" alt="Logo"></a>
+        </div>
+        <ul class="menu">
+          <li><a href="{% url 'myAPP:home' project.id %}" class="options">Planning</a></li>
+          <li><a href="{% url 'myAPP:manager-reporting' project.id %}" class="options">Reporting</a></li>
+          <li><a href="{% url 'myAPP:complince-home' project.id %}" class="options">Complince</a></li>
+          <li><a href="#" class="options">User Name : {{request.user.username}}</a></li>
+          <li class="logout" class="options"><a href="{% url 'myAPP:logout'%}">Logout <i class="fa-solid fa-arrow-right-from-bracket"></i></a></li>
+        </ul>
+      </nav>
+      {% else %}
+      <nav>
+        <div class="logo">
+          <a href="#"><img src="https://assets.letsendorse.com/20200111/VwBUYOZNdHaPdNqQgzsG15787235219596.png" alt="Logo"></a>
+        </div>
+        <ul class="menu">
+          <li><a href="{%url 'myAPP:masterhome' %}" class="options">Dashboard</a></li>
+          <li class="dropdown">
+            <a href="#" class="options">Category</a>
+            <ul class="dropdown-menu" style='list-style-type: none;margin: 0;padding: 0;'>
+              <li><a href="{%url 'myAPP:add-category' %}" style='color:red;'>&#10010;Add Category</a></li>
+              {% for a in categories %}
+              <li><a href="{% url 'myAPP:home' a.id %}">{{ a.Category_name }}</a></li>
+              {% endfor %}
+            </ul>
+          </li>
+          <li><a href="{%url 'myAPP:add_Project' %}" class="options">&#10010;Add Project</a></li>
+          <li class="dropdown">
+            <a href="#" class="options">Planning</a>
+            <ul class="dropdown-menu" style='list-style-type: none;margin: 0;padding: 0;'>
+              {% for a in projects %}
+              <li><a href="{% url 'myAPP:home' a.id %}">{{ a.project_name }}</a></li>
+              {% endfor %}
+            </ul>
+          </li>
+          <li class="dropdown">
+            <a href="#" class="options">Reporting</a>
+            <ul class="dropdown-menu" style='list-style-type: none;margin: 0;padding: 0;'>
+              {% for a in projects %}
+              <li><a href="{% url 'myAPP:manager-reporting' a.id %}">{{ a.project_name }}</a></li>
+              {% endfor %}
+            </ul>
+          </li>
+          <li class="dropdown">
+            <a href="#" class="options">Complince</a>
+            <ul class="dropdown-menu" style='list-style-type: none;margin: 0;padding: 0;'>
+              {% for a in projects %}
+              <li><a href="{% url 'myAPP:complince-home' a.id %}">{{ a.project_name }}</a></li>
+              {% endfor %}
+            </ul>
+          </li>
+          <li><a href="#" class="options">Governance</a></li>
+          <li><a href="#" class="options">Finance</a></li>
+          <li><a href="#" class="options">User Name : {{request.user.username}}</a></li>
+          <li class="logout"><a href="{% url 'myAPP:logout'%}">Logout</a></li>
+        </ul>
+      </nav>
+      {% endif %}
+    </div>
+    <div id="welcome-message">
+      <h2>WELCOME TO YCDA PROJECT MANAGEMENT</h2>
+    </div>
+    <div id="body">
+        {% block content %}{% endblock %}
+    </div>
+  </body>
+  <script>
+    window.addEventListener('DOMContentLoaded', function() {
+      var welcomeMessage = document.getElementById('welcome-message');
+      setTimeout(function() {
+        welcomeMessage.classList.add('show');
+      }, 500);
+    });      
+  </script>
+</html>

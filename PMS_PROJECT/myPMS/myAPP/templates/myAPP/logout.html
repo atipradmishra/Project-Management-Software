@@ -1,0 +1,13 @@
+
+{% extends 'myAPP/base.html' %}
+
+{% block content %}
+    <br>
+    <div class="alert alert-success" role="alert">
+        <h2 style="text-align: center;">Logged out!</h2>
+    </div>
+
+    <h3>Login again?</h3>
+    <a href="{% url 'myAPP:login' %}">---> Login</a> <br>
+    <a href="{% url 'myAPP:home' %}"><--- Or go back to home.</a>
+{% endblock content %}

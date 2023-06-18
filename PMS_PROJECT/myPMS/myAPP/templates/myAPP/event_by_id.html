@@ -1,0 +1,54 @@
+{% extends 'myAPP/baseEvent.html' %}
+{% block title %} event #{{event.id}} {% endblock %}
+{% block content %}
+<div class="ticket">
+ <table class="styled-table">
+ <h2> Event No.{{event.id}}</h2>
+ <tbody>
+
+
+   <tr>
+    <th>key-event-1</th>
+   </tr>
+
+   <tr>
+       <td>{{event.key_event1}}</td>
+   </tr>
+
+   <tr>
+    <th>key-event-2</th>
+   </tr>
+
+   <tr>
+       <td>{{event.key_event2}}</td>
+   </tr>
+
+   <tr>
+    <th>key-event-3</th>
+   </tr>
+
+   <tr>
+       <td>{{event.key_event3}}</td>
+   </tr>
+
+   <tr>
+    <th>key-event-4</th>
+   </tr>
+
+   <tr>
+       <td>{{event.key_event4}}</td>
+   </tr>
+
+   <tr>
+    <th>key-event-5</th>
+   </tr>
+
+   <tr>
+       <td>{{event.key_event5}}</td>
+   </tr>
+
+  </tr>
+ </tbody>
+ </table>
+
+{% endblock %}

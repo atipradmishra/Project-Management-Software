@@ -1,0 +1,116 @@
+{% extends 'myAPP/base-add-week.html' %}
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<style>
+  .input-group {
+    display: flex;
+    align-items: center;
+  }
+  
+  .radio-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+</style>
+<body>
+  <div class="form-group">
+    <form  method="POST">
+      {% csrf_token %}
+      <lable>Activities :</lable>
+      {{form.activity_id}}<br>
+      <lable>No of unit :</lable>
+      {{form.unit}}<br>
+      <lable>Approved Budget :</lable>
+      {{form.approved_budget}}<br>
+      <lable>Week 1 Progress :</lable>
+      {{form.w1}}<br>
+      <lable>Week 2 Progress :</lable>
+      {{form.w2}}<br>
+      <lable>Week 3 Progress :</lable>
+      {{form.w3}}<br>
+      <lable>Week 4 Progress :</lable>
+      {{form.w4}}<br>
+      <lable>Week 5 Progress :</lable>
+      {{form.w5}}<br>
+      {% comment %} <lable>Week 1 Progress :</lable>
+      <div class="input-group">
+        {{ form1.report }}
+        <div class="radio-group">
+            {{ form1.status }}
+        </div>
+      </div>
+      <lable>Week 2 Progress :</lable>
+      <div class="input-group">
+        {{ form2.report }}
+        <div class="radio-group">
+            {{ form2.status }}
+        </div>
+      </div> {% endcomment %}
+      {% comment %} <lable>Week 3 Progress :</lable>
+      <div class="input-group">
+        {{ form3.report }}
+        <div class="radio-group">
+            {{ form3.status }}
+        </div>
+      </div>
+      <lable>Week 4 Progress :</lable>
+      <div class="input-group">
+        {{ form4.report }}
+        <div class="radio-group">
+            {{ form4.status }}
+        </div>
+      </div>
+      <lable>Week 5 Progress :</lable>
+      <div class="input-group">
+        {{ form5.report }}
+        <div class="radio-group">
+            {{ form5.status }}
+        </div>
+      </div> {% endcomment %}
+      <lable>Cumulative Progress :</lable>
+      {{form.cumulative_progress}}<br>
+      <lable>Cumulative Utilisation :</lable>
+      {{form.cumulative_utilisation}}<br>
+      <lable>Remarks if any :</lable>
+      {{form.remarks}}
+      <input class='button' type="submit" value="Save">
+    </form>
+  </div> 
+  <script>
+    function changeBulletColor(element) {
+      var bullet = element.closest('.bullet');
+      var radioValue = element.value;
+
+      if (radioValue === '1') {
+        bullet.style.color = 'green';
+      } else if (radioValue === '2') {
+          bullet.style.color = 'yellow';
+      } else if (radioValue === '3') {
+        bullet.style.color = 'red';
+      } else {
+        // Reset to default color
+        bullet.style.color = 'initial';
+      }
+    }
+    function capitalizeText(inputId) {
+      var input = document.getElementById(inputId);
+      var inputValue = input.value;
+      var capitalizedText = "";
+      var capitalizeNext = true;
+
+      for (var i = 0; i < inputValue.length; i++) {
+        var currentChar = inputValue.charAt(i);
+        
+        if (capitalizeNext && currentChar.match(/[a-z]/i)) {
+          capitalizedText += currentChar.toUpperCase();
+          capitalizeNext = false;
+        } else {
+          capitalizedText += currentChar;
+        }
+      }
+      input.value = capitalizedText;
+    }
+  </script>  
+  </body>
+{% endblock  %}

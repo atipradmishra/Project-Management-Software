@@ -1,0 +1,294 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Monthly Plan{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+    .update { 
+      color:white; background:blue; border-radius:2vh; padding:1vh;
+     }
+  
+     .update:hover{ 
+      color:white; background:darkblue; border-radius:2vh; padding:1vh;
+  
+     }
+  
+     .delete { 
+      color:white; background:red; border-radius:2vh; padding:1vh;
+     }
+  
+     .delete:hover { 
+      color:white; background:darkred; border-radius:2vh; padding:1vh;
+     }
+  
+     .num{ color: blue;
+     }
+
+     .num:hover{
+      text-decoration:underline blue 2px;
+     }
+     @media print {
+      .header {
+          display: none;
+      }
+    }
+    .popup {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+    
+    .popup-content {
+      background-color: #fefefe;
+      margin: 8% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 90%;
+    }
+    
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    
+    .close:hover,
+    .close:focus {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .btn {
+      background-color: #4CAF50; /* Green */
+      border-radius: 10px;
+      color: white;
+      padding: 8px 30px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 5px;
+      margin-left: 1100px;
+      transition-duration: 0.4s;
+      cursor: pointer;
+    }
+    .button1 {
+      background-color: white;
+      color: black; 
+      border: 2px solid #4CAF50;
+    }
+    
+    .button1:hover {
+      background-color: #4CAF50;
+      color: white;
+    }
+    .popup2{
+      width: 400px;
+      background: #fff;
+      border-radius: 6px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%) scale(0.80);
+      text-align: center;
+      color: #333;
+      padding: 0 30px 30px;
+      display: none;
+      transition: transform 0.4s, top 0.4s; 
+      box-shadow: 0 20px 30px rgba(1,1,1,1);
+    }
+    .popup2 img{
+      width: 100px;
+      margin-top: -50px;
+      border-radius: 50%;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .popup2 h2{
+      font-size: 40px;
+      font-weight: 500;
+      margin: 30px 0 l0px;
+    }
+    .popup2 button{
+      width: 100%;
+      margin-top: 50px;
+      padding: 10px 0;
+      background: #6fd649;
+      color: #fff;
+      border: 0;
+      outline: none;
+      font-size: 18px;
+      border-radius: 4px;
+      cursor: pointer;
+      box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+  </head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <body>
+    <div class="header">
+      <a class="logo">{{ project.project_name }}</a>
+      <div class="header-right">
+        {% if user == 1 %}
+          <a href="{% url 'myAPP:add-weekly-report' project.id %}">&#10010; Add Plan</a>
+          <a onclick="openPopup()" style='cursor: pointer;'><i class="fa fa-eye"></i>View</a>
+          <a onclick="printPage()" style='cursor: pointer;'><i class="fa fa-print"></i>Print</a>
+          <a href="{% url 'myAPP:home' project.id %}" class=sel><i class="fa fa-home"></i>Home</a>
+        {% else %}
+          <a href="{% url 'myAPP:home' project.pk %}" class=sel>Back</a>
+          <a href="{% url 'myAPP:masterhome' %}" class=sel><i class="fa fa-home"></i>Home</a>
+        {% endif %}
+      </div>
+    </div>
+    <div id="popup" class="popup">
+      <div class="popup-content">
+        <span class="close" onclick="closePopup()">&times;</span>
+        <img class="image" src="https://assets.letsendorse.com/20200111/VwBUYOZNdHaPdNqQgzsG15787235219596.png"></img>
+        <div style='float:left;margin-left: 40%;'>
+          <center><h1 style='font-family:"Calibri", sans-serif;'>{{project.project_name}}</h1>
+          <h2 style='font-family:"Calibri", sans-serif;'><u>Weekly Report</u></h1></center>
+        </div>
+        <table id="customers" class="printable">
+          <thead>
+              <tr>
+                  <th style="width: 3%;font-size:12px">Sl. No.</th>
+                  <th style="width: 15%;text-align:center;font-size:15px">Activities</th>
+                  <th style="width: 5%;text-align:center;font-size:15px">No. of Unit</th>
+                  <th style="text-align:center;font-size:15px">Approved Budget</th>
+                  <th style="width: 8%;text-align:center;font-size:15px">Week 1 Progress</th>
+                  <th style="width: 8%;text-align:center;font-size:15px">Week 2 Progress</th>
+                  <th style="width: 8%;text-align:center;font-size:15px">Week 3 Progress</th>
+                  <th style="width: 8%;text-align:center;font-size:15px">Week 4 Progress</th>
+                  <th style="width: 8%;text-align:center;font-size:15px">Week 5 Progress</th>
+                  <th style="width: 10%;text-align:center;font-size:15px">Cumulative Progress</th>
+                  <th style="width: 10%;text-align:center;font-size:15px">Cumulative Utilisation</th>
+                  <th style="font-size:15px" class='no-print'>Edit</th>
+                  <th style="text-align: center;font-size:15px" class='no-print'>Remarks if any</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for x in Plans %}
+              <tr>
+                  <td style="text-align:center;">{{ forloop.counter }}</td>
+                  <td style="text-align:center;">{{ x.activity_id.activity_name }}</td>
+                  <td style="text-align:center;">{{ x.unit }}</td>
+                  <td style="text-align:center;">{{ x.approved_budget }}</td>
+                  {% if x.w1 == null %}
+                  <td style="text-align:center;">N/A</td>
+                  {% else %}
+                  <td style="text-align:center; word-wrap:break-all;">{{ x.w1 }}</td>
+                  {% endif %}
+                  {% if x.w2 == null %}
+                  <td style="text-align:center;">N/A</td>
+                  {% else %}
+                  <td style="text-align:center;word-wrap:break-all;">{{ x.w2 }}</td>
+                  {% endif %}
+                  {% if x.w3 == null %}
+                  <td style="text-align:center;">N/A</td>
+                  {% else %}
+                  <td style="text-align:center;word-wrap:break-all;">{{ x.w3 }}</td>
+                  {% endif %}
+                  {% if x.w4 == null %}
+                  <td style="text-align:center;">N/A</td>
+                  {% else %}
+                  <td style="text-align:center;word-wrap:break-all;">{{ x.w4 }}</td>
+                  {% endif %}
+                  {% if x.w5 == null %}
+                  <td style="text-align:center;">N/A</td>
+                  {% else %}
+                  <td style="text-align:center;word-wrap:break-all;">{{ x.w5 }}</td>
+                  {% endif %}
+                  <td style="text-align:center;">{{ x.cumulative_progress }}</td>
+                  <td style="text-align:center;">{{ x.cumulative_utilisation }}</td>
+                  <td onclick="window.location='{% url 'myAPP:update-weekly-report' x.id %}';" style="cursor: pointer;" class="no-print"><label style="color: red;cursor: pointer;" >&#9998;Edit</label></td>
+                  {% if x.plan_remarks %}
+                    <td class='no-print' style="text-align: center;">{{ x.plan_remarks }}</td>
+                  {% else %}
+                    <td style="text-align: center;" class='no-print'>No Remarks</td>
+                  {% endif %}
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+      </div>
+    </div>
+    <div id="body">
+      {% block content %}{% endblock %}
+    </div>
+    <script>
+      const form = document.getElementById('myForm');
+
+      form.addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the form from submitting
+        
+        // Display the confirmation dialog
+        if (confirm('Do you really want to submit?')) {
+          // If the user confirms, submit the form
+          setTimeout(function() {
+            form.submit();
+          }, 5000);
+          // Display the success popup
+          closePopup();
+          showSuccessPopup();
+        }
+      });
+  
+      function showSuccessPopup() {
+        var successPopup = document.getElementById("successPopup");
+        successPopup.style.display = "block";
+  
+        setTimeout(function() {
+          successPopup.style.display = "none";
+        }, 5000);
+      }
+  
+      function closeSuccessPopup() {
+        document.getElementById("successPopup").style.display = "none";
+      }
+
+      function submitForm() {
+        document.getElementById("myForm").submit();
+      }
+
+
+      var selectAllCheckbox = document.getElementById("select-all-checkbox");
+      selectAllCheckbox.addEventListener("click", selectAllCheckboxClicked);
+    
+      // Function to handle the "Select All" checkbox
+      function selectAllCheckboxClicked() {
+        var checkboxes = document.querySelectorAll("input[type='checkbox']:not(#select-all-checkbox)");
+    
+        for (var i = 0; i < checkboxes.length; i++) {
+          checkboxes[i].checked = selectAllCheckbox.checked;
+        }
+      }
+
+      function openPopup() {
+        document.getElementById("popup").style.display = "block";
+      }
+      
+      function closePopup() {
+        document.getElementById("popup").style.display = "none";
+      }
+      function printPage() {
+        removeElements(); // Call the function to remove elements before printing
+        window.print(); // Invoke the browser's print functionality
+      }
+      function removeElements() {
+        var elements = document.getElementsByClassName('no-print');
+        while (elements.length > 0) {
+            elements[0].parentNode.removeChild(elements[0]);
+        }
+      }
+    </script>
+  </body>
+  </html>

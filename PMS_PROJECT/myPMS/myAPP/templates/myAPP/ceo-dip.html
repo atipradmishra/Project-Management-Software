@@ -1,0 +1,231 @@
+{% extends 'myAPP/baseDip_Details.html' %}
+{% block content %}
+<style>
+  @media print {
+    .no-print {
+        display: none; /* Hide elements with the "no-print" class */
+    }
+  }
+  .ingredient-form {
+    border-bottom: 1px solid black;
+  }
+  .hidden {
+      display: none
+  }
+  
+  .button {
+    border-radius: 4px;
+    background-color: #6699ff;
+    border: none;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 20px;
+    width: 80%;
+    height: 50px;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin: 30px;
+    position: sticky;
+  }
+  @media print {
+    .button {
+        display: none; /* Hide elements with the "no-print" class */
+    }
+  }
+  
+  .button span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+  }
+  
+  .button span:after {
+    content: '\002B';
+    font-size: 50px;
+    position: absolute;
+    opacity: 0;
+    top: -22px;
+    left: 160px;
+    right: -100px;
+    transition: 0.5s;
+  }
+  
+  .button:hover span {
+    padding-right: 25px;
+  }
+  
+  .button:hover span:after {
+    opacity: 1;
+    right: 0;
+  }
+
+  body {font-family: Arial, Helvetica, sans-serif;}
+  * {box-sizing: border-box;}
+
+  /* Button used to open the contact form - fixed at the bottom of the page */
+  .open-button {
+    background-color: #555;
+    color: white;
+    padding: 16px 20px;
+    border: none;
+    cursor: pointer;
+    opacity: 0.8;
+    position: fixed;
+    bottom: 23px;
+    right: 28px;
+    width: 280px;
+  }
+
+  #customers {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  #customers td, #customers th {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+
+  #customers tr:nth-child(even){background-color: #f2f2f2;}
+
+  #customers tr:hover {background-color: #ddd;}
+
+  #customers th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #f4b083;
+    color: black;
+  }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<body>
+  <center><h2 style='font-family:"Calibri", sans-serif;'><u>Detail Implementation Plan - DIP</u></h1></center>
+  <form method="POST">
+  {% csrf_token %}
+    <table id="customers">
+        <thead>
+        {% if component.count != 0 %}
+        <tr>
+            <th>Sl. No.</th>
+            <th>Activities</th>
+            <th>Objectives</th>
+            <th>Target Participants</th>
+            <th>Outreach</th>
+            <th>Process</th>
+            <th>Duration</th>
+            <th>Indicator</th>
+            <th>Expected Out come</th>
+            <th>MOV</th>
+            <th style='text-align:center;width:10%'>Approve<input type="checkbox" id="select-all-checkbox"></th>
+            <th style='text-align:center'>Remarks if any </th>
+        </tr>
+        {% endif %}
+        </thead>
+        <tbody>
+        {% for a in component %}
+        <tr>
+            {% ifchanged %}
+            <td colspan="12" style="color: blue; font-weight: bold;">{{a.component}}</td>
+            {% endifchanged %}
+        </tr>
+        {% for x in a.dip_activities_set.all %}
+        {% if x.is_dip_submited == 1 or x.is_dip_rejected == 1 %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ x.activity_name }}</td>
+                <td>{{ x.objectives}}</td>
+                <td>{{ x.target_participants}}</td>
+                <td style="max-width: 100px;">{{ x.coverage}}</td>
+                <td>
+                    <ul>
+                    {% for y in x.dip_process_set.all %}
+                    <li>{{ y.process }}</li>
+                    {% endfor %}
+                    </ul>
+                </td>
+                <td style="max-width: 100px;">{{ x.duration}}</td>
+                <td style="max-width: 200px;">
+                <ul>
+                    {% for y in x.dip_indicator_set.all %}
+                    <li>{{ y.indicator }}</li>
+                    {% endfor %}
+                </ul>
+                </td>
+                <td style="max-width: 200px;">
+                <ul>
+                    {% for y in x.dip_expected_out_come_set.all %}
+                    <li>{{ y.expected_out_come }}</li>
+                    {% endfor %}
+                </ul>
+                </td>
+                <td style="max-width: 150px;">
+                <ul>
+                    {% for y in x.dip_mov_set.all %}
+                    <li>{{ y.mov }}</li>
+                    {% endfor %}
+                </ul>
+                </td>
+                {% if x.is_dip_approved == 1 and x.is_dip_rejected == 0 %}
+                <td style="color:Green;text-align:center;"><i class="fa-solid fa-check"></i>Approved</td>
+                {% elif x.is_dip_approved == 0 and x.is_dip_rejected == 1 %}
+                <td style="color:red;text-align:center;"><i class="fa-solid fa-xmark"></i>Rejected</td>
+                {% else %}
+                <td style="text-align:center">
+                  <input type="checkbox" name="selected_activities" value="{{ x.id }}">
+                </td>
+                {% endif %}
+                <td onclick="window.location='{% url 'myAPP:ceo_dip_remark' x.id %}';" style="color:red;cursor: pointer;">&#10010; Add Remarks</td>
+            </tr>
+        {% endif %}
+        {% endfor %}
+
+        {% endfor %}
+        </tbody>
+    </table>
+    <button type="submit" class="button" style="background-color: #33cc33; float:right;width:15%;" name="form1_submit">Approve</button>
+    </form>
+  <div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js" ></script>
+    <script type="text/javascript">
+        var selectAllCheckbox = document.getElementById("select-all-checkbox");
+        selectAllCheckbox.addEventListener("click", selectAllCheckboxClicked);
+      
+        // Function to handle the "Select All" checkbox
+        function selectAllCheckboxClicked() {
+          var checkboxes = document.querySelectorAll("input[type='checkbox']:not(#select-all-checkbox)");
+      
+          for (var i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = selectAllCheckbox.checked;
+          }
+        }
+
+      function printPage() {
+        removeElements(); // Call the function to remove elements before printing
+        window.print(); // Invoke the browser's print functionality
+      }
+
+      function capitalizeText(inputId) {
+        var input = document.getElementById(inputId);
+        var inputValue = input.value;
+        var capitalizedText = "";
+        var capitalizeNext = true;
+  
+        for (var i = 0; i < inputValue.length; i++) {
+          var currentChar = inputValue.charAt(i);
+          
+          if (capitalizeNext && currentChar.match(/[a-z]/i)) {
+            capitalizedText += currentChar.toUpperCase();
+            capitalizeNext = false;
+          } else {
+            capitalizedText += currentChar;
+          }
+        } 
+        input.value = capitalizedText;
+      }
+    </script>
+  </div>   
+</body>
+{% endblock  %}

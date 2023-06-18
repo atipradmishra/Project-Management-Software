@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}DIP Activity List{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+    .update { 
+      color:white; background:blue; border-radius:2vh; padding:1vh;
+     }
+  
+     .update:hover{ 
+      color:white; background:darkblue; border-radius:2vh; padding:1vh;
+  
+     }
+  
+     .delete { 
+      color:white; background:red; border-radius:2vh; padding:1vh;
+     }
+  
+     .delete:hover { 
+      color:white; background:darkred; border-radius:2vh; padding:1vh;
+     }
+  
+     .num{ color: blue;
+     }
+
+     .num:hover{
+      text-decoration:underline blue 2px;
+     }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <a class="logo"><td>DIP (Component - {{dip_details.component}})</td></a>
+      <div class="header-right">
+        <a href='{% url 'myAPP:home' %}'><td>Home</td></a>
+        <a href='{% url 'myAPP:index' %}'><td>Project List</td></a>        
+      </div>
+    </div>
+    <div id="body">
+      {% block content %}{% endblock %}
+    </div>
+  </body>
+  </html>
