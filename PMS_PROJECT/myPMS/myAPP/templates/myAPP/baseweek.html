@@ -142,7 +142,7 @@
           <a href="{% url 'myAPP:add-weekly-report' project.id %}">&#10010; Add Plan</a>
           <a onclick="openPopup()" style='cursor: pointer;'><i class="fa fa-eye"></i>View</a>
           <a onclick="printPage()" style='cursor: pointer;'><i class="fa fa-print"></i>Print</a>
-          <a href="{% url 'myAPP:home' project.id %}" class=sel><i class="fa fa-home"></i>Home</a>
+          <a href="{% url 'myAPP:manager-reporting' project.id %}" class=sel><i class="fa fa-home"></i>Home</a>
         {% else %}
           <a href="{% url 'myAPP:home' project.pk %}" class=sel>Back</a>
           <a href="{% url 'myAPP:masterhome' %}" class=sel><i class="fa fa-home"></i>Home</a>

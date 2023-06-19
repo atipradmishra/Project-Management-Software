@@ -505,7 +505,7 @@
             <ul class="dropdown-menu" style='list-style-type: none;margin: 0;padding: 0;'>
               <li><a href="{%url 'myAPP:add-category' %}" style='color:red;'>&#10010;Add Category</a></li>
               {% for a in categories %}
-              <li><a href="{% url 'myAPP:home' a.id %}">{{ a.Category_name }}</a></li>
+              <li>{{ a.Category_name }}</li>
               {% endfor %}
             </ul>
           </li>
