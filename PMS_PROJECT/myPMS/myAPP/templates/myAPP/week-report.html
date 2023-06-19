@@ -130,35 +130,180 @@
         <tr>
             <td style="text-align:center;">{{ forloop.counter }}</td>
             <td style="text-align:center;">{{ x.activity_id.activity_name }}</td>
-            <td style="text-align:center;">{{ x.unit }}</td>
-            <td style="text-align:center;">{{ x.approved_budget }}</td>
-            {% if x.w1 != null %}
-            <td style="text-align:center;">{{ x.w1 }}</td>
-            {% else %}
-              <td style="text-align:center;">N/A</td>
-            {% endif %}
-            {% if x.w2 != null %}
-            <td style="text-align:center;">{{ x.w2 }}</td>
-            {% else %}
-              <td style="text-align:center;">N/A</td>
-            {% endif %}
-            {% if x.w3 != null %}
-            <td style="text-align:center;">{{ x.w3 }}</td>
-            {% else %}
-              <td style="text-align:center;">N/A</td>
-            {% endif %}
-            {% if x.w4 != null %}
-            <td style="text-align:center;">{{ x.w4 }}</td>
-            {% else %}
-              <td style="text-align:center;">N/A</td>
-            {% endif %}
-            {% if x.w5 != null %}
-            <td style="text-align:center;">{{ x.w5 }}</td>
-            {% else %}
-              <td style="text-align:center;">N/A</td>
-            {% endif %}
-            <td style="text-align:center;">{{ x.cumulative_progress }}</td>
-            <td style="text-align:center;">{{ x.cumulative_utilisation }}</td>
+            <td style="text-align:center;">{% if  x.unit == null %}N/A{% else %}{{ x.unit }}{% endif %}</td>
+            <td style="text-align:center;">{% if  x.approved_budget == null %}N/A{% else %}{{ x.approved_budget }}{% endif %}</td>
+            {% for a in x.week_one_report_set.all %}
+              {% if a.status == '1' %}
+                <td style="text-align:center;background-color:#87c46c;">
+                  {% if a.report != null %}
+                  {{ a.report }}
+                  {% else %}
+                  N/A
+                  {% endif %}
+                </td>
+              {% elif a.status == '2' %}
+                <td style="text-align:center;background-color:#cccc00;">
+                  {% if a.report != null %}
+                  {{ a.report }}
+                  {% else %}
+                  N/A
+                  {% endif %}
+                </td>
+              {% elif a.status == '3' %}
+                <td style="text-align:center;background-color:#ff5c33;">
+                  {% if a.report != null %}
+                  {{ a.report }}
+                  {% else %}
+                  N/A
+                  {% endif %}
+                </td>
+              {% else %}
+              <td style="text-align:center;">
+                {% if a.report != null %}
+                {{ a.report }}
+                {% else %}
+                N/A
+                {% endif %}</td>
+              {% endif %}
+            {% endfor %}
+            {% for a in x.week_two_report_set.all %}
+              {% if a.status == '1' %}
+                <td style="text-align:center;background-color:#87c46c;">
+                  {% if a.report != null %}
+                  {{ a.report }}
+                  {% else %}
+                  N/A
+                  {% endif %}
+                </td>
+              {% elif a.status == '2' %}
+                <td style="text-align:center;background-color:#cccc00;">
+                  {% if a.report != null %}
+                  {{ a.report }}
+                  {% else %}
+                  N/A
+                  {% endif %}
+                </td>
+              {% elif a.status == '3' %}
+                <td style="text-align:center;background-color:#ff5c33;">
+                  {% if a.report != null %}
+                  {{ a.report }}
+                  {% else %}
+                  N/A
+                  {% endif %}
+                </td>
+              {% else %}
+              <td style="text-align:center;">
+                {% if a.report != null %}
+                {{ a.report }}
+                {% else %}
+                N/A
+                {% endif %}</td>
+              {% endif %}
+            {% endfor %}
+            {% for a in x.week_three_report_set.all %}
+              {% if a.status == '1' %}
+                <td style="text-align:center;background-color:#87c46c;">
+                  {% if a.report != null %}
+                  {{ a.report }}
+                  {% else %}
+                  N/A
+                  {% endif %}
+                </td>
+              {% elif a.status == '2' %}
+                <td style="text-align:center;background-color:#cccc00;">
+                  {% if a.report != null %}
+                  {{ a.report }}
+                  {% else %}
+                  N/A
+                  {% endif %}
+                </td>
+              {% elif a.status == '3' %}
+                <td style="text-align:center;background-color:#ff5c33;">
+                  {% if a.report != null %}
+                  {{ a.report }}
+                  {% else %}
+                  N/A
+                  {% endif %}
+                </td>
+              {% else %}
+              <td style="text-align:center;">
+                {% if a.report != null %}
+                {{ a.report }}
+                {% else %}
+                N/A
+                {% endif %}</td>
+              {% endif %}
+            {% endfor %}
+            {% for a in x.week_four_report_set.all %}
+              {% if a.status == '1' %}
+                <td style="text-align:center;background-color:#87c46c;">
+                  {% if a.report != null %}
+                  {{ a.report }}
+                  {% else %}
+                  N/A
+                  {% endif %}
+                </td>
+              {% elif a.status == '2' %}
+                <td style="text-align:center;background-color:#cccc00;">
+                  {% if a.report != null %}
+                  {{ a.report }}
+                  {% else %}
+                  N/A
+                  {% endif %}
+                </td>
+              {% elif a.status == '3' %}
+                <td style="text-align:center;background-color:#ff5c33;">
+                  {% if a.report != null %}
+                  {{ a.report }}
+                  {% else %}
+                  N/A
+                  {% endif %}
+                </td>
+              {% else %}
+              <td style="text-align:center;">
+                {% if a.report != null %}
+                {{ a.report }}
+                {% else %}
+                N/A
+                {% endif %}</td>
+              {% endif %}
+            {% endfor %}
+            {% for a in x.week_five_report_set.all %}
+              {% if a.status == '1' %}
+                <td style="text-align:center;background-color:#87c46c;">
+                  {% if a.report != null %}
+                  {{ a.report }}
+                  {% else %}
+                  N/A
+                  {% endif %}
+                </td>
+              {% elif a.status == '2' %}
+                <td style="text-align:center;background-color:#cccc00;">
+                  {% if a.report != null %}
+                  {{ a.report }}
+                  {% else %}
+                  N/A
+                  {% endif %}
+                </td>
+              {% elif a.status == '3' %}
+                <td style="text-align:center;background-color:#ff5c33;">
+                  {% if a.report != null %}
+                  {{ a.report }}
+                  {% else %}
+                  N/A
+                  {% endif %}
+                </td>
+              {% else %}
+              <td style="text-align:center;">
+                {% if a.report != null %}
+                {{ a.report }}
+                {% else %}
+                N/A
+                {% endif %}</td>
+              {% endif %}
+            {% endfor %}
+            <td style="text-align:center;">{% if  x.cumulative_progress == null %}N/A{% else %}{{ x.cumulative_progress }}{% endif %}</td>
+            <td style="text-align:center;">{% if  x.cumulative_utilisation == null %}N/A{% else %}{{ x.cumulative_utilisation }}{% endif %}</td>
             {% if x.remarks %}
               <td class='no-print' style="text-align: center;">{{ x.remarks }}</td>
             {% else %}

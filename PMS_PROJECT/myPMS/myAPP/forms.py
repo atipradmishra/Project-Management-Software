@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Activity_location, Activity_timeframe, Annual_budget, Dip_Activities, Dip_Indicator, Dip_Process, Dip_expected_out_come, Dip_mov, Monthly_Project_Clearance, Project_Category, Project_DIP,Month_Plan,Dip_details,Event_Plan, Week_five_Report, Week_four_Report, Week_one_Report, Week_three_Report, Week_two_Report, Weekly_Report
+from .models import Activity_location, Activity_timeframe, Dip_Activities, Dip_Indicator, Dip_Process, Dip_expected_out_come, Dip_mov, Monthly_Project_Clearance, Project_Category, Project_DIP,Month_Plan,Dip_details,Event_Plan, Week_five_Report, Week_four_Report, Week_one_Report, Week_three_Report, Week_two_Report, Weekly_Report
 from django.forms import ModelForm
 
 
@@ -214,6 +214,16 @@ class MonthlyReportUpdateForm(ModelForm):
         'backlog_justification' : forms.TextInput(attrs={'null' : 'True','id':"input3" ,'onkeyup':"capitalizeText('input3')"})
         }
 
+class WeekOneForm(ModelForm):
+     class Meta:
+        model = Week_three_Report
+        fields = ['report','status']
+
+class WeekTwoForm(ModelForm):
+     class Meta:
+        model = Week_two_Report
+        fields = ['report','status']
+
 class DipUpdateForm(ModelForm):
      class Meta:
         model = Dip_details
@@ -264,55 +274,14 @@ class WeeklyReportForm(ModelForm):
         self.fields['activity_id'].queryset = Dip_Activities.objects.filter(project_detail_id__project_id = pk)
     class Meta:
         model = Weekly_Report
-        fields = ['activity_id','unit','approved_budget','cumulative_progress','cumulative_utilisation','remarks','w1','w2','w3','w4','w5'] 
+        fields = ['activity_id','unit','approved_budget','cumulative_progress','cumulative_utilisation','remarks'] 
         widgets = {
         'activity_id': forms.Select(choices=['test'],attrs={'class':'form-control'}),
         'unit': forms.TextInput(attrs={'id':"input1" ,'onkeyup':"capitalizeText('input1')",'class':'form-control'}),
         'approved_budget': forms.TextInput(attrs={'id':"input2" ,'onkeyup':"capitalizeText('input2')",'class':'form-control'}),
-        'w1': forms.TextInput(attrs={'id':"input3" ,'onkeyup':"capitalizeText('input3')",'class':'form-control'}),
-        'w2': forms.TextInput(attrs={'id':"input4" ,'onkeyup':"capitalizeText('input4')",'class':'form-control'}),
-        'w3': forms.TextInput(attrs={'id':"input5" ,'onkeyup':"capitalizeText('input5')",'class':'form-control'}),
-        'w4': forms.TextInput(attrs={'id':"input6" ,'onkeyup':"capitalizeText('input6')",'class':'form-control'}),
-        'w5': forms.TextInput(attrs={'id':"input9" ,'onkeyup':"capitalizeText('input9')",'class':'form-control'}),
         'cumulative_progress': forms.TextInput(attrs={'id':"input7" ,'onkeyup':"capitalizeText('input7')",'class':'form-control'}),
         'cumulative_utilisation': forms.TextInput(attrs={'id':"input8" ,'onkeyup':"capitalizeText('input8')",'class':'form-control'}),
         'remarks': forms.TextInput(attrs={'id':"input9" ,'onkeyup':"capitalizeText('input9')",'class':'form-control'}),
-        }
-
-
-class WeekOneForm(ModelForm):
-    class Meta:
-        model = Week_one_Report
-        fields= ['report','status']
-
-class WeekTwoForm(ModelForm):
-    class Meta:
-        model = Week_two_Report
-        fields= ['report','status']
-
-class WeekThreeForm(ModelForm):
-     class Meta:
-        model = Week_three_Report
-        fields = ['report','status']
-        widgets ={
-        'report' : forms.TextInput(attrs={'null' : 'True','id':"input5" ,'onkeyup':"capitalizeText('input5')",'style':'width:80%;margin:10px;height:40px;'}),
-        'status': forms.Select(choices=['test'],attrs={}),
-        }
-
-class WeekFourForm(ModelForm):
-     class Meta:
-        model = Week_four_Report
-        fields = ['report','status']
-        widgets ={
-        'report' : forms.TextInput(attrs={'null' : 'True','id':"input6" ,'onkeyup':"capitalizeText('input6')",'style':'width:80%;margin:10px;height:40px;'})
-        }
-
-class WeekFiveForm(ModelForm):
-     class Meta:
-        model = Week_five_Report
-        fields = ['report','status']
-        widgets ={
-        'report' : forms.TextInput(attrs={'null' : 'True','id':"input7" ,'onkeyup':"capitalizeText('input7')",'style':'width:80%;margin:10px;height:40px;'}),
         }
 
 
@@ -352,19 +321,6 @@ class MPCForm(ModelForm):
             'staff_reason': forms.TextInput(attrs={'null':'True','class':'form-control','id':"input2" ,'onkeyup':"capitalizeText('input2')"}),
         }
 
-class annualBudgetForm(ModelForm):
-    class Meta:
-        model = Annual_budget
-        exclude = () 
-        widgets={
-              'name_of_organization': forms.TextInput(attrs={'class':'form-control'}),
-              'project_number': forms.Select(choices=['test'],attrs={'class':'form-control'}),
-              'period': forms.TextInput(attrs={'class':'form-control'}),
-              'date_of_budget': forms.DateInput(attrs={'type' :"date"}),
-              'local_currency': forms.TextInput(attrs={'class':'form-control'}),
-              'exchange_rate': forms.TextInput(attrs={'class':'form-control'}),
-              'date_approved': forms.DateInput(attrs={'type' :"date"}),
-        }
 
 class DipActivitiesForm(ModelForm):
         class Meta:

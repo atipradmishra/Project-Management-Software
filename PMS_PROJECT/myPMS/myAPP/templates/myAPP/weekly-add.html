@@ -15,7 +15,7 @@
 </style>
 <body>
   <div class="form-group">
-    <form  method="POST">
+    <form  method="POST" action="{% url 'myAPP:create_weekly_report' project.id %}">
       {% csrf_token %}
       <lable>Activities :</lable>
       {{form.activity_id}}<br>
@@ -23,51 +23,47 @@
       {{form.unit}}<br>
       <lable>Approved Budget :</lable>
       {{form.approved_budget}}<br>
-      <lable>Week 1 Progress :</lable>
-      {{form.w1}}<br>
-      <lable>Week 2 Progress :</lable>
-      {{form.w2}}<br>
-      <lable>Week 3 Progress :</lable>
-      {{form.w3}}<br>
-      <lable>Week 4 Progress :</lable>
-      {{form.w4}}<br>
-      <lable>Week 5 Progress :</lable>
-      {{form.w5}}<br>
-      {% comment %} <lable>Week 1 Progress :</lable>
-      <div class="input-group">
-        {{ form1.report }}
-        <div class="radio-group">
-            {{ form1.status }}
-        </div>
-      </div>
-      <lable>Week 2 Progress :</lable>
-      <div class="input-group">
-        {{ form2.report }}
-        <div class="radio-group">
-            {{ form2.status }}
-        </div>
-      </div> {% endcomment %}
-      {% comment %} <lable>Week 3 Progress :</lable>
-      <div class="input-group">
-        {{ form3.report }}
-        <div class="radio-group">
-            {{ form3.status }}
-        </div>
-      </div>
-      <lable>Week 4 Progress :</lable>
-      <div class="input-group">
-        {{ form4.report }}
-        <div class="radio-group">
-            {{ form4.status }}
-        </div>
-      </div>
-      <lable>Week 5 Progress :</lable>
-      <div class="input-group">
-        {{ form5.report }}
-        <div class="radio-group">
-            {{ form5.status }}
-        </div>
-      </div> {% endcomment %}
+      <label for="week_one_report">Week 1 Report:</label>
+      <input name="week_one_report" id="week_one_report"></input>
+      <select name="week_one_status" id="week_one_status">
+          <option value="">Select Status</option>
+          <option value="1">Completed</option>
+          <option value="2">In-Progress</option>
+          <option value="3">Not-Started</option>
+      </select><br>
+      <label for="week_two_report">Week 2 Report:</label>
+      <input name="week_two_report" id="week_two_report"></input>
+      <select name="week_two_status" id="week_two_status">
+          <option value="">Select Status</option>
+          <option value="1">Completed</option>
+          <option value="2">In-Progress</option>
+          <option value="3">Not-Started</option>
+      </select><br>
+      <label for="week_three_report">Week 3 Report:</label>
+      <input name="week_three_report" id="week_three_report"></input>
+      <select name="week_three_status" id="week_three_status">
+          <option value="">Select Status</option>
+          <option value="1">Completed</option>
+          <option value="2">In-Progress</option>
+          <option value="3">Not-Started</option>
+      </select><br>
+      <label for="week_four_report">Week 4 Report:</label>
+      <input name="week_four_report" id="week_four_report"></input>
+      <select name="week_four_status" id="week_four_status">
+          <option value="">Select Status</option>
+          <option value="1">Completed</option>
+          <option value="2">In-Progress</option>
+          <option value="3">Not-Started</option>
+      </select><br>
+      <label for="week_five_report">Week 5 Report:</label>
+      <input name="week_five_report" id="week_five_report"></input>
+      <select name="week_five_status" id="week_five_status">
+          <option value="">Select Status</option>
+          <option value="1">Completed</option>
+          <option value="2">In-Progress</option>
+          <option value="3">Not-Started</option>
+      </select><br>
+      
       <lable>Cumulative Progress :</lable>
       {{form.cumulative_progress}}<br>
       <lable>Cumulative Utilisation :</lable>
@@ -78,21 +74,6 @@
     </form>
   </div> 
   <script>
-    function changeBulletColor(element) {
-      var bullet = element.closest('.bullet');
-      var radioValue = element.value;
-
-      if (radioValue === '1') {
-        bullet.style.color = 'green';
-      } else if (radioValue === '2') {
-          bullet.style.color = 'yellow';
-      } else if (radioValue === '3') {
-        bullet.style.color = 'red';
-      } else {
-        // Reset to default color
-        bullet.style.color = 'initial';
-      }
-    }
     function capitalizeText(inputId) {
       var input = document.getElementById(inputId);
       var inputValue = input.value;

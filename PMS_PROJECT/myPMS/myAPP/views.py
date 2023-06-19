@@ -1,12 +1,13 @@
 from datetime import datetime, timedelta
+from django.http import JsonResponse
 from django.utils.timezone import now
 from django.forms import formset_factory, inlineformset_factory
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import login, authenticate,logout
 from django.contrib import messages
 from django.shortcuts import render, redirect
-from .models import Activity_location, Activity_timeframe, Annual_budget, Dip_Activities, Dip_Indicator, Dip_Process, Dip_expected_out_come, Dip_mov, Project_Category, Project_DIP,Month_Plan,Dip_details,Event_Plan, Week_one_Report, Weekly_Report
-from .forms import ActivityAproveForm, ActivityMatrixAproveForm, ActivityMatrixCeoForm, AmRemarkForm, CategoryForm, CeoAproveForm, DipActivitiesForm, DipComponentForm, DipIndicatorForm, DipMovForm, DipOutcomeForm, DipProcessForm, DipRemarkForm, DipUpdateForm, EventPlanAproveForm, EventRemarkForm, LocationCountForm, MPCForm, MonthlyPlanAproveForm, MonthlyReportUpdateForm, MonthlyachievementForm, MonthlybacklogForm, MonthlyhighlightForm, PlanRemarkForm, ProjectForm, ReportAproveForm, ReportRemarkForm, TimeFrameForm, WeekFiveForm, WeekFourForm, WeekOneForm, WeekThreeForm, WeekTwoForm, WeeklyReportForm, annualBudgetForm,MonthPlanForm,eventForm
+from .models import Activity_location, Activity_timeframe, Dip_Activities, Dip_Indicator, Dip_Process, Dip_expected_out_come, Dip_mov, Project_Category, Project_DIP,Month_Plan,Dip_details,Event_Plan, Week_five_Report, Week_four_Report, Week_one_Report, Week_three_Report, Week_two_Report, Weekly_Report
+from .forms import ActivityAproveForm, ActivityMatrixAproveForm, ActivityMatrixCeoForm, AmRemarkForm, CategoryForm, CeoAproveForm, DipActivitiesForm, DipComponentForm, DipIndicatorForm, DipMovForm, DipOutcomeForm, DipProcessForm, DipRemarkForm, DipUpdateForm, EventPlanAproveForm, EventRemarkForm, LocationCountForm, MPCForm, MonthlyPlanAproveForm, MonthlyReportUpdateForm, MonthlyachievementForm, MonthlybacklogForm, MonthlyhighlightForm, PlanRemarkForm, ProjectForm, ReportAproveForm, ReportRemarkForm, TimeFrameForm, WeekOneForm, WeekTwoForm, WeeklyReportForm, MonthPlanForm,eventForm
 from django.contrib import messages
 from .forms import  CreateUserForm
 from .decorators import admin_only, allowed_users, unauthenticated_user
@@ -1090,56 +1091,127 @@ def weekly_report(request,pk):
 def add_WeeklyReport(request,pk):
       project = get_object_or_404(Project_DIP, id=pk)
       form = WeeklyReportForm(pk=pk)
-      # form1 = WeekOneForm()
-      # form2 = WeekTwoForm()
-      if request.method == 'POST':
-            form = WeeklyReportForm(request.POST,pk=pk)
-            # form1 = WeekOneForm(request.POST)
-            # form2 = WeekTwoForm(request.POST)
-            if form.is_valid() :
-                data = form.save(commit=False)
-                data.month = datetime.today().month
-                data.year = datetime.today().year
-                data.save()
-                # one = form1.save(commit=False)
-                # one.weekly_Report_id = data
-                # print(one.report)
-                # two = form2.save(commit=False)
-                # two.weekly_Report_id = data
-                # one.save()
-                # two.save()
-                return redirect('myAPP:weekly-report', project.id)
-            else:
-               form = WeeklyReportForm(pk=pk)
-              #  form1 = WeekOneForm() 
-              #  form2 = WeekTwoForm() 
-
       context= {
           'form': form,
           'project':project,
-          # 'form1':form1,
-          # 'form2':form2,
           }
       return render(request,'myAPP/weekly-add.html',context) 
+
+def create_weekly_report(request,pk):
+    project = get_object_or_404(Project_DIP, id=pk)
+    if request.method == 'POST': 
+        form = WeeklyReportForm(request.POST,pk=pk)  
+        data = form.save(commit=False)
+        data.month = datetime.today().month
+        data.year = datetime.today().year
+        data.save()     
+        # Create the Week_one_Report instance
+        week_one_report = Week_one_Report.objects.create(
+            weekly_Report_id=data,
+            report=request.POST.get('week_one_report'),
+            status=request.POST.get('week_one_status')
+        )
+        
+        # Create the Week_two_Report instance
+        week_two_report = Week_two_Report.objects.create(
+            weekly_Report_id=data,
+            report=request.POST.get('week_two_report'),
+            status=request.POST.get('week_two_status')
+        )
+        
+        # Create the Week_three_Report instance
+        week_three_report = Week_three_Report.objects.create(
+            weekly_Report_id=data,
+            report=request.POST.get('week_three_report'),
+            status=request.POST.get('week_three_status')
+        )
+        
+        # Create the Week_four_Report instance
+        week_four_report = Week_four_Report.objects.create(
+            weekly_Report_id=data,
+            report=request.POST.get('week_four_report'),
+            status=request.POST.get('week_four_status')
+        )
+        
+        # Create the Week_five_Report instance
+        week_five_report = Week_five_Report.objects.create(
+            weekly_Report_id=data,
+            report=request.POST.get('week_five_report'),
+            status=request.POST.get('week_five_status')
+        )
+        
+        # Return a success response
+        return redirect('myAPP:weekly-report', project.id)
+    
+    # Return an error response if the request method is not POST
+    return JsonResponse({'error': 'Invalid request method.'}, status=405)
 
 @login_required(login_url='login')
 def update_WeeklyReport(request,pk):
       plan = get_object_or_404(Weekly_Report, id=pk)
       project = get_object_or_404(Project_DIP, id=plan.activity_id.project_detail_id.project_id.id)
       form = WeeklyReportForm(pk=project,instance=plan)
-      if request.method == 'POST':
-            form = WeeklyReportForm(request.POST,pk=project,instance=plan)
-            if form.is_valid:
-                form.save()
-                return redirect('myAPP:weekly-report', project.id)
-            else:
-               form = WeeklyReportForm(pk=pk)
+      one = Week_one_Report.objects.get(weekly_Report_id=plan)
+      two = Week_two_Report.objects.get(weekly_Report_id=plan)
+      three = Week_three_Report.objects.get(weekly_Report_id=plan)
+      four = Week_four_Report.objects.get(weekly_Report_id=plan)
+      five = Week_five_Report.objects.get(weekly_Report_id=plan)
       context= {
           'form': form,
           'project':project,
+          'plan':plan,
+          'week_one_report': one,
+          'week_two_report': two,
+          'week_three_report': three,
+          'week_four_report': four,
+          'week_five_report': five,
           } 
-      return render(request,'myAPP/weekly-add.html',context) 
+      return render(request,'myAPP/weekly-update.html',context) 
 
+
+def update_weekly_report(request, pk):
+    plan = get_object_or_404(Weekly_Report, id=pk)
+    project = get_object_or_404(Project_DIP, id=plan.activity_id.project_detail_id.project_id.id)
+    if request.method == 'POST':
+        form = WeeklyReportForm(request.POST,pk=project,instance=plan)  
+        if form.is_valid():        
+        # Update the fields 
+            data = form.save(commit=False)
+            data.save()    
+        
+        # Update the Week_one_Report instance
+            week_one_report = Week_one_Report.objects.get(weekly_Report_id=data)
+            week_one_report.report = request.POST.get('week_one_report')
+            week_one_report.status = request.POST.get('week_one_status')
+            week_one_report.save()
+        
+            # Update the Week_two_Report instance
+            week_two_report = Week_two_Report.objects.get(weekly_Report_id=data)
+            week_two_report.report = request.POST.get('week_two_report')
+            week_two_report.status = request.POST.get('week_two_status')
+            week_two_report.save()
+            
+            # Update the Week_three_Report instance
+            week_three_report = Week_three_Report.objects.get(weekly_Report_id=data)
+            week_three_report.report = request.POST.get('week_three_report')
+            week_three_report.status = request.POST.get('week_three_status')
+            week_three_report.save()
+            
+            # Update the Week_four_Report instance
+            week_four_report = Week_four_Report.objects.get(weekly_Report_id=data)
+            week_four_report.report = request.POST.get('week_four_report')
+            week_four_report.status = request.POST.get('week_four_status')
+            week_four_report.save()
+            
+            # Update the Week_five_Report instance
+            week_five_report = Week_five_Report.objects.get(weekly_Report_id=data)
+            week_five_report.report = request.POST.get('week_five_report')
+            week_five_report.status = request.POST.get('week_five_status')
+            week_five_report.save()
+            
+            return redirect('myAPP:weekly-report', project.id)
+    print(form.errors)
+    return JsonResponse({'error': 'Invalid request method.'}, status=405)
 
 # @login_required(login_url='login')
 # def week_remarks(request,pk):
@@ -1210,17 +1282,17 @@ def add_project_clearance(request,pk):
 
 
 
-@login_required(login_url='login')
-def add_annual_budget(request):
-      form = annualBudgetForm()
-      if request.method == 'POST':
-            form = annualBudgetForm(request.POST)
-            if form.is_valid():
-               form.save()
-               messages.success(request,'Budget Created Successfully')
-            else:  # display empty form
-               form = annualBudgetForm()  
-      return render(request,'myAPP/addannualbudget.html',{'data': form}) 
+# @login_required(login_url='login')
+# def add_annual_budget(request):
+#       form = annualBudgetForm()
+#       if request.method == 'POST':
+#             form = annualBudgetForm(request.POST)
+#             if form.is_valid():
+#                form.save()
+#                messages.success(request,'Budget Created Successfully')
+#             else:  # display empty form
+#                form = annualBudgetForm()  
+#       return render(request,'myAPP/addannualbudget.html',{'data': form}) 
 
 
 

@@ -159,11 +159,6 @@ class Weekly_Report(models.Model):
  activity_id= models.ForeignKey("Dip_Activities", on_delete=models.CASCADE)  
  unit = models.IntegerField(null=True,blank=True)
  approved_budget = models.IntegerField(null=True,blank=True)
- w1 = models.CharField(max_length=500,null=True,blank=True)
- w2 = models.CharField(max_length=500,null=True,blank=True)
- w3 = models.CharField(max_length=500,null=True,blank=True)
- w4 = models.CharField(max_length=500,null=True,blank=True)
- w5 = models.CharField(max_length=500,null=True,blank=True)
  cumulative_progress = models.CharField(max_length=500,null=True,blank=True)
  cumulative_utilisation = models.CharField(max_length=500,null=True,blank=True)
  remarks=models.CharField(max_length=200,null=True,blank=True)
@@ -172,6 +167,67 @@ class Weekly_Report(models.Model):
 
  def __str__(self):
         return self.activity_id.activity_name 
+
+class Week_one_Report(models.Model):
+ COLOR_CHOICES =(
+    ('1',"Completed"),
+    ('2',"In-Progress"),
+    ('3',"Not-Started")
+    )
+ weekly_Report_id = models.ForeignKey("Weekly_Report", on_delete=models.CASCADE)
+ report = models.CharField(max_length=500,null=True,blank=True)
+ status = models.CharField(max_length= 10,choices=COLOR_CHOICES,null=True,blank=True)
+ def __str__(self):
+        return self.weekly_Report_id.activity_id.activity_name 
+   
+class Week_two_Report(models.Model):
+ COLOR_CHOICES =(
+    ('1',"Completed"),
+    ('2',"In-Progress"),
+    ('3',"Not-Started")
+    )
+ weekly_Report_id = models.ForeignKey("Weekly_Report", on_delete=models.CASCADE)
+ report = models.CharField(max_length=500,null=True,blank=True)
+ status = models.CharField(max_length= 10,choices=COLOR_CHOICES,null=True,blank=True)
+ def __str__(self):
+        return self.weekly_Report_id.activity_id.activity_name 
+ 
+class Week_three_Report(models.Model):
+ COLOR_CHOICES =(
+    ('1',"Completed"),
+    ('2',"In-Progress"),
+    ('3',"Not-Started")
+    )
+ weekly_Report_id = models.ForeignKey("Weekly_Report", on_delete=models.CASCADE)
+ report = models.CharField(max_length=500,null=True,blank=True)
+ status = models.CharField(max_length= 10,choices=COLOR_CHOICES,null=True,blank=True)
+ def __str__(self):
+        return self.weekly_Report_id.activity_id.activity_name 
+ 
+class Week_four_Report(models.Model):
+ COLOR_CHOICES =(
+    ('1',"Completed"),
+    ('2',"In-Progress"),
+    ('3',"Not-Started")
+    )
+ weekly_Report_id = models.ForeignKey("Weekly_Report", on_delete=models.CASCADE)
+ report = models.CharField(max_length=500,null=True,blank=True)
+ status = models.CharField(max_length= 10,choices=COLOR_CHOICES,null=True,blank=True)
+ def __str__(self):
+        return self.weekly_Report_id.activity_id.activity_name 
+ 
+class Week_five_Report(models.Model):
+ COLOR_CHOICES =(
+    ('1',"Completed"),
+    ('2',"In-Progress"),
+    ('3',"Not-Started")
+    )
+ weekly_Report_id = models.ForeignKey("Weekly_Report", on_delete=models.CASCADE)
+ report = models.CharField(max_length=500,null=True,blank=True)
+ status = models.CharField(max_length= 10,choices=COLOR_CHOICES,null=True,blank=True)
+ def __str__(self):
+        return self.weekly_Report_id.activity_id.activity_name 
+ 
 
 class Monthly_Project_Clearance(models.Model):
  MONTH_CHOICES =(
@@ -218,98 +274,6 @@ class Monthly_Project_Clearance(models.Model):
 
 
 
-
-
-
-
-
-class Week_one_Report(models.Model):
- COLOR_CHOICES =(
-    ('1',"Completed"),
-    ('2',"In-PROGRESS"),
-    ('3',"Not-Started")
-    )
- weekly_Report_id = models.ForeignKey("Weekly_Report", on_delete=models.CASCADE)
- report = models.CharField(max_length=500,null=True,blank=True)
- status = models.CharField(max_length= 10,choices=COLOR_CHOICES,null=True,blank=True)
- def __str__(self):
-        return self.weekly_Report_id.activity_id.activity_name 
-   
-class Week_two_Report(models.Model):
- COLOR_CHOICES =(
-    ('1',"Completed"),
-    ('2',"In-PROGRESS"),
-    ('3',"Not-Started")
-    )
- weekly_Report_id = models.ForeignKey("Weekly_Report", on_delete=models.CASCADE)
- report = models.CharField(max_length=500,null=True,blank=True)
- status = models.CharField(max_length= 10,choices=COLOR_CHOICES,null=True,blank=True)
- def __str__(self):
-        return self.weekly_Report_id.activity_id.activity_name 
- 
-class Week_three_Report(models.Model):
- COLOR_CHOICES =(
-    ('1',"Completed"),
-    ('2',"In-PROGRESS"),
-    ('3',"Not-Started")
-    )
- weekly_Report_id = models.ForeignKey("Weekly_Report", on_delete=models.CASCADE)
- report = models.CharField(max_length=500,null=True,blank=True)
- status = models.CharField(max_length= 10,choices=COLOR_CHOICES,null=True,blank=True)
- def __str__(self):
-        return self.weekly_Report_id.activity_id.activity_name 
- 
-class Week_four_Report(models.Model):
- COLOR_CHOICES =(
-    ('1',"Completed"),
-    ('2',"In-PROGRESS"),
-    ('3',"Not-Started")
-    )
- weekly_Report_id = models.ForeignKey("Weekly_Report", on_delete=models.CASCADE)
- report = models.CharField(max_length=500,null=True,blank=True)
- status = models.CharField(max_length= 10,choices=COLOR_CHOICES,null=True,blank=True)
- def __str__(self):
-        return self.weekly_Report_id.activity_id.activity_name 
- 
-class Week_five_Report(models.Model):
- COLOR_CHOICES =(
-    ('1',"Completed"),
-    ('2',"In-PROGRESS"),
-    ('3',"Not-Started")
-    )
- weekly_Report_id = models.ForeignKey("Weekly_Report", on_delete=models.CASCADE)
- report = models.CharField(max_length=500,null=True,blank=True)
- status = models.CharField(max_length= 10,choices=COLOR_CHOICES,null=True,blank=True)
- def __str__(self):
-        return self.weekly_Report_id.activity_id.activity_name 
- 
-class Annual_budget(models.Model):
- name_of_organization=models.CharField(max_length=200)   
- project_number= models.ForeignKey("Project_DIP", on_delete=models.CASCADE)
- period = models.CharField(max_length=200)
- date_of_budget = models.DateField()
- local_currency = models.CharField(max_length=100)
- exchange_rate = models.CharField(max_length=100)
- date_approved = models.DateField()
- created_at = models.DateTimeField('created at', auto_now_add=True)
- updated_at = models.DateTimeField('updated at', auto_now=True)  
-  
- def __str__(self):
-        return self.name_of_organization
- 
-
-class MonthlyBudget(models.Model):
-   exp_code=models.IntegerField()
-   name=models.CharField(max_length=200)
-   designation=models.CharField(max_length=200)
-   programme=models.CharField(max_length=200)
-   month=models.CharField(max_length=200)
-   head_expenditure=models.CharField(max_length=200)
-   amount_requested_previous_month=models.IntegerField()
-   amount_requested_current_month=models.IntegerField()
-   amount_sanctioned=models.IntegerField()
-   created_at = models.DateTimeField('created at', auto_now_add=True)
-   updated_at = models.DateTimeField('updated at',auto_now=True)
 
 
 

@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import  add_Category, add_WeeklyReport, add_annual_budget, add_project_clearance, add_report_achievement, add_report_backlog, add_report_highlights, am_remarks, ceo_am_approve, ceo_aproval_dip, ceoevent, ceoplanapproval, ceoreportapproval, dip_remarks, event_remarks, index,complince_home, location_count, add_Project, monthly_report, plan_remarks, report_remarks, timeframe, update_Activity, update_MonthPlan,update_Project,index1,add_Activity,registerPage,loginPage,logoutUser,index2,add_MonthPlan,index4,add_DIP_Details, update_WeeklyReport, update_component, update_location, update_report, update_timeframe, index6,add_event,update_event, weekly_report
+from .views import  add_Category, add_WeeklyReport, add_project_clearance, add_report_achievement, add_report_backlog, add_report_highlights, am_remarks, ceo_am_approve, ceo_aproval_dip, ceoevent, ceoplanapproval, ceoreportapproval, create_weekly_report, dip_remarks, event_remarks, index,complince_home, location_count, add_Project, monthly_report, plan_remarks, report_remarks, timeframe, update_Activity, update_MonthPlan,update_Project,index1,add_Activity,registerPage,loginPage,logoutUser,index2,add_MonthPlan,index4,add_DIP_Details, update_WeeklyReport, update_component, update_location, update_report, update_timeframe, index6,add_event,update_event, update_weekly_report, weekly_report
 app_name = "myAPP"   
 
 
@@ -58,6 +58,8 @@ urlpatterns = [
     path('weekly-report/<int:pk>/', weekly_report, name='weekly-report'),
     path('add-weekly-report/<int:pk>/',add_WeeklyReport,name='add-weekly-report'),
     path('update-weekly-report/<int:pk>/',update_WeeklyReport,name='update-weekly-report'),
+    path('create-weekly-report/<int:pk>/', create_weekly_report, name='create_weekly_report'),
+    path('edit-weekly-report/<int:pk>/', update_weekly_report, name='update_weekly_report'),
     # path('remarks-weekly-report/<int:pk>/',week_remarks,name='remarks-weekly-report'),
 
 
@@ -75,7 +77,6 @@ urlpatterns = [
     path('update/<int:pk>/',update_component,name='update_component'),
 
     path('signup/',registerPage, name='signup'),
-    path('addAnnualBudget',add_annual_budget,name='add_Annual_Budget'),
     
     
 ]
