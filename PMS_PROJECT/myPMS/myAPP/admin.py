@@ -1,11 +1,26 @@
 from django.contrib import admin
 from .models import Activity_location, Activity_timeframe, Dip_Activities, Dip_Indicator, Dip_Process, Dip_expected_out_come, Dip_mov, Event_Plan, Monthly_Project_Clearance, Project_Category, Project_DIP,Month_Plan,Dip_details, Week_five_Report, Week_four_Report, Week_one_Report, Week_three_Report, Week_two_Report, Weekly_Report
+from django.contrib.auth.models import User
+from django.contrib.auth.admin import UserAdmin
+from import_export.admin import ImportExportMixin
+from import_export.admin import ImportExportModelAdmin
+from .resources import ProjectResource, UserResource
+
+class CustomUserAdmin(ImportExportMixin, UserAdmin):
+    resource_class = UserResource
+
+admin.site.unregister(User)
+admin.site.register(User, CustomUserAdmin)
+
+@admin.register(Project_DIP)
+class CustomProjectAdmin(ImportExportModelAdmin):
+    resource_class = ProjectResource
 
 class ProjectAdmin(admin.ModelAdmin):
   date_hierarchy = 'created_at'
   list_filter = ('period','project_name')
   search_fields = ['project_name','period']
-admin.site.register(Project_DIP, ProjectAdmin)
+# admin.site.register(Project_DIP, ProjectAdmin)
 admin.site.register(Activity_timeframe)
 admin.site.register(Dip_details)
 admin.site.register(Project_Category)
