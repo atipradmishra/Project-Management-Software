@@ -60,7 +60,9 @@
     
       #customers td, #customers th {
         border: 1px solid #ddd;
-        padding: 8px;
+        padding-left: 2px;
+        padding-right: 2px;
+        text-align: center;
       }
     
       #customers tr:nth-child(even){background-color: #f2f2f2;}
@@ -70,7 +72,6 @@
       #customers th {
         padding-top: 12px;
         padding-bottom: 12px;
-        text-align: left;
         background-color: #ead1dc;
         color: black;
       }
@@ -108,20 +109,20 @@
 <table id="customers" class="printable">
     <thead>
         <tr>
-            <th style="width: 3%;font-size:12px">Sl. No.</th>
-            <th style="width: 15%;text-align:center;font-size:15px">Activities</th>
+            <th style="width: 1%;font-size:12px">Sl. No.</th>
+            <th style="width: 16%;text-align:center;font-size:15px">Activities</th>
             <th style="width: 5%;text-align:center;font-size:15px">No. of Unit</th>
-            <th style="text-align:center;font-size:15px">Approved Budget</th>
+            <th style="width: 5%;text-align:center;font-size:15px">Approved Budget</th>
             <th style="width: 8%;text-align:center;font-size:15px">Week 1 Progress</th>
             <th style="width: 8%;text-align:center;font-size:15px">Week 2 Progress</th>
             <th style="width: 8%;text-align:center;font-size:15px">Week 3 Progress</th>
             <th style="width: 8%;text-align:center;font-size:15px">Week 4 Progress</th>
             <th style="width: 8%;text-align:center;font-size:15px">Week 5 Progress</th>
-            <th style="width: 10%;text-align:center;font-size:15px">Cumulative Progress</th>
-            <th style="width: 10%;text-align:center;font-size:15px">Cumulative Utilisation</th>
+            <th style="width: 12%;text-align:center;font-size:15px">Cumulative Progress</th>
+            <th style="width: 12%;text-align:center;font-size:15px">Cumulative Utilisation</th>
             <th style="text-align: center;font-size:15px" class='no-print'>Remarks if any</th>
             {% if user == 1 %}
-            <th style="font-size:15px" class='no-print'>Edit</th>
+            <th style="font-size:15px;width: 5%;" class='no-print'>Edit</th>
             {% endif %}
         </tr>
     </thead>

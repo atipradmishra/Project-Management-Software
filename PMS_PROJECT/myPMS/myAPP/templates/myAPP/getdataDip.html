@@ -85,7 +85,8 @@
 
   #customers td, #customers th {
     border: 1px solid #ddd;
-    padding: 8px;
+    padding-left: 2px;
+    padding-right: 2px;
   }
 
   #customers tr:nth-child(even){background-color: #f2f2f2;}
@@ -99,6 +100,24 @@
     background-color: #f4b083;
     color: black;
   }
+  .list-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .list-container ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: disc;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 18px;
+  }
+
+  .list-container ul li {
+    margin-bottom: 5px;
+  }
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <body>
@@ -107,18 +126,18 @@
     <thead>
       {% if component.count != 0 %}
       <tr>
-        <th>Sl. No.</th>
-        <th>Activities</th>
-        <th>Objectives</th>
-        <th>Target Participants</th>
-        <th>Outreach</th>
-        <th>Process</th>
-        <th>Duration</th>
-        <th>Indicator</th>
-        <th>Expected Out come</th>
-        <th>MOV</th>
-        <th style="text-align: center;" class="no-print">Remarks if any</th>
-        <th class="no-print">Edit</th>
+        <th style="font-size:12px;">Sl. No.</th>
+        <th style="text-align: center;width:15%">Activities</th>
+        <th style="text-align: center;width:15%">Objectives</th>
+        <th style="text-align: center;">Target Participants</th>
+        <th style="text-align: center;width:8%">Coverage</th>
+        <th style="text-align: center;">Process</th>
+        <th style="text-align: center;width:5%">Duration</th>
+        <th style="text-align: center;">Indicator</th>
+        <th style="text-align: center;">Expected Out come</th>
+        <th style="text-align: center;">MOV</th>
+        <th style="text-align: center;width:5%" class="no-print">Remarks if any</th>
+        <th class="no-print" style="text-align:center;width:3%">Edit</th>
       </tr>
      {% endif %}
     </thead>
@@ -138,36 +157,44 @@
             <td>{{ x.target_participants}}</td>
             <td style="max-width: 100px;">{{ x.coverage}}</td>
             <td>
+              <div class="list-container">
                 <ul>
                   {% for y in x.dip_process_set.all %}
                   <li>{{ y.process }}</li>
                   {% endfor %}
                 </ul>
+              </div>
             </td>
-            <td style="max-width: 100px;">{{ x.duration}}</td>
-            <td style="max-width: 200px;">
+            <td style='text-align:center;'>{{ x.duration}}</td>
+            <td>
+              <div class="list-container">
               <ul>
                 {% for y in x.dip_indicator_set.all %}
                 <li>{{ y.indicator }}</li>
                 {% endfor %}
               </ul>
+            </div>
             </td>
-            <td style="max-width: 200px;">
+            <td>
+              <div class="list-container">
               <ul>
                 {% for y in x.dip_expected_out_come_set.all %}
                 <li>{{ y.expected_out_come }}</li>
                 {% endfor %}
               </ul>
+              </div>
             </td>
-            <td style="max-width: 150px;">
+            <td>
+              <div class="list-container">
               <ul>
                 {% for y in x.dip_mov_set.all %}
                 <li>{{ y.mov }}</li>
                 {% endfor %}
               </ul>
+              </div>
             </td>
             {% if x.dip_remarks %}
-            <td class="no-print">{{ x.dip_remarks }}</td>
+            <td class="no-print" style='text-align:center;'>{{ x.dip_remarks }}</td>
             {% else %}
             <td style="text-align: center;" class="no-print">No Remarks</td>
             {% endif %}

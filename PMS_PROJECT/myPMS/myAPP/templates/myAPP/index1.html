@@ -78,7 +78,8 @@
 
   #customers td, #customers th {
     border: 1px solid #ddd;
-    padding: 8px;
+    padding-left: 2px;
+    padding-right: 2px;
   }
 
   #customers tr:nth-child(even){background-color: #f2f2f2;}
@@ -127,6 +128,24 @@
     .no-print {
         display: none; /* Hide elements with the "no-print" class */
     }
+  }
+  .list-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .list-container ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: disc;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 18px;
+  }
+
+  .list-container ul li {
+    margin-bottom: 5px;
   } 
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -135,15 +154,15 @@
   <table id="customers">
     <thead>
       <tr>
-        <th style="width: 4%;font-size: 12px;">Sl. No.</th>
-        <th style="text-align: center;width: 20%;">Activities</th>
-        <th style="text-align: center;width: 10%;">Target</th>
-        <th style="text-align: center;width: 15%;">Location</th>
-        <th style="max-width: 5px;text-align: center;width: 5%;" class="no-print">Time Frame</th>
+        <th style="width: 1%;font-size: 12px;">Sl. No.</th>
+        <th style="text-align: center;width: 15%;">Activities</th>
+        <th style="text-align: center;width: 8%;">Target</th>
+        <th style="text-align: center;width: 8%;">Location</th>
+        <th style="text-align: center;width: 4%;padding-left:0px;padding-right:0px;" class="no-print">Time Frame</th>
         {% for next_month in next_months %}
-        <th style="width: 5%;">{{ next_month|date:"M" }}</th>
+        <th style="width: 5%;text-align: center;">{{ next_month|date:"M" }}</th>
         {% endfor %}
-        <th style="text-align: center;width:5%" class="no-print">Remarks if any</th>
+        <th style="text-align: center;width:4%" class="no-print">Remarks if any</th>
       </tr>
     </thead>
     <tbody>
@@ -156,15 +175,17 @@
       {% for x in a.dip_activities_set.all %}
       <tr>
             <td>{{ forloop.counter }}</td>
-            <td style="max-width: 50px;">{{ x.activity_name }}</td>
-            <td style="width: 150px;">{{ x.target_participants }}</td>
+            <td>{{ x.activity_name }}</td>
+            <td>{{ x.target_participants }}</td>
             {% if x.activity_location_set.all %}
               <td onclick="window.location='{% url 'myAPP:update-location' x.id %}';">
-                <ul>
-                {% for b in x.activity_location_set.all %}
-                <li>{{b.location_name}} - {{ b.count }}</li>
-                {% endfor %}
-                </ul>
+                <div class="list-container">
+                  <ul>
+                  {% for b in x.activity_location_set.all %}
+                  <li>{{b.location_name}}-{{ b.count }}</li>
+                  {% endfor %}
+                  </ul>
+                </div>
                 <label class="no-print" style="color:red;cursor: pointer;">&#9998;Edit</label>
               </td>
             {% else %}
