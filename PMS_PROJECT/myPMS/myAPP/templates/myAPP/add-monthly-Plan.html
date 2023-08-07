@@ -1,0 +1,70 @@
+{% extends 'sidenav\sidenav_ceo.html' %}
+{% load static %}
+{% block title %} Add Monthly Plan {% endblock %}
+{% block content %}
+<style>
+  input[type=text], select {
+    width: 70%;
+    padding: 12px 20px;
+    margin: 10px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: #e7e6e6;
+  }
+  label {
+    color: #2706ca;
+    font-weight: bold;
+    {% comment %} padding: 5px 12px 12px 0; {% endcomment %}
+    display: inline-block;
+    float: left;
+    width: 25%;
+    margin-top: 10px
+  }
+  
+  input[type=submit] {
+    width: 15%;
+    background-color: #003366;
+    color: white;
+    padding: 14px 20px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 20px;
+  }
+  
+  input[type=submit]:hover {
+    background-color: #45a049;
+  }
+</style>
+<div style='margin:50px;'>
+  <h2 style='color:#003366;margin-bottom:50px;'>Add Monthly Plan </h2>
+    <form  method="POST">
+      {% csrf_token %}
+      {{data.as_p}}
+      <input class='button' type="submit" value="Save">
+    </form>
+</div> 
+<script>
+    function capitalizeText(inputId) {
+      var input = document.getElementById(inputId);
+      var inputValue = input.value;
+      var capitalizedText = "";
+      var capitalizeNext = true;
+
+      for (var i = 0; i < inputValue.length; i++) {
+        var currentChar = inputValue.charAt(i);
+        
+        if (capitalizeNext && currentChar.match(/[a-z]/i)) {
+          capitalizedText += currentChar.toUpperCase();
+          capitalizeNext = false;
+        } else {
+          capitalizedText += currentChar;
+        }
+      }
+      input.value = capitalizedText;
+    }
+</script>  
+{% endblock  %}

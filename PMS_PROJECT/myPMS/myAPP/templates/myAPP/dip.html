@@ -1,0 +1,600 @@
+{% extends 'myAPP/user_nav.html' %}
+{% load static %}
+{% block title %}DIP{% endblock %}
+{% block content %}
+<style>
+  @media print {
+    .no-print {
+        display: none;
+    }
+    body {
+      background-color: transparent;
+    }
+  }
+  .ingredient-form {
+    border-bottom: 1px solid black;
+  }
+  .hidden {
+      display: none
+  }
+  
+  .button {
+    border-radius: 4px;
+    background-color: #6699ff;
+    border: none;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 20px;
+    width: 80%;
+    height: 50px;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin: 30px;
+    position: sticky;
+    background-color: #33cc33;
+  }
+  @media print {
+    .button {
+        display: none; 
+    }
+  }
+  .open-button {
+    background-color: #555;
+    color: white;
+    padding: 16px 20px;
+    border: none;
+    cursor: pointer;
+    opacity: 0.8;
+    position: fixed;
+    bottom: 23px;
+    right: 28px;
+    width: 280px;
+  }
+
+  #customers {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    width: 99%;
+    margin: 0 auto;
+    background-color: #fff;
+  }
+
+  #customers thead tr:first-child th:first-child {
+    border-top-left-radius: 10px;
+  }
+
+  #customers thead tr:first-child th:last-child {
+    border-top-right-radius: 10px;
+  }
+
+  #customers td, #customers th {
+    border: 1px solid #ddd;
+    padding-left: 2px;
+    padding-right: 2px;
+    font-size: 15px;
+  }
+  #customers td{
+    color:#003366;
+  }
+
+  #customers tr:nth-child(even){background-color: #f2f2f2;}
+
+  #customers tr:hover {background-color: #ddd;}
+
+  #customers th {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: #f4b083;
+    color: black;
+    text-align: center;
+  }
+  .list-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .list-container ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: disc;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 18px;
+  }
+
+  .list-container ul li {
+    margin-bottom: 5px;
+  }
+  @media print {
+    .header {
+        display: none;
+    }
+  }
+  .popup {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  .popup::-webkit-scrollbar {
+    display: none;  
+  }
+  .popup::-webkit-scrollbar-thumb {
+    display: none;
+  }
+  .popup::-webkit-scrollbar-track {
+    display:none;
+  }
+  
+  .popup-content {
+    background-color: #fefefe;
+    margin: 7% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 95%;
+  }
+  
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .btn {
+    background-color: #4CAF50; /* Green */
+    border-radius: 10px;
+    color: white;
+    padding: 8px 30px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-top: 5px;
+    margin-left: 1120px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+  }
+  .button1 {
+    background-color: white;
+    color: black; 
+    border: 2px solid #4CAF50;
+  }
+  
+  .button1:hover {
+    background-color: #4CAF50;
+    color: white;
+  }
+  .popup2{
+    width: 400px;
+    background: #fff;
+    border-radius: 6px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%) scale(0.80);
+    text-align: center;
+    color: #333;
+    padding: 0 30px 30px;
+    display: none;
+    transition: transform 0.4s, top 0.4s; 
+    box-shadow: 0 20px 30px rgba(1,1,1,1);
+  }
+  .popup2 img{
+    width: 100px;
+    margin-top: -50px;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+  .popup2 h2{
+    font-size: 40px;
+    font-weight: 500;
+    margin: 30px 0 l0px;
+  }
+  .popup2 button{
+    width: 100%;
+    margin-top: 50px;
+    padding: 10px 0;
+    background: #6fd649;
+    color: #fff;
+    border: 0;
+    outline: none;
+    font-size: 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
+  }
+  .butn {
+    border-radius: 8px;
+    color: white;
+    padding: 10px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 15px;
+    margin-right:10px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    background-color: white; 
+    color: #003366; 
+    border: 2px solid #003366;
+  }
+  .butn:hover {
+    background-color: #003366;
+    color: white;
+  }
+  @media print {
+    .helpers {
+        display: none; /* Hide elements with the "no-print" class */
+    }
+  }
+  #views {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    width: 100%;
+    margin: 0 auto;
+    background-color: #fff;
+    }
+  
+    #views td, #views th {
+      border: 1px solid #ddd;
+      padding-left: 2px;
+      padding-right: 2px;
+      font-size: 15px;
+      text-align: left;
+    }
+  
+    #views tr:nth-child(even){background-color: #f2f2f2;}
+  
+    #views tr:hover {background-color: #ddd;}
+  
+    #views th {
+      padding-top: 5px;
+      padding-bottom: 5px;
+      background-color: #f4b083;
+      color: black;
+      text-align: center;
+    }
+</style>
+<div>
+  <h2 style='font-family:"Calibri", sans-serif;margin-left:20px;margin-top:30px'>Detail Implementation Plan - DIP</h2>
+  <div class="helpers" style='margin-left:20px;margin-top:10px'>
+    <img src="{% static 'images\main-logo.png' %}" style='float:right;margin-right: 10px;width:10%'></img>
+      {% if user == 1 %}
+        <button class='butn' id='add-more'><i class="fa-solid fa-plus"></i> Add Component</button>
+        <button onclick="openPopup()" class='butn'><i class="fa fa-eye"></i> View</button>
+        <div id="popup" class="popup">
+        <div class="popup-content">
+          <span class="close" onclick="closePopup()">&times;</span>
+          <center><h2 style='font-family:"Calibri", sans-serif;'>{{ project.project_name }}</h2>
+          <h2 style='font-family:"Calibri", sans-serif;'><u>Detail Implementation Plan - DIP</u></h2></center>
+          <form method="POST" id="myForm">
+          {% csrf_token %}
+          <table id="views">
+            <thead>
+              <tr>
+                <th style="font-size:12px;width:1%">Sl. No.</th>
+                <th style="width:10%">Activities</th>
+                <th style="width:10%">Objectives</th>
+                <th>Target Participants</th>
+                <th style="width:5%">Coverage</th>
+                <th>Process</th>
+                <th style="width:5%">Duration</th>
+                <th>Indicator</th>
+                <th>Expected Out come</th>
+                <th>MOV</th>
+                <th style="text-align:center">Submit<input type="checkbox" id="select-all-checkbox"></th>
+              </tr>
+            </thead>
+            <tbody>
+             {% for a in component %}
+              <tr>
+                {% ifchanged %}
+                <td onclick="window.location='{% url 'myAPP:add_ActivityMatrix' a.id %}';" colspan="11" style="color: blue; font-weight: bold;">{{a.component}}</td>
+                {% endifchanged %}
+              </tr>
+              {% for x in a.dip_activities_set.all %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ x.activity_name }}</td>
+                    <td>{{ x.objectives}}</td>
+                    <td>{{ x.target_participants}}</td>
+                    <td style="max-width: 100px;">{{ x.coverage}}</td>
+                    <td>
+                        <ul>
+                          {% for y in x.dip_process_set.all %}
+                          <li>{{ y.process }}</li>
+                          {% endfor %}
+                        </ul>
+                    </td>
+                    <td style="max-width: 100px;">{{ x.duration}}</td>
+                    <td style="max-width: 200px;">
+                      <ul>
+                        {% for y in x.dip_indicator_set.all %}
+                        <li>{{ y.indicator }}</li>
+                        {% endfor %}
+                      </ul>
+                    </td>
+                    <td style="max-width: 200px;">
+                      <ul>
+                        {% for y in x.dip_expected_out_come_set.all %}
+                        <li>{{ y.expected_out_come }}</li>
+                        {% endfor %}
+                      </ul>
+                    </td>
+                    <td style="max-width: 150px;">
+                      <ul>
+                        {% for y in x.dip_mov_set.all %}
+                        <li>{{ y.mov }}</li>
+                        {% endfor %}
+                      </ul>
+                    </td>
+                    {% if x.is_dip_submited == 1 %}
+                    <td>Submited</td>
+                    {% else %}
+                    <td style="text-align:center">
+                      <input type="checkbox" name="selected_activities" value="{{ x.id }}">
+                    </td>
+                    {% endif %}
+                </tr>
+              {% endfor %}
+             {% endfor %}
+            </tbody>
+          </table>
+          <button class="btn button1" type="submit"><i class="fa fa-send-o"></i>Submit</button>
+        </form>
+        </div>
+        </div>
+        <button onclick="printPage()" class='butn'><i class="fa fa-print"></i> Print</button>
+      {% else %}
+        <button href="{% url 'myAPP:home' project.pk %}" class='butn'>Back</button>
+      {% endif %}
+  </div>
+  <table id="customers">
+    <thead>
+      <tr>
+        <th style="font-size:12px;width:1%">Sl. No.</th>
+        <th style="width:15%">Activities</th>
+        <th style="width:15%">Objectives</th>
+        <th style="">Target Participants</th>
+        <th style="width:8%">Coverage</th>
+        <th>Process</th>
+        <th style="width:5%">Duration</th>
+        <th>Indicator</th>
+        <th>Expected Out come</th>
+        <th>MOV</th>
+        <th style="width:5%" class="no-print">Remarks if any</th>
+        <th class="no-print" style="width:3%">Edit</th>
+      </tr>
+    </thead>
+    <tbody>
+     {% for a in component %}
+      <tr>
+        {% ifchanged %}
+        <td onclick="window.location='{% url 'myAPP:add_ActivityMatrix' a.id %}';" colspan="11" style="color: blue; font-weight: bold;cursor: pointer;">{{a.component}}<br><label class="no-print" style="font-weight: normal;color: #004d00; font-size: 15px">&#10010; Add Activity</label></td>
+        <td style="cursor: pointer;" onclick="window.location='{% url 'myAPP:update_component' a.id %}';" class="no-print"><label style="color: red;cursor: pointer;">&#9998;Edit</label></td>
+        {% endifchanged %}
+      </tr>
+      {% for x in a.dip_activities_set.all %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ x.activity_name }}</td>
+            <td>{{ x.objectives}}</td>
+            <td>{{ x.target_participants}}</td>
+            <td>{{ x.coverage}}</td>
+            <td>
+              <div class="list-container">
+                <ul>
+                  {% for y in x.dip_process_set.all %}
+                  <li>{{ y.process }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </td>
+            <td style='text-align:center;'>{{ x.duration}}</td>
+            <td>
+              <div class="list-container">
+              <ul>
+                {% for y in x.dip_indicator_set.all %}
+                <li>{{ y.indicator }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+            </td>
+            <td>
+              <div class="list-container">
+              <ul>
+                {% for y in x.dip_expected_out_come_set.all %}
+                <li>{{ y.expected_out_come }}</li>
+                {% endfor %}
+              </ul>
+              </div>
+            </td>
+            <td>
+              <div class="list-container">
+              <ul>
+                {% for y in x.dip_mov_set.all %}
+                <li>{{ y.mov }}</li>
+                {% endfor %}
+              </ul>
+              </div>
+            </td>
+            {% if x.dip_remarks %}
+            <td class="no-print" style='text-align:center;'>{{ x.dip_remarks }}</td>
+            {% else %}
+            <td style="text-align: center;" class="no-print">No Remarks</td>
+            {% endif %}
+            {% if x.is_dip_submited == 1 and x.is_dip_approved == 0 %}
+              <td class="no-print">Submited</td>
+            {% elif x.is_dip_approved == 1 %}
+            <td style="color:Green;text-align:center;" class="no-print"><i class="fa-solid fa-check"></i>Approved</td>
+            {% else %}
+              <td onclick="window.location='{% url 'myAPP:update_ActivityMatrix' x.id %}';" style="cursor: pointer;" class="no-print"><label style="color: red;cursor: pointer;" >&#9998;Edit</label></td>
+            {% endif %}
+        </tr>
+      {% endfor %}
+
+     {% endfor %}
+    </tbody>
+  </table>
+  <div class="form-group">
+      <form method="POST">
+        {% csrf_token %}
+        <div>
+          <div>
+            {% if formset %}
+            {{ formset.management_form}}
+            <div id='component-form-list'></div>
+              {% for form in formset %}
+              <div class="input_fields_wrap" class='component-form'>
+                {{form.component}}
+              </div>
+            {% endfor %}
+          </div>
+          <div id= "empty-form" class= "hidden">{{ formset.empty_form.component }}</div><br>
+          <center><button type="submit" class="button" name="form1_submit">Save</button></center>
+          {% endif %}
+        </div>
+      </form>
+  </div>
+  <div id="successPopup" class="popup2">
+    <img src="{% static 'images\tick.png' %}">
+    <h2>Thank You!</h2>
+    <p style='font-size:20px'>Thanks!!!! Your DIP has been successfully submitted.</P>
+    <button type='button' onclick='submitForm()'>Ok</button>
+  </div>   
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js" ></script>
+<script>
+  $("#add-more").click(function() {
+    $("html, body").animate({ scrollTop: $(document).height() }, "slow");
+  
+  });
+  document.addEventListener('click', (event)=>{
+    if (event.target.id == 'add-more') {
+        add_new_form(event)
+    }
+  })
+  function add_new_form(event) {
+    if (event) {
+        event.preventDefault()
+    }
+  
+    const totalNewForms = document.getElementById('id_dip_details_set-TOTAL_FORMS')
+    const currentForms = document.getElementsByClassName('component-form')
+    const currentFormCount = currentForms.length // + 1
+    const formCopyTarget = document.getElementById('component-form-list')
+    const copyEmptyFormEl = document.getElementById('empty-form').cloneNode(true)
+    copyEmptyFormEl.setAttribute('class', 'component-form')
+    copyEmptyFormEl.setAttribute('id', `form-${currentFormCount}`)
+    const regex = new RegExp('__prefix__', 'g')
+    copyEmptyFormEl.innerHTML = copyEmptyFormEl.innerHTML.replace(regex, currentFormCount)
+    totalNewForms.setAttribute('value', currentFormCount + 1)
+    // now add new empty form element to our html form
+    formCopyTarget.append(copyEmptyFormEl)
+  }
+
+  function removeElements() {
+    var elements = document.getElementsByClassName('no-print');
+    while (elements.length > 0) {
+        elements[0].parentNode.removeChild(elements[0]);
+    }
+  }
+
+  function printPage() {
+    removeElements(); // Call the function to remove elements before printing
+    window.print(); // Invoke the browser's print functionality
+  }
+
+  function capitalizeText(inputId) {
+    var input = document.getElementById(inputId);
+    var inputValue = input.value;
+    var capitalizedText = "";
+    var capitalizeNext = true;
+
+    for (var i = 0; i < inputValue.length; i++) {
+      var currentChar = inputValue.charAt(i);
+      
+      if (capitalizeNext && currentChar.match(/[a-z]/i)) {
+        capitalizedText += currentChar.toUpperCase();
+        capitalizeNext = false;
+      } else {
+        capitalizedText += currentChar;
+      }
+    } 
+    input.value = capitalizedText;
+  }
+  const form = document.getElementById('myForm');
+
+  form.addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent the form from submitting
+    
+    // Display the confirmation dialog
+    if (confirm('Do you really want to submit?')) {
+      // If the user confirms, submit the form
+      setTimeout(function() {
+        form.submit();
+      }, 5000);
+      // Display the success popup
+      closePopup();
+      showSuccessPopup();
+    }
+  });
+
+  function showSuccessPopup() {
+    var successPopup = document.getElementById("successPopup");
+    successPopup.style.display = "block";
+
+    setTimeout(function() {
+      successPopup.style.display = "none";
+    }, 5000);
+  }
+
+  function closeSuccessPopup() {
+    document.getElementById("successPopup").style.display = "none";
+  }
+
+  function submitForm() {
+    document.getElementById("myForm").submit();
+  }
+
+  var selectAllCheckbox = document.getElementById("select-all-checkbox");
+  selectAllCheckbox.addEventListener("click", selectAllCheckboxClicked);
+
+  // Function to handle the "Select All" checkbox
+  function selectAllCheckboxClicked() {
+    var checkboxes = document.querySelectorAll("input[type='checkbox']:not(#select-all-checkbox)");
+
+    for (var i = 0; i < checkboxes.length; i++) {
+      checkboxes[i].checked = selectAllCheckbox.checked;
+    }
+  }
+  
+  window.onscroll = function() {myFunction()};
+  
+  function openPopup() {
+    document.getElementById("popup").style.display = "block";
+  }
+  
+  function closePopup() {
+    document.getElementById("popup").style.display = "none";
+  }
+</script>
+{% endblock  %}

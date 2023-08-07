@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Activity_location, Activity_timeframe, Dip_Activities, Dip_Indicator, Dip_Process, Dip_expected_out_come, Dip_mov, Event_Plan, Monthly_Project_Clearance, Project_Category, Project_DIP,Month_Plan,Dip_details, Week_five_Report, Week_four_Report, Week_one_Report, Week_three_Report, Week_two_Report, Weekly_Report
+from .models import *
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 from import_export.admin import ImportExportMixin
@@ -21,6 +21,7 @@ class ProjectAdmin(admin.ModelAdmin):
   list_filter = ('period','project_name')
   search_fields = ['project_name','period']
 # admin.site.register(Project_DIP, ProjectAdmin)
+admin.site.register(Profile)
 admin.site.register(Activity_timeframe)
 admin.site.register(Dip_details)
 admin.site.register(Project_Category)
@@ -38,7 +39,18 @@ admin.site.register(Week_two_Report)
 admin.site.register(Week_three_Report)
 admin.site.register(Week_four_Report)
 admin.site.register(Week_five_Report)
+admin.site.register(Case_study)
 admin.site.register(Monthly_Project_Clearance)
+admin.site.register(Monthly_staff_clearance)
+admin.site.register(Leave_Statement)
+admin.site.register(Leave_Application)
+admin.site.register(Appraisal)
+admin.site.register(Asset)
+admin.site.register(Clearance_Admin)
+admin.site.register(Clearance_Programme)
+admin.site.register(Clearance_Programme_key_activities)
+admin.site.register(OutStation)
+admin.site.register(MonthlyBudget)
 
   
    

@@ -1,0 +1,42 @@
+{% extends "myAPP/ceo_dashboard.html" %}
+{% load static %}
+{% block title %} Profile {% endblock %}
+{% block content %}
+<style>
+    .profile-pic {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin: 0 auto 20px;
+      }
+      .profile-info {
+        margin-bottom: 20px;
+      }
+      .edit-button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+      .edit-button:hover {
+        background-color: #0056b3;
+      }
+</style>
+<div class="data" style='margin-top:60px'>
+    <div class="content-data" style='text-align: center;'>
+        <img class="profile-pic" src="{% static 'images/profile.png' %}" alt="Profile Picture">
+        <div class="profile-info">
+            <h2>{{ request.user.first_name }} {{ request.user.last_name }}</h2>
+            <p>Designation: {{ request.user.profile.designation }}</p>
+            <p>Email: {{ request.user.email }}</p>
+            <p>Phone Number: {{ request.user.profile.phone_no }}</p>
+            <p>Location: {{ request.user.profile.address }}</p>
+          </div>
+          <button class="edit-button">Edit Profile</button>
+    </div>
+</div>
+{% endblock %}

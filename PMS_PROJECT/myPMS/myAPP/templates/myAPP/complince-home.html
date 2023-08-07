@@ -1,113 +1,94 @@
-{% extends "myAPP/user_nav.html" %}
-
+{% extends "myAPP/dashboard_ceo.html" %}
+{% load static %}
+{% block title %} Compliance Home {% endblock %}
 {% block content %}
-  <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HOME</title>
-  </head>
-  <body>
-     <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-      <style>
-        /* Navbar styles */
-        nav {
-          background: linear-gradient(to right, #ff6f00, #ffcd38);
-          padding: 0.5%;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          position: sticky;
-          top: 0px;
-        }
-        
-        .logo img {
-          height: 50px;
-        }
-        
-        .menu {
-          list-style-type: none;
-          display: flex;
-          align-items: center;
-          margin: 0;
-          padding: 0;
-        }
-        
-        .menu li {
-          margin-right: 20px;
-        }
-        
-        .menu a {
-          text-decoration: none;
-          color: #333;
-          font-weight: bold;
-        }
-        
-        .dropdown-menu {
-          display: none;
-          position: absolute;
-          background-color: #f9f9f9;
-          min-width: 160px;
-          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-          z-index: 1;
-        }
-        
-        .dropdown-menu li {
-          padding: 12px 16px;
-        }
-        
-        .dropdown:hover .dropdown-menu {
-          display: block;
-        }
-        
-      </style>
-            <ul>          
-                {% comment %} <li class="a1"><a href="{%url 'myAPP:index' project.id %}"> <button>PROJECT-DIP(Detail Implementation Plan)</button></a></li> {% endcomment %}
-                {% if user == 1 %}
-                <li class="a1"> <a href="{%url 'myAPP:add-mpc-report' project.id %}"><button>Add MONTHLY PROJECT CLEARANCE</button></a></li>
-                <li class="a1"> <a href=""><button>LEAVE STATEMENT & STAFF CLEARANCE</button></a></li>
-                <center><li class="a1"> <a href="#"><button>MONTHLY STAFF CLEARANCE</button></a></li></center>
-                {% else %}
-                <li class="a1"> <a href="{%url 'myAPP:add-mpc-report' project.id %}"><button>MONTHLY PROJECT CLEARANCE</button></a></li>
-                <li class="a1"> <a href=""><button>LEAVE STATEMENT & STAFF CLEARANCE</button></a></li>
-                <center><li class="a1"> <a href="#"><button>MONTHLY STAFF CLEARANCE</button></a></li></center>
-                {% endif %}
-              </ul>
-        
-  
-  
-   
-      
-  
-    
-  
-      
-     <script>
-      $('.owl-carousel').owlCarousel({
-      loop:true,
-      margin:10,
-      dots:false,
-      nav:true,
-      mouseDrag:false,
-      autoplay:true,
-      animateOut: 'slideOutUp',
-      responsive:{
-          0:{
-              items:1
-          },
-          600:{
-              items:1
-          },
-          1000:{
-              items:1
-          }
-      }
-  });
-  
-  </script>
-  </body>
-  <footer>
-    <center><p>&copy; 2023 YCDA. All Rights Reserved.</p></center>
-    <center><p>@Powered By Sigma analytics and Computing</p></center>
-  </footer>
+<style>
+  #content::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background-position: top;
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      animation: slideBg 36s linear infinite ;
+      animation-timing-function: ease-in-out;
+      backface-visibility: hidden;
+      backdrop-filter: blur(5px);
+      filter: blur(3px);
+      z-index: -1;
+  }
+  @keyframes slideBg{
+    0%,100%{
+      background-image: url("{% static 'images\planning3.jpeg' %}");
+    }
+    20%{
+      background-image: url("{% static 'images\planning2.jpeg' %}");
+    }
+    40%{
+      background-image: url("{% static 'images\planning5.jpeg' %}");
+    }
+    60%{
+      background-image: url("{% static 'images\planning1.jpeg' %}");
+    }
+    80%{
+      background-image: url("{% static 'images\planning4.jpeg' %}");
+    }
+    100%{
+      background-image: url("{% static 'images\planning6.jpeg' %}");
+    }
+  }
+  .card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: solid 1px #bbb;
+    margin-bottom: 20%;
+    margin-top: 40%;
+    transition: all .2s;
+    cursor: pointer;
+  }
+  .info-data .card img {
+    margin-right: 10%;
+    width:30%;
+  }
+  .card p {
+    font-weight: 400;
+    font-size: 20px;
+    color: black;
+  }
+  .card:hover {
+      content:"";
+      transform: translateY(-20px);
+      opacity: 100%;
+      box-shadow: rgba(0, 0, 0, 0.4) 0px 30px 90px;
+    }
+</style>
+<h1 class="title">Compliance</h1>
+<ul class="breadcrumbs">
+    <li>{{ project.project_name }}</li>
+</ul>
+<div class="info-data" style='margin-left: 10%;margin-right:10%'>
+  <a href="{%url 'myAPP:mpc-report' project.id %}" style='text-decoration: none;'>
+    <div class="card">
+      <img src="{% static 'images\certificate-icon-premium-quality-symbol-260nw-2251446855-removebg-preview.png' %}" ></img>
+      <p>Monthly Project Clearance</p>
+    </div>
+  </a>
+  <a href="{%url 'myAPP:msc' project.id %}" style='text-decoration: none;'>
+    <div class="card">
+      <img src="{% static 'images\download-removebg-preview.png' %}" style='margin-top: 15px;margin-bottom: 15px'></img>
+      <p>Monthly Staff Clearance</p>
+    </div>
+  </a>
+  <a href="{%url 'myAPP:leaves' project.id %}" style='text-decoration: none;'>
+    <div class="card">
+      <img src="{% static 'images\198141.png' %}" ></img>
+      <p>Leave Status & Staff Clearance</p>
+    </div>
+  </a>
+</div>
 {% endblock %}

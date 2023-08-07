@@ -1,28 +1,31 @@
 from datetime import datetime, timedelta
-from django.http import JsonResponse
+from django.http import Http404, JsonResponse
 from django.utils.timezone import now
 from django.forms import formset_factory, inlineformset_factory
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import login, authenticate,logout
 from django.contrib import messages
 from django.shortcuts import render, redirect
-from .models import Activity_location, Activity_timeframe, Dip_Activities, Dip_Indicator, Dip_Process, Dip_expected_out_come, Dip_mov, Project_Category, Project_DIP,Month_Plan,Dip_details,Event_Plan, Week_five_Report, Week_four_Report, Week_one_Report, Week_three_Report, Week_two_Report, Weekly_Report
-from .forms import ActivityAproveForm, ActivityMatrixAproveForm, ActivityMatrixCeoForm, AmRemarkForm, CategoryForm, CeoAproveForm, DipActivitiesForm, DipComponentForm, DipIndicatorForm, DipMovForm, DipOutcomeForm, DipProcessForm, DipRemarkForm, DipUpdateForm, EventPlanAproveForm, EventRemarkForm, LocationCountForm, MPCForm, MonthlyPlanAproveForm, MonthlyReportUpdateForm, MonthlyachievementForm, MonthlybacklogForm, MonthlyhighlightForm, PlanRemarkForm, ProjectForm, ReportAproveForm, ReportRemarkForm, TimeFrameForm, WeekOneForm, WeekTwoForm, WeeklyReportForm, MonthPlanForm,eventForm
+from .models import *
+from .forms import ActivityAproveForm, ActivityMatrixAproveForm, ActivityMatrixCeoForm, Ad_clerance_Form, AmRemarkForm, AppraisalForm, AssetForm, CategoryForm, CeoAproveForm, DipActivitiesForm, DipComponentForm, DipIndicatorForm, DipMovForm, DipOutcomeForm, DipProcessForm, DipRemarkForm, DipUpdateForm, DocumentForm, EventPlanAproveForm, EventRemarkForm, LeaveForm, LeaverequestForm, LocationCountForm, MPCForm, MonthlyBudgetRequestForm, MonthlyLeaveForm, MonthlyPlanAproveForm, MonthlyReportUpdateForm, MonthlyachievementForm, MonthlybacklogForm, MonthlyhighlightForm, MscForm, OutstationForm, PlanRemarkForm, ProjectForm, ReportAproveForm, ReportRemarkForm, TimeFrameForm, WeekOneForm, WeekTwoForm, WeeklyReportForm, MonthPlanForm,eventForm, pr_clerance_Form, pr_clerance_activity_Form
 from django.contrib import messages
 from .forms import  CreateUserForm
 from .decorators import admin_only, allowed_users, unauthenticated_user
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.contrib.auth.models import Group
+from django.utils import timezone
+from django.shortcuts import HttpResponse, get_object_or_404
+from django.core.exceptions import PermissionDenied
 
-
+# project_manager landingpage
 @login_required(login_url='login')
 def home(request,pk):
     project = Project_DIP.objects.get(id=pk)
     projects = Project_DIP.objects.all()
     categories = Project_Category.objects.all()
     user=0
-    if user_belongs_to_group(request.user,'ProjectManager'):
+    if user_belongs_to_group(request.user,'Project Manager'):
         user = 1
     else:
         user = 0
@@ -32,13 +35,14 @@ def home(request,pk):
         'categories':categories,
         'project':project
         }
-    return render(request, 'myAPP/home.html',context)
+    return render(request, 'myAPP/planning-home.html',context)
 
+# ceo landingpage
 @login_required(login_url='login')
 @allowed_users("CEO")
 def masterhome(request):
     user=0
-    if user_belongs_to_group(request.user,'ProjectManager'):
+    if user_belongs_to_group(request.user,'Project Manager'):
         user = 1
     else:
         user = 0
@@ -47,31 +51,36 @@ def masterhome(request):
     activities = Dip_Activities.objects.all()
     monthlyplans = Month_Plan.objects.all()
     eventplans = Event_Plan.objects.all()
+
     context = {
         'user':user,
         'projects':projects,
         'categories':categories,
         'activities':activities,
         'monthlyplans': monthlyplans,
-        'eventplans':eventplans
+        'eventplans': eventplans
         }
-    return render(request, 'myAPP/home1.html',context)
+    return render(request, 'myAPP/dashboard_ceo.html',context)
 
-def registerPage(request):
-    if request.user.is_authenticated:
-        return redirect('home')
+@login_required(login_url='login')
+def userhome(request,pk):
+    user=0
+    if user_belongs_to_group(request.user,'Project Manager'):
+        user = 1
     else:
-        form = CreateUserForm()
-        if request.method == 'POST':
-            form = CreateUserForm(request.POST)
-            if form.is_valid():
-                form.save()
-                user = form.cleaned_data.get('username')
-                messages.success(request, 'Account was created for ' + user)
-                return redirect('login')
-        context = {'form':form}
-        return render(request, 'registration/signup.html', context)
+        user = 0
+    project = Project_DIP.objects.get(id=pk)
+    projects = Project_DIP.objects.all()
+    categories = Project_Category.objects.all()
+    context = {
+        'user':user,
+        'projects':projects,
+        'categories':categories,
+        'project' : project
+        }
+    return render(request, 'myAPP/dashboard_user.html',context)
 
+# login and logout
 @unauthenticated_user
 def loginPage(request):
     projects = Project_DIP.objects.order_by('-created_at')[:50]
@@ -82,11 +91,11 @@ def loginPage(request):
       user = authenticate(request, username=username, password=password)
       assigned = Project_DIP.objects.filter(assigned_to = user).values_list('id', flat=True)
       if user is not None:
-          if user_belongs_to_group(user,'ProjectManager'):
+          if user_belongs_to_group(user,'Project Manager'):
             if projectname != 'null':
               if int(projectname) in assigned:
                 login(request, user)
-                return redirect('myAPP:home', projectname)
+                return redirect('myAPP:pm-home', projectname)
               else:
                 messages.info(request, 'You are unauthorized to open this Project')
             else:
@@ -96,7 +105,7 @@ def loginPage(request):
               return redirect('myAPP:masterhome')
       else:
           messages.info(request, 'Username OR password is incorrect')
-    return render(request, 'registration/login.html',{"projects":projects})
+    return render(request, 'registration/index.html',{"projects":projects})
 
 def logoutUser(request):
 	logout(request)
@@ -110,20 +119,38 @@ def user_belongs_to_group(user, group_name):
     return user.groups.filter(name=group_name).exists()
 
 
+@login_required(login_url='login')
+def user_profile(request,pk):
+    user=0
+    if user_belongs_to_group(request.user,'Project Manager'):
+      user = 1
+    else:
+      user = 0
+    project = get_object_or_404(Project_DIP, id=pk)
+    profile = Profile.objects.get(user=request.user)
+    context = {
+        'profile' : profile,
+        'user' : user,
+        'project': project
+    }
+    return render(request, 'myAPP/profile.html',context)
 
 @login_required(login_url='login')
-def index(request):
- x=0
- if user_belongs_to_group(request.user,'CEO'):
-     x = 1
-     projects = Project_DIP.objects.order_by('-created_at')[:50]
- elif user_belongs_to_group(request.user,'ProjectManager'):
-     user = request.user.id
-     projects = Project_DIP.objects.select_related('assigned_to').filter(assigned_to = user).order_by('-created_at')[:50]
- else:
-     projects = Project_DIP.objects.order_by('-created_at')[:50]
- return render(request,'myAPP/index.html', {'projects': projects,'user':x})
+@admin_only
+def ceo_profile(request):
+    user=0
+    if user_belongs_to_group(request.user,'Project Manager'):
+      user = 1
+    else:
+      user = 0
+    profile = Profile.objects.get(user=request.user)
+    context = {
+        'profile' : profile,
+        'user' : user,
+    }
+    return render(request, 'myAPP/profile.html',context)
 
+# ceo adding user,category and project
 @login_required(login_url='login')
 @admin_only
 def add_Category(request):
@@ -140,6 +167,8 @@ def add_Category(request):
 @login_required(login_url='login')
 @admin_only
 def add_Project(request):
+      projects = Project_DIP.objects.all()
+      categories = Project_Category.objects.all()
       form = ProjectForm()
       if request.method == 'POST':
             form = ProjectForm(request.POST)
@@ -151,31 +180,45 @@ def add_Project(request):
                 return redirect('myAPP:masterhome')
             else:
                 form = ProjectForm()   
-      return render(request,'myAPP/getdata.html',{'data': form}) 
+      return render(request,'myAPP/add-project.html',{'data': form,'projects':projects,
+        'categories':categories,}) 
 
 @login_required(login_url='login')
 @admin_only
-def update_Project(request,project_id):  
+def update_Project(request,pk):
+   projects = Project_DIP.objects.all()  
    form = ProjectForm()
-   project = Project_DIP.objects.get(pk=project_id)
+   project = Project_DIP.objects.get(pk=pk)
    form = ProjectForm(request.POST or None, instance=project)
    if request.method == 'POST':
     if form.is_valid():
                form.save()  
                messages.success(request,'ProjectDIP updated Successfully')
                return redirect('myAPP:index')
-   return render(request,'myAPP/updateProject.html',{'data':form}) 
+   return render(request,'myAPP/add-project.html',{'data':form,'project':project,'projects':projects}) 
+
+@login_required(login_url='login')
+@admin_only
+def Projects_list(request):
+      projects = Project_DIP.objects.all()
+      context = {
+          'projects':projects,
+          } 
+      return render(request,'myAPP/projects-list.html',context) 
 
 
 
+# planning DIP
 @login_required(login_url='login')
 def add_DIP_Details(request,pk):
       user=0
-      if user_belongs_to_group(request.user,'ProjectManager'):
+      if user_belongs_to_group(request.user,'Project Manager'):
         user = 1
       else:
         user = 0
       project = get_object_or_404(Project_DIP, id=pk)
+      projects = Project_DIP.objects.all()
+      categories = Project_Category.objects.all()
       component = project.dip_details_set.all()
       activities = Dip_Activities.objects.filter(project_detail_id__in=component)
       MyFirstModelFormSet = inlineformset_factory(
@@ -209,23 +252,26 @@ def add_DIP_Details(request,pk):
                     data.save()
             return redirect('myAPP:add_DIP_Details',project.id) 
       context = {
-        "projects":project,
+        "project":project,
         'component': component,
         'formset': formset,
         'activities':activities,
-        'user': user
+        'user': user,
+        'projects': projects,
+        'categories':categories
       }
-      return render(request,'myAPP/getdataDip.html',context)
+      return render(request,'myAPP/dip.html',context)
 
 @login_required(login_url='login')
 @admin_only
 def ceo_aproval_dip(request,pk):
       user=0
-      if user_belongs_to_group(request.user,'ProjectManager'):
+      if user_belongs_to_group(request.user,'Project Manager'):
         user = 1
       else:
         user = 0
       project = get_object_or_404(Project_DIP, id=pk)
+      projects = Project_DIP.objects.all()
       component = project.dip_details_set.all()
       activities = Dip_Activities.objects.filter(project_detail_id__in=component)
       if request.method == 'POST':
@@ -251,7 +297,8 @@ def ceo_aproval_dip(request,pk):
                     data.save()
         return redirect('myAPP:ceo_aproval_dip',project.id) 
       context = {
-        "projects":project,
+        "project":project,
+        "projects":projects,
         'component': component,
         'activities':activities,
         'user': user
@@ -259,6 +306,7 @@ def ceo_aproval_dip(request,pk):
       return render(request,'myAPP/ceo-dip.html',context)
 
 @login_required(login_url='login')
+@admin_only
 def dip_remarks(request,pk):
       activities = Dip_Activities.objects.get(id =pk)
       project = get_object_or_404(Project_DIP, id=activities.project_detail_id.project_id.pk)
@@ -379,7 +427,7 @@ def add_Activity(request,pk):
           "formset3":formset3,
           "formset4":formset4
         }
-      return render(request,'myAPP/getdataActivity.html', context ) 
+      return render(request,'myAPP/add-Activity.html', context ) 
 
 @login_required(login_url='login')
 def update_Activity(request,pk):
@@ -480,10 +528,11 @@ def update_Activity(request,pk):
 
 
 
+# planning AM
 @login_required(login_url='login')
 def index1(request, pk):
     user=0
-    if user_belongs_to_group(request.user,'ProjectManager'):
+    if user_belongs_to_group(request.user,'Project Manager'):
       user = 1
     else:
       user = 0
@@ -518,17 +567,18 @@ def index1(request, pk):
         'next_months': next_months,
         'user':user
     }
-    return render(request, 'myAPP/index1.html', context)
+    return render(request, 'myAPP/activity_matrix.html', context)
 
 @login_required(login_url='login')
 @admin_only
 def ceo_am_approve(request, pk):
     user=0
-    if user_belongs_to_group(request.user,'ProjectManager'):
+    if user_belongs_to_group(request.user,'Project Manager'):
       user = 1
     else:
       user = 0
     project = get_object_or_404(Project_DIP, id=pk)
+    projects = Project_DIP.objects.all()
     component = project.dip_details_set.all()
     next_months = []
     current_month = project.start_date.month
@@ -563,6 +613,7 @@ def ceo_am_approve(request, pk):
         next_months.append(datetime(project.start_date.year, next_month, 1))
     context = {
         'project': project,
+        'projects':projects,
         'component': component,
         'next_months': next_months,
         'user':user
@@ -570,6 +621,7 @@ def ceo_am_approve(request, pk):
     return render(request, 'myAPP/ceo-am.html', context)
 
 @login_required(login_url='login')
+@admin_only
 def am_remarks(request,pk):
       activities = Dip_Activities.objects.get(id =pk)
       project = get_object_or_404(Project_DIP, id=activities.project_detail_id.project_id.pk)
@@ -588,7 +640,13 @@ def am_remarks(request,pk):
 
 @login_required(login_url='login')
 def location_count(request, pk):
+  user=0
+  if user_belongs_to_group(request.user,'Project Manager'):
+    user = 1
+  else:
+    user = 0
   activity = Dip_Activities.objects.get(id=pk)
+  project= Project_DIP.objects.get(id=activity.project_detail_id.project_id.id)
   MyFirstModelFormSet = inlineformset_factory(
         Dip_Activities,  # parent model
         Activity_location,  # child model
@@ -608,11 +666,17 @@ def location_count(request, pk):
         else:
             print(formset.errors)
         return redirect('myAPP:index1', activity.project_detail_id.project_id.pk)
-  return render(request, 'myAPP/add_count.html', {'formset':formset,'activity':activity})
+  return render(request, 'myAPP/add_count.html', {'formset':formset,'activity':activity,'user':user,'project':project})
 
 @login_required(login_url='login')
 def update_location(request, pk):
+  user=0
+  if user_belongs_to_group(request.user,'Project Manager'):
+    user = 1
+  else:
+    user = 0
   activity = Dip_Activities.objects.get(id=pk)
+  project= Project_DIP.objects.get(id=activity.project_detail_id.project_id.id)
   MyFirstModelFormSet = inlineformset_factory(
         Dip_Activities,  # parent model
         Activity_location,  # child model
@@ -632,11 +696,17 @@ def update_location(request, pk):
     else:
             print(formset.errors)
     return redirect('myAPP:index1', activity.project_detail_id.project_id.pk)
-  return render(request, 'myAPP/update-location.html', {'formset':formset,'activity':activity})
+  return render(request, 'myAPP/update-location.html', {'formset':formset,'activity':activity,'user':user,'project':project})
 
 @login_required(login_url='login')
 def timeframe(request,pk):
+ user=0
+ if user_belongs_to_group(request.user,'Project Manager'):
+  user = 1
+ else:
+  user = 0
  activities = Dip_Activities.objects.get(id =pk)
+ project= Project_DIP.objects.get(id=activities.project_detail_id.project_id.id)
  form = TimeFrameForm()
  next_months = []
  current_month = activities.project_detail_id.project_id.start_date.month
@@ -655,7 +725,7 @@ def timeframe(request,pk):
                 return redirect('myAPP:index1',activities.project_detail_id.project_id.pk)
             else:
                 form = TimeFrameForm()   
- return render(request,'myAPP/timeframe.html',{"activities":activities,'form':form,'next_months':next_months})
+ return render(request,'myAPP/timeframe.html',{"activities":activities,'form':form,'next_months':next_months,'user':user,'project':project})
 
 @login_required(login_url='login')
 def update_timeframe(request,pk):
@@ -677,11 +747,11 @@ def update_timeframe(request,pk):
  return render(request,'myAPP/timeframe.html',{"activities":activities,'form':form,'next_months':next_months})
 
 
-
+# planning monthly plan
 @login_required(login_url='login')
 def index2(request,pk):
     user=0
-    if user_belongs_to_group(request.user,'ProjectManager'):
+    if user_belongs_to_group(request.user,'Project Manager'):
       user = 1
     else:
       user = 0
@@ -705,19 +775,20 @@ def index2(request,pk):
         'month':month,
         'user': user
         }
-    return render(request,'myAPP/index2.html', context)
+    return render(request,'myAPP/monthly-plan.html', context)
 
 @login_required(login_url='login')
 @admin_only
 def ceoplanapproval(request,pk):
     user=0
-    if user_belongs_to_group(request.user,'ProjectManager'):
+    if user_belongs_to_group(request.user,'Project Manager'):
       user = 1
     else:
       user = 0
     project = get_object_or_404(Project_DIP, id=pk)
+    projects = Project_DIP.objects.all()
     month = datetime.today()
-    Plans = Month_Plan.objects.filter(activity_id__project_detail_id__project_id = project).filter(month=month.month).filter(year=month.year)
+    Plans = Month_Plan.objects.filter(activity_id__project_detail_id__project_id = project)
     if request.method == 'POST':
       submited=request.POST.getlist('selected_activities')
       for x in submited:
@@ -741,6 +812,7 @@ def ceoplanapproval(request,pk):
       return redirect('myAPP:ceo_plan_approve',project.id)
     context= {
         'project':project,
+        'projects':projects,
         'Plans' : Plans,
         'month':month,
         'user': user
@@ -748,6 +820,7 @@ def ceoplanapproval(request,pk):
     return render(request,'myAPP/ceo-plan.html', context)
 
 @login_required(login_url='login')
+@admin_only
 def plan_remarks(request,pk):
       plan = get_object_or_404(Month_Plan, id=pk)
       project = get_object_or_404(Project_DIP, id=plan.activity_id.project_detail_id.project_id.id)
@@ -766,6 +839,11 @@ def plan_remarks(request,pk):
 
 @login_required(login_url='login')
 def add_MonthPlan(request,pk):
+      user=0
+      if user_belongs_to_group(request.user,'Project Manager'):
+        user = 1
+      else:
+        user = 0
       project = get_object_or_404(Project_DIP, id=pk)
       form = MonthPlanForm(pk=pk)
       if request.method == 'POST':
@@ -778,10 +856,15 @@ def add_MonthPlan(request,pk):
                 return redirect('myAPP:index2', project.id)
             else:
                form = MonthPlanForm(pk=pk)  
-      return render(request,'myAPP/getdataPlan.html',{'data': form,'project':project}) 
+      return render(request,'myAPP/add-monthly-Plan.html',{'data': form,'project':project,'user':user}) 
 
 @login_required(login_url='login')
 def update_MonthPlan(request,pk):
+      user=0
+      if user_belongs_to_group(request.user,'Project Manager'):
+        user = 1
+      else:
+        user = 0
       plan = get_object_or_404(Month_Plan, id=pk)
       project = get_object_or_404(Project_DIP, id=plan.activity_id.project_detail_id.project_id.id)
       form = MonthPlanForm(pk=project,instance=plan)
@@ -795,14 +878,14 @@ def update_MonthPlan(request,pk):
                 return redirect('myAPP:index2', project.id)
             else:
                form = MonthPlanForm(pk=pk)  
-      return render(request,'myAPP/getdataPlan.html',{'data': form,'plan':plan,'project':project}) 
+      return render(request,'myAPP/add-monthly-Plan.html',{'data': form,'plan':plan,'project':project,'user':user}) 
 
 
-
+# planning event
 @login_required(login_url='login')
 def index6(request,pk):
  user=0
- if user_belongs_to_group(request.user,'ProjectManager'):
+ if user_belongs_to_group(request.user,'Project Manager'):
     user = 1
  else:
     user = 0
@@ -819,11 +902,13 @@ def index6(request,pk):
           data.is_rejected = False
           data.save()
       return redirect('myAPP:index6',project.id)
- return render(request,'myAPP/index6.html', {'events': events,'project':project,'user':user})
+ return render(request,'myAPP/event-planning.html', {'events': events,'project':project,'user':user})
 
 @login_required(login_url='login')
+@admin_only
 def ceoevent(request,pk):
  project = Project_DIP.objects.get(id=pk)
+ projects = Project_DIP.objects.all()
  events = Event_Plan.objects.filter(project_id = project)
  if request.method == 'POST':
       submited=request.POST.getlist('selected_activities')
@@ -847,9 +932,10 @@ def ceoevent(request,pk):
                     data.is_rejected = True
                     data.save()
       return redirect('myAPP:ceo_event_approve',project.id)
- return render(request,'myAPP/ceo-event.html', {'events': events,'project':project})
+ return render(request,'myAPP/ceo-event.html', {'events': events,'project':project,'projects':projects,})
 
 @login_required(login_url='login')
+@admin_only
 def event_remarks(request,pk):
       event = get_object_or_404(Event_Plan, id=pk)
       project = get_object_or_404(Project_DIP, id=event.project_id.id)
@@ -869,6 +955,11 @@ def event_remarks(request,pk):
 
 @login_required(login_url='login')
 def add_event(request,pk):
+      user=0
+      if user_belongs_to_group(request.user,'Project Manager'):
+        user = 1
+      else:
+        user = 0
       project = get_object_or_404(Project_DIP, id=pk)
       form = eventForm()
       if request.method == 'POST':
@@ -880,10 +971,15 @@ def add_event(request,pk):
                 return redirect('myAPP:index6',project.pk)
             else:
                form = eventForm()  
-      return render(request,'myAPP/getdataEvent.html',{'data': form,'project':project}) 
+      return render(request,'myAPP/add-Event.html',{'data': form,'project':project,'user':user}) 
 
 @login_required(login_url='login')
 def update_event(request,pk):
+      user=0
+      if user_belongs_to_group(request.user,'Project Manager'):
+        user = 1
+      else:
+        user = 0
       event = get_object_or_404(Event_Plan, id=pk)
       project = get_object_or_404(Project_DIP, id=event.project_id.id)
       form = eventForm(instance=event)
@@ -896,44 +992,108 @@ def update_event(request,pk):
                 return redirect('myAPP:index6',project.pk)
             else:
                form = eventForm(instance=event)  
-      return render(request,'myAPP/getdataEvent.html',{'data': form,'project':project}) 
+      return render(request,'myAPP/add-Event.html',{'data': form,'project':project,'user':user}) 
+
+
+@login_required(login_url='login')
+def budget_requests(request,pk):
+  user=0
+  if user_belongs_to_group(request.user,'Project Manager'):
+    user = 1
+  else:
+    user = 0
+  project = get_object_or_404(Project_DIP, id=pk) 
+  projects = Project_DIP.objects.all() 
+  budget = MonthlyBudget.objects.filter(project_id=project) 
+  date = datetime.today()
+  context= {
+        'project':project,
+        'projects':projects,
+        'user': user,
+        'budget':budget,
+        'date': date
+  }
+  return render(request,'myAPP/budget-request.html', context)
+
+@login_required(login_url='login')
+def add_budget_request(request,pk):
+  user=0
+  if user_belongs_to_group(request.user,'Project Manager'):
+    user = 1
+  else:
+    user = 0
+  project = get_object_or_404(Project_DIP, id=pk)
+  form = MonthlyBudgetRequestForm()
+  if request.method == 'POST':
+            form = MonthlyBudgetRequestForm(request.POST)
+            if form.is_valid():
+                data = form.save(commit=False)
+                data.project_id = project
+                data.month = datetime.today().month
+                data.year = datetime.today().year
+                data.save()
+                return redirect('myAPP:budget_requests', project.id)
+            else:
+               form = MonthlyBudgetRequestForm()  
+  context= {
+        'project':project,
+        'user': user,
+        'form':form,
+  }
+  return render(request,'myAPP/add-bdget-request.html', context)
+
+@login_required(login_url='login')
+def edit_budget_request(request,pk):
+  user=0
+  if user_belongs_to_group(request.user,'Project Manager'):
+    user = 1
+  else:
+    user = 0
+  mbr = get_object_or_404(MonthlyBudget, id=pk)
+  project = get_object_or_404(Project_DIP, id=mbr.project_id.id)
+  form = MonthlyBudgetRequestForm(instance=mbr)
+  if request.method == 'POST':
+            form = MonthlyBudgetRequestForm(request.POST,instance=mbr)
+            if form.is_valid():
+                form.save()
+                return redirect('myAPP:budget_requests', project.id)
+            else:
+               form = MonthlyBudgetRequestForm(instance=mbr)  
+  context= {
+        'project':project,
+        'user': user,
+        'form':form,
+  }
+  return render(request,'myAPP/add-bdget-request.html', context)
 
 
 
 @login_required(login_url='login')
 def index4(request,pk):
     user=0
-    if user_belongs_to_group(request.user,'ProjectManager'):
+    if user_belongs_to_group(request.user,'Project Manager'):
       user = 1
     else:
       user = 0
     project = get_object_or_404(Project_DIP, id=pk)
     projects = Project_DIP.objects.all()
-    categories = Project_Category.objects.all()
-    activities = Dip_Activities.objects.all()
-    monthlyplans = Month_Plan.objects.all()
-    eventplans = Event_Plan.objects.all()
     context= {
         'project':project,
         'user': user,
-        'projects':projects,
-        'categories':categories,
-        'activities': activities,
-        'monthlyplans':monthlyplans,
-        'eventplans':eventplans
+        'projects':projects
         }
     return render(request,'myAPP/reporting-home.html', context)
 
 @login_required(login_url='login')
 def monthly_report(request,pk):
     user=0
-    if user_belongs_to_group(request.user,'ProjectManager'):
+    if user_belongs_to_group(request.user,'Project Manager'):
       user = 1
     else:
       user = 0
     project = get_object_or_404(Project_DIP, id=pk)
     month = datetime.today()
-    Plans = Month_Plan.objects.filter(activity_id__project_detail_id__project_id = project).filter(month=month.month).filter(year=month.year)
+    Plans = Month_Plan.objects.filter(activity_id__project_detail_id__project_id = project)
     if request.method == 'POST':
       submited=request.POST.getlist('selected_activities')
       for x in submited:
@@ -955,6 +1115,11 @@ def monthly_report(request,pk):
 
 @login_required(login_url='login')
 def add_report_achievement(request,pk):
+      user=0
+      if user_belongs_to_group(request.user,'Project Manager'):
+        user = 1
+      else:
+        user = 0
       plan = get_object_or_404(Month_Plan, id=pk)
       project = get_object_or_404(Project_DIP, id=plan.activity_id.project_detail_id.project_id.id)
       form = MonthlyachievementForm(instance=plan)
@@ -965,10 +1130,15 @@ def add_report_achievement(request,pk):
                 return redirect('myAPP:monthly-reporting', project.id)
             else:
                form = MonthlyachievementForm(instance=plan)  
-      return render(request,'myAPP/achivment_form.html',{'form': form,'plan':plan,'project':project})
+      return render(request,'myAPP/achivment_form.html',{'form': form,'plan':plan,'project':project,'user':user})
 
 @login_required(login_url='login')
 def add_report_highlights(request,pk):
+      user=0
+      if user_belongs_to_group(request.user,'Project Manager'):
+        user = 1
+      else:
+        user = 0
       plan = get_object_or_404(Month_Plan, id=pk)
       project = get_object_or_404(Project_DIP, id=plan.activity_id.project_detail_id.project_id.id)
       form = MonthlyhighlightForm(instance=plan)
@@ -979,10 +1149,15 @@ def add_report_highlights(request,pk):
                 return redirect('myAPP:monthly-reporting', project.id)
             else:
                form = MonthlyhighlightForm(instance=plan)  
-      return render(request,'myAPP/highlights_form.html',{'form': form,'plan':plan,'project':project}) 
+      return render(request,'myAPP/highlights_form.html',{'form': form,'plan':plan,'project':project,'user':user}) 
 
 @login_required(login_url='login')
 def add_report_backlog(request,pk):
+      user=0
+      if user_belongs_to_group(request.user,'Project Manager'):
+        user = 1
+      else:
+        user = 0
       plan = get_object_or_404(Month_Plan, id=pk)
       project = get_object_or_404(Project_DIP, id=plan.activity_id.project_detail_id.project_id.id)
       form = MonthlybacklogForm(instance=plan)
@@ -993,7 +1168,7 @@ def add_report_backlog(request,pk):
                 return redirect('myAPP:monthly-reporting', project.id)
             else:
                form = MonthlybacklogForm(instance=plan)  
-      return render(request,'myAPP/backlog_form.html',{'form': form,'plan':plan,'project':project})  
+      return render(request,'myAPP/backlog_form.html',{'form': form,'plan':plan,'project':project,'user':user})  
 
 @login_required(login_url='login')
 def update_report(request,pk):
@@ -1013,13 +1188,14 @@ def update_report(request,pk):
 @admin_only
 def ceoreportapproval(request,pk):
     user=0
-    if user_belongs_to_group(request.user,'ProjectManager'):
+    if user_belongs_to_group(request.user,'Project Manager'):
       user = 1
     else:
       user = 0
     project = get_object_or_404(Project_DIP, id=pk)
+    projects = Project_DIP.objects.all()
     month = datetime.today()
-    Plans = Month_Plan.objects.filter(activity_id__project_detail_id__project_id = project).filter(month=month.month).filter(year=month.year)
+    Plans = Month_Plan.objects.filter(activity_id__project_detail_id__project_id = project)
     if request.method == 'POST':
       submited=request.POST.getlist('selected_activities')
       for x in submited:
@@ -1044,6 +1220,7 @@ def ceoreportapproval(request,pk):
       return redirect('myAPP:ceo_report_approve',project.id)
     context= {
         'project':project,
+        'projects':projects,
         'Plans' : Plans,
         'month':month,
         'user': user
@@ -1051,6 +1228,7 @@ def ceoreportapproval(request,pk):
     return render(request,'myAPP/ceo-report.html', context)
 
 @login_required(login_url='login')
+@admin_only
 def report_remarks(request,pk):
       plan = get_object_or_404(Month_Plan, id=pk)
       project = get_object_or_404(Project_DIP, id=plan.activity_id.project_detail_id.project_id.id)
@@ -1072,15 +1250,17 @@ def report_remarks(request,pk):
 @login_required(login_url='login')
 def weekly_report(request,pk):
     user=0
-    if user_belongs_to_group(request.user,'ProjectManager'):
+    if user_belongs_to_group(request.user,'Project Manager'):
       user = 1
     else:
       user = 0
     project = get_object_or_404(Project_DIP, id=pk)
+    projects = Project_DIP.objects.all()
     month = datetime.today()
     Plans = Weekly_Report.objects.filter(activity_id__project_detail_id__project_id = project).filter(month=month.month).filter(year=month.year)
     context= {
         'project':project,
+        'projects':projects,
         'user': user,
         'Plans': Plans,
         'month': month,
@@ -1095,8 +1275,9 @@ def add_WeeklyReport(request,pk):
           'form': form,
           'project':project,
           }
-      return render(request,'myAPP/weekly-add.html',context) 
+      return render(request,'myAPP/add-weekly.html',context) 
 
+@login_required(login_url='login')
 def create_weekly_report(request,pk):
     project = get_object_or_404(Project_DIP, id=pk)
     if request.method == 'POST': 
@@ -1168,7 +1349,7 @@ def update_WeeklyReport(request,pk):
           } 
       return render(request,'myAPP/weekly-update.html',context) 
 
-
+@login_required(login_url='login')
 def update_weekly_report(request, pk):
     plan = get_object_or_404(Weekly_Report, id=pk)
     project = get_object_or_404(Project_DIP, id=plan.activity_id.project_detail_id.project_id.id)
@@ -1213,26 +1394,246 @@ def update_weekly_report(request, pk):
     print(form.errors)
     return JsonResponse({'error': 'Invalid request method.'}, status=405)
 
-# @login_required(login_url='login')
-# def week_remarks(request,pk):
-#       plan = get_object_or_404(Weekly_Report, id=pk)
-#       project = get_object_or_404(Project_DIP, id=plan.activity_id.project_detail_id.project_id.id)
-#       form = WeekRemarkForm(instance=plan)
-#       if request.method == 'POST':
-#             form = WeekRemarkForm(request.POST,instance=plan)
-#             if form.is_valid():
-#                 form.save()
-#                 return redirect('myAPP:weekly-report',project.pk)
-#             else:
-#                form = WeekRemarkForm(instance=plan)  
-#       return render(request,'myAPP/event-remarks.html',{'form': form,'project':project})
+@login_required(login_url='login')
+def upload_document(request,pk):
+    user=0
+    if user_belongs_to_group(request.user,'Project Manager'):
+      user = 1
+    else:
+      user = 0
+    project = get_object_or_404(Project_DIP,id=pk)
+    projects = Project_DIP.objects.all()
+    current_month_start = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    documents_this_month = Case_study.objects.filter(project_id=project, uploaded_at__gte=current_month_start)
+    case_studies = Case_study.objects.filter(project_id=project,uploaded_at__month = str(datetime.today().month))
+    if request.method == 'POST':
+        if documents_this_month.count() >= 5:
+            return render(request, 'upload_limit_exceeded.html')
+        else:
+         form = DocumentForm(request.POST, request.FILES)
+         if form.is_valid():
+            document = form.save(commit=False)
+            document.project_id = project
+            document.save()
+            return redirect('myAPP:case-studies',project.id)
+    else:
+        form = DocumentForm()
+
+    context = {
+        'form': form,
+        'project':  project,
+        'case_studies': case_studies,
+        'projects' : projects,
+        'user': user 
+        }
+    return render(request, 'myApp/case_study.html', context)
+
+@login_required(login_url='login')
+def download_document(request, document_id):
+    document = get_object_or_404(Case_study, id=document_id)
+    try:
+        with open(document.case_studies.path, 'rb') as f:
+            response = HttpResponse(f.read(), content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+            response['Content-Disposition'] = f'attachment; filename="{document.project_id.project_name}{document.id}.docx"'
+            return response
+    except FileNotFoundError:
+        raise Http404("File not found")
+
 
 
 
 @login_required(login_url='login')
 def complince_home(request,pk):
   user=0
-  if user_belongs_to_group(request.user,'ProjectManager'):
+  if user_belongs_to_group(request.user,'Project Manager'):
+    user = 1
+  else:
+    user = 0
+  project = get_object_or_404(Project_DIP, id=pk)
+  projects = Project_DIP.objects.all()
+  context= {
+        'project':project,
+        'user': user,
+        'projects':projects,
+  }
+  return render(request,'myAPP/complince-home.html', context)
+
+@login_required(login_url='login')
+def project_clearance(request,pk):
+  user=0
+  if user_belongs_to_group(request.user,'Project Manager'):
+    user = 1
+  else:
+    user = 0
+  project = get_object_or_404(Project_DIP, id=pk) 
+  month = datetime.today()
+  pc = Monthly_Project_Clearance.objects.filter(project_id=project).filter(reporting_month=month.month)
+  context= {
+        'project':project,
+        'user': user,
+        'pc':pc
+  }
+  return render(request,'myAPP/mpc.html', context)
+
+@login_required(login_url='login')
+def add_project_clearance(request,pk):
+  user=0
+  if user_belongs_to_group(request.user,'Project Manager'):
+    user = 1
+  else:
+    user = 0
+  project = get_object_or_404(Project_DIP, id=pk)
+  form = MPCForm()
+  if request.method == 'POST':
+            form = MPCForm(request.POST)
+            if form.is_valid():
+                data = form.save(commit=False)
+                data.project_id = project
+                data.save()
+                return redirect('myAPP:mpc-report', project.id)
+            else:
+               form = MPCForm()  
+  context= {
+        'project':project,
+        'user': user,
+        'form':form
+  }
+  return render(request,'myAPP/add-monthly-clearance.html', context)
+
+@login_required(login_url='login')
+def leaves(request,pk):
+  user=0
+  if user_belongs_to_group(request.user,'Project Manager'):
+    user = 1
+  else:
+    user = 0
+  project = get_object_or_404(Project_DIP, id=pk)
+  next_months = []
+  for i in range(0, 12):
+        next_month = (project.start_date.month + i) % 12  # Calculate the month index
+        if next_month == 0:
+            next_month = 12  # Handle December (month index 0)
+        next_months.append(datetime(project.start_date.year, next_month, project.start_date.day)) 
+  leaves = Leave_Statement.objects.filter(project_id=project) 
+  context= {
+        'project':project,
+        'user': user,
+        'leaves':leaves,
+        'next_months': next_months
+  }
+  return render(request,'myAPP/leave.html', context)
+
+@login_required(login_url='login')
+def add_leaves(request,pk):
+  user=0
+  if user_belongs_to_group(request.user,'Project Manager'):
+    user = 1
+  else:
+    user = 0
+  project = get_object_or_404(Project_DIP, id=pk)
+  form = LeaveForm()
+  if request.method == 'POST':
+            form = LeaveForm(request.POST)
+            if form.is_valid():
+                data = form.save(commit=False)
+                data.project_id = project
+                data.total_leaves_remaining = data.total_leaves_allowed
+                data.save()
+                return redirect('myAPP:leaves', project.id)
+            else:
+               form = LeaveForm()  
+  context= {
+        'project':project,
+        'user': user,
+        'form':form,
+  }
+  return render(request,'myAPP/add-leave.html', context)
+
+@login_required(login_url='login')
+def add_leaves_monthly(request,pk):
+  user=0
+  if user_belongs_to_group(request.user,'Project Manager'):
+    user = 1
+  else:
+    user = 0
+  leave = get_object_or_404(Leave_Statement, id=pk)
+  project = get_object_or_404(Project_DIP, id=leave.project_id.id)
+  next_months = []
+  for i in range(0, 12):
+        next_month = (project.start_date.month + i) % 12  # Calculate the month index
+        if next_month == 0:
+            next_month = 12  # Handle December (month index 0)
+        next_months.append(datetime(project.start_date.year, next_month, project.start_date.day)) 
+  form = MonthlyLeaveForm(instance=leave)
+  if request.method == 'POST':
+            form = MonthlyLeaveForm(request.POST,instance=leave)
+            if form.is_valid():
+                data = form.save(commit=False)
+                data.total_leaves_remaining = data.total_leaves_allowed - (data.m1_leave+data.m2_leave+data.m3_leave+data.m4_leave+data.m5_leave+data.m6_leave+data.m7_leave+data.m8_leave+data.m9_leave+data.m10_leave+data.m11_leave+data.m12_leave)
+                data.save()
+                return redirect('myAPP:leaves', project.id)
+            else:
+               print(form.errors)
+               form = MonthlyLeaveForm(instance=leave)  
+  context= {
+        'project':project,
+        'user': user,
+        'form':form,
+        'next_months': next_months
+  }
+  return render(request,'myAPP/add-leave-monthly.html', context)
+
+@login_required(login_url='login')
+def msc(request,pk):
+  user=0
+  if user_belongs_to_group(request.user,'Project Manager'):
+    user = 1
+  else:
+    user = 0
+  project = get_object_or_404(Project_DIP, id=pk) 
+  msc = Monthly_staff_clearance.objects.filter(project_id=project) 
+  date = datetime.today()
+  context= {
+        'project':project,
+        'user': user,
+        'msc':msc,
+        'date': date
+  }
+  return render(request,'myAPP/msc.html', context)
+
+@login_required(login_url='login')
+def add_msc(request,pk):
+  user=0
+  if user_belongs_to_group(request.user,'Project Manager'):
+    user = 1
+  else:
+    user = 0
+  project = get_object_or_404(Project_DIP, id=pk)
+  form = MscForm()
+  if request.method == 'POST':
+            form = MscForm(request.POST)
+            if form.is_valid():
+                data = form.save(commit=False)
+                data.project_id = project
+                data.month = datetime.today().month
+                data.year = datetime.today().year
+                data.save()
+                return redirect('myAPP:msc', project.id)
+            else:
+               form = LeaveForm()  
+  context= {
+        'project':project,
+        'user': user,
+        'form':form,
+  }
+  return render(request,'myAPP/add-msc.html', context)
+
+
+
+@login_required(login_url='login')
+def governance_home(request,pk):
+  user=0
+  if user_belongs_to_group(request.user,'Project Manager'):
     user = 1
   else:
     user = 0
@@ -1251,48 +1652,321 @@ def complince_home(request,pk):
         'monthlyplans':monthlyplans,
         'eventplans':eventplans
   }
-  return render(request,'myAPP/complince-home.html', context)
+  return render(request,'myAPP/governance-home.html', context)
 
 @login_required(login_url='login')
-def add_project_clearance(request,pk):
+def leave_application(request,pk):
   user=0
-  if user_belongs_to_group(request.user,'ProjectManager'):
+  if user_belongs_to_group(request.user,'Project Manager'):
     user = 1
   else:
     user = 0
-  project = get_object_or_404(Project_DIP, id=pk)
-  form = MPCForm()
+  project = get_object_or_404(Project_DIP, id=pk) 
+  La = Leave_Application.objects.filter(project_id=project)
+  context= {
+        'project':project,
+        'user': user,
+        'leave_applications':La
+  }
+  return render(request,'myAPP/leave_application_list.html', context)
+
+@login_required(login_url='login')
+def add_leave_application(request,pk):
+  user=0
+  if user_belongs_to_group(request.user,'Project Manager'):
+    user = 1
+  else:
+    user = 0
+  project = get_object_or_404(Project_DIP, id=pk) 
+  form = LeaverequestForm()
   if request.method == 'POST':
-            form = MPCForm(request.POST)
+            form = LeaverequestForm(request.POST)
             if form.is_valid():
                 data = form.save(commit=False)
                 data.project_id = project
                 data.save()
-                return redirect('myAPP:complince-home', project.id)
+                return redirect('myAPP:leave-application', project.id)
             else:
-               form = MPCForm()  
+               form = LeaverequestForm() 
   context= {
         'project':project,
         'user': user,
-        'form':form
+        'form': form,
   }
-  return render(request,'myAPP/add-monthly-clearance.html', context)
+  return render(request,'myAPP/add-leave-application.html', context)
+
+@login_required(login_url='login')
+def edit_leave_application(request,pk):
+  user=0
+  if user_belongs_to_group(request.user,'Project Manager'):
+    user = 1
+  else:
+    user = 0
+  leave = get_object_or_404(Leave_Application, id=pk) 
+  project = get_object_or_404(Project_DIP, id=leave.project_id.id) 
+  form = LeaverequestForm(instance=leave)
+  if request.method == 'POST':
+            form = LeaverequestForm(request.POST,instance=leave)
+            if form.is_valid():
+                form.save()
+                return redirect('myAPP:leave-application', project.id)
+            else:
+               form = LeaverequestForm(instance=leave) 
+  context= {
+        'project':project,
+        'user': user,
+        'form': form,
+  }
+  return render(request,'myAPP/add-leave-application.html', context)
+
+@login_required(login_url='login')
+def appraisals(request,pk):
+  user=0
+  if user_belongs_to_group(request.user,'Project Manager'):
+    user = 1
+  else:
+    user = 0
+  project = get_object_or_404(Project_DIP, id=pk) 
+  appraisals = Appraisal.objects.filter(project_id=project)
+  context= {
+        'project':project,
+        'user': user,
+        'appraisals':appraisals
+  }
+  return render(request,'myAPP/appraisal.html', context)
+
+@login_required(login_url='login')
+def add_appraisal(request,pk):
+  user=0
+  if user_belongs_to_group(request.user,'Project Manager'):
+    user = 1
+  else:
+    user = 0
+  project = get_object_or_404(Project_DIP, id=pk) 
+  form = AppraisalForm()
+  x = request.POST.get('rg1')
+  if request.method == 'POST':
+    print(x)
+    form = AppraisalForm(request.POST)
+    if form.is_valid():
+      data = form.save(commit=False)
+      data.project_id = project
+      data.save()
+      return redirect('myAPP:appraisal', project.id)
+    else:
+      form = AppraisalForm() 
+  context= {
+        'project':project,
+        'user': user,
+        'form': form
+  }
+  return render(request,'myAPP/add-appraisal.html', context)
+
+@login_required(login_url='login')
+def assets(request,pk):
+  user=0
+  if user_belongs_to_group(request.user,'Project Manager'):
+    user = 1
+  else:
+    user = 0
+  project = get_object_or_404(Project_DIP, id=pk) 
+  assets = Asset.objects.filter(project_id=project)
+  context= {
+        'project':project,
+        'user': user,
+        'assets':assets
+  }
+  return render(request,'myAPP/assets.html', context)
+
+@login_required(login_url='login')
+def add_asset(request,pk):
+  user=0
+  if user_belongs_to_group(request.user,'Project Manager'):
+    user = 1
+  else:
+    user = 0
+  project = get_object_or_404(Project_DIP, id=pk) 
+  form = AssetForm()
+  if request.method == 'POST':
+            form = AssetForm(request.POST)
+            if form.is_valid():
+                data = form.save(commit=False)
+                data.project_id = project
+                data.save()
+                return redirect('myAPP:assets', project.id)
+            else:
+               form = AssetForm() 
+  context= {
+        'project':project,
+        'user': user,
+        'form': form,
+  }
+  return render(request,'myAPP/add-asset.html', context)
+
+@login_required(login_url='login')
+def update_asset(request,pk):
+  user=0
+  if user_belongs_to_group(request.user,'Project Manager'):
+    user = 1
+  else:
+    user = 0
+  asset = get_object_or_404(Asset, id=pk) 
+  project = get_object_or_404(Project_DIP, id=asset.project_id.id) 
+  form = AssetForm(instance=asset)
+  if request.method == 'POST':
+            form = AssetForm(request.POST,instance=asset)
+            if form.is_valid():
+              form.save()
+              return redirect('myAPP:assets', project.id)
+            else:
+               form = AssetForm(instance=asset) 
+  context= {
+        'project':project,
+        'user': user,
+        'form': form,
+  }
+  return render(request,'myAPP/add-asset.html', context)
+
+@login_required(login_url='login')
+def clearance_admin(request,pk):
+  user=0
+  if user_belongs_to_group(request.user,'Project Manager'):
+    user = 1
+  else:
+    user = 0
+  project = get_object_or_404(Project_DIP, id=pk) 
+  ca = Clearance_Admin.objects.filter(project_id=project)
+  context= {
+        'project':project,
+        'user': user,
+        'cas': ca
+  }
+  return render(request,'myAPP/clearance_admin.html', context)
+
+@login_required(login_url='login')
+def add_admin_clearance(request,pk):
+  user=0
+  if user_belongs_to_group(request.user,'Project Manager'):
+    user = 1
+  else:
+    user = 0
+  project = get_object_or_404(Project_DIP, id=pk) 
+  form = Ad_clerance_Form()
+  if request.method == 'POST':
+    form = Ad_clerance_Form(request.POST)
+    if form.is_valid():
+      data = form.save(commit=False)
+      data.project_id = project
+      data.save()
+      return redirect('myAPP:clearance-admin', project.id)
+    else:
+      form = Ad_clerance_Form() 
+  context= {
+        'project':project,
+        'user': user,
+        'form': form,
+  }
+  return render(request,'myAPP/add-clearance_admin.html', context)
+
+@login_required(login_url='login')
+def clearance_programme(request,pk):
+  user=0
+  if user_belongs_to_group(request.user,'Project Manager'):
+    user = 1
+  else:
+    user = 0
+  project = get_object_or_404(Project_DIP, id=pk) 
+  ca = Clearance_Programme.objects.filter(project_id=project)
+  context= {
+        'project':project,
+        'user': user,
+        'cas': ca
+  }
+  return render(request,'myAPP/clearance_programme.html', context)
+
+@login_required(login_url='login')
+def add_programme_clearance(request,pk):
+  user=0
+  if user_belongs_to_group(request.user,'Project Manager'):
+    user = 1
+  else:
+    user = 0
+  project = get_object_or_404(Project_DIP, id=pk)
+  MyFirstModelFormSet = inlineformset_factory(
+        Clearance_Programme,  # parent model
+        Clearance_Programme_key_activities,  # child model
+        pr_clerance_activity_Form,  # fields in the child model
+        extra=0,  # number of extra forms to display
+        can_delete= False  # allow deleting forms
+      )
+  formset = MyFirstModelFormSet()
+  form = pr_clerance_Form()
+  if request.method == 'POST':
+        formset = MyFirstModelFormSet(request.POST)
+        form = pr_clerance_Form(request.POST)
+        if form.is_valid() and formset.is_valid():
+          data = form.save(commit=False)
+          data.project_id = project
+          data.save()
+          for form in formset:
+                model = form.save(commit=False)
+                model.Clearance_Programme = Clearance_Programme
+                model.cp_id = data
+                model.save()
+        else:
+            print(formset.errors) 
+        return redirect('myAPP:clearance-programme', project.id) 
+  context= {
+        'project':project,
+        'user': user,
+        'form': form,
+        'formset': formset, 
+  }
+  return render(request,'myAPP/add-clearance_programme.html', context)
+
+@login_required(login_url='login')
+def leaving_station(request,pk):
+  user=0
+  if user_belongs_to_group(request.user,'Project Manager'):
+    user = 1
+  else:
+    user = 0
+  project = get_object_or_404(Project_DIP, id=pk) 
+  ls = OutStation.objects.filter(project_id=project)
+  context= {
+        'project':project,
+        'user': user,
+        'requests': ls
+  }
+  return render(request,'myAPP/outstation_permission.html', context)
+
+@login_required(login_url='login')
+def add_leaving_station(request,pk):
+  project = get_object_or_404(Project_DIP, id=pk) 
+  form = OutstationForm()
+  if request.method == 'POST':
+    form = OutstationForm(request.POST)
+    if form.is_valid():
+      data = form.save(commit=False)
+      data.project_id = project
+      data.save()
+      return redirect('myAPP:leaving-station', project.id)
+    else:
+      form = OutstationForm()
+  context= {
+        'project':project,
+        'form': form,
+  }
+  return render(request,'myAPP/add-outstation-reqest.html', context)
 
 
 
 
 
-# @login_required(login_url='login')
-# def add_annual_budget(request):
-#       form = annualBudgetForm()
-#       if request.method == 'POST':
-#             form = annualBudgetForm(request.POST)
-#             if form.is_valid():
-#                form.save()
-#                messages.success(request,'Budget Created Successfully')
-#             else:  # display empty form
-#                form = annualBudgetForm()  
-#       return render(request,'myAPP/addannualbudget.html',{'data': form}) 
+
+
+
+
 
 
 

@@ -1,0 +1,122 @@
+{% extends 'sidenav\sidenav_ceo.html' %}
+{% load static %}
+{% block title %} Add Weekly Report {% endblock %}
+{% block content %}
+<style>
+  input[type=text], number , .box{
+    width: 70%;
+    padding: 12px 20px;
+    margin: 10px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: #e7e6e6;
+  }
+  label {
+    color: #2706ca;
+    font-weight: bold;
+    padding: 5px 12px 12px 0;
+    display: inline-block;
+    float: left;
+    width: 25%;
+    margin-top: 10px
+  }
+  
+  input[type=submit] {
+    width: 15%;
+    background-color: #003366;
+    color: white;
+    padding: 14px 20px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 20px;
+  }
+  
+  input[type=submit]:hover {
+    background-color: #45a049;
+  }
+</style>
+<div style='margin:50px;'>
+  <h2 style='color:#003366;margin-bottom:20px;'>Add Weekly Report</h2>
+    <form  method="POST" action="{% url 'myAPP:create_weekly_report' project.id %}">
+      {% csrf_token %}
+      <label>Activities :</label>
+      {{form.activity_id}}
+      <label>No of unit :</label>
+      {{form.unit}}
+      <label>Approved Budget :</label>
+      {{form.approved_budget}}
+      <label for="week_one_report">Week 1 Report:</label>
+      <input name="week_one_report" id="week_one_report" type='text' style='width: 60%;'></input>
+      <select name="week_one_status" id="week_one_status">
+          <option value="">Select Status</option>
+          <option value="1">Completed</option>
+          <option value="2">In-Progress</option>
+          <option value="3">Not-Started</option>
+      </select>
+      <label for="week_two_report">Week 2 Report:</label>
+      <input name="week_two_report" id="week_two_report" type='text' style='width: 60%;'></input>
+      <select name="week_two_status" id="week_two_status">
+          <option value="">Select Status</option>
+          <option value="1">Completed</option>
+          <option value="2">In-Progress</option>
+          <option value="3">Not-Started</option>
+      </select>
+      <label for="week_three_report">Week 3 Report:</label>
+      <input name="week_three_report" id="week_three_report" type='text' style='width: 60%;'></input>
+      <select name="week_three_status" id="week_three_status">
+          <option value="">Select Status</option>
+          <option value="1">Completed</option>
+          <option value="2">In-Progress</option>
+          <option value="3">Not-Started</option>
+      </select>
+      <label for="week_four_report">Week 4 Report:</label>
+      <input name="week_four_report" id="week_four_report" type='text' style='width: 60%;'></input>
+      <select name="week_four_status" id="week_four_status">
+          <option value="">Select Status</option>
+          <option value="1">Completed</option>
+          <option value="2">In-Progress</option>
+          <option value="3">Not-Started</option>
+      </select>
+      <label for="week_five_report">Week 5 Report:</label>
+      <input name="week_five_report" id="week_five_report" type='text' style='width: 60%;'></input>
+      <select name="week_five_status" id="week_five_status">
+          <option value="">Select Status</option>
+          <option value="1">Completed</option>
+          <option value="2">In-Progress</option>
+          <option value="3">Not-Started</option>
+      </select>
+      
+      <label>Cumulative Progress :</label>
+      {{form.cumulative_progress}}
+      <label>Cumulative Utilisation :</label>
+      {{form.cumulative_utilisation}}
+      <label>Remarks if any :</label>
+      {{form.remarks}}
+      <input class='button' type="submit" value="Save">
+    </form>
+</div> 
+<script>
+    function capitalizeText(inputId) {
+      var input = document.getElementById(inputId);
+      var inputValue = input.value;
+      var capitalizedText = "";
+      var capitalizeNext = true;
+
+      for (var i = 0; i < inputValue.length; i++) {
+        var currentChar = inputValue.charAt(i);
+        
+        if (capitalizeNext && currentChar.match(/[a-z]/i)) {
+          capitalizedText += currentChar.toUpperCase();
+          capitalizeNext = false;
+        } else {
+          capitalizedText += currentChar;
+        }
+      }
+      input.value = capitalizedText;
+    }
+</script>  
+{% endblock  %}

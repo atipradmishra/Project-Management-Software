@@ -1,0 +1,140 @@
+{% extends "myAPP/dashboard_ceo.html" %}
+{% load static %}
+{% block title %} Planning Home {% endblock %}
+{% block content %}
+<style>
+  #content::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background-position: top;
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      animation: slideBg 36s linear infinite ;
+      animation-timing-function: ease-in-out;
+      backface-visibility: hidden;
+      backdrop-filter: blur(5px);
+      filter: blur(3px);
+      z-index: -1;
+  }
+  @keyframes slideBg{
+    0%,100%{
+      background-image: url("{% static 'images\planning3.jpeg' %}");
+    }
+    20%{
+      background-image: url("{% static 'images\planning2.jpeg' %}");
+    }
+    40%{
+      background-image: url("{% static 'images\planning5.jpeg' %}");
+    }
+    60%{
+      background-image: url("{% static 'images\planning1.jpeg' %}");
+    }
+    80%{
+      background-image: url("{% static 'images\planning4.jpeg' %}");
+    }
+    100%{
+      background-image: url("{% static 'images\planning6.jpeg' %}");
+    }
+  }
+  .card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: solid 1px #bbb;
+    margin-bottom: 20%;
+    transition: all .2s;
+    cursor: pointer;
+  }
+  .info-data .card img {
+    margin-right: 10%;
+    width:30%;
+  }
+  .card p {
+    font-weight: 400;
+    font-size: 20px;
+    color: black;
+  }
+  .card:hover {
+      content:"";
+      transform: translateY(-20px);
+      opacity: 100%;
+      box-shadow: rgba(0, 0, 0, 0.4) 0px 30px 90px;
+    }
+</style>
+<h1 class="title">Planning</h1>
+<ul class="breadcrumbs">
+    <li>{{ project.project_name }}</li>
+</ul>
+{% if user == 1 %}
+  <div class="info-data" style='margin-left: 10%;margin-right:10%'>
+  <a href="{%url 'myAPP:add_DIP_Details' project.id %}" style='text-decoration: none;'>
+    <div class="card">
+      <img src="{% static 'images\dip.png' %}"></img>
+      <p>Detail Implementation Plan</p>
+    </div>
+  </a>
+  <a href="{%url 'myAPP:index1' project.id %}" style='text-decoration: none;'>
+    <div class="card">
+      <img src="{% static 'images\gantt-chart.png' %}"></img>
+      <p>Activity Matrix</p>
+    </div>
+  </a>
+  <a href="{%url 'myAPP:index2' project.id %}" style='text-decoration: none;'>
+    <div class="card">
+      <img src="{% static 'images\monthly-planning.png' %}"></img>
+      <p>Monthly Plan</p>
+    </div>
+  </a>
+  <a href="{%url 'myAPP:index6' project.id %}" style='text-decoration: none;'>
+    <div class="card">
+      <img src="{% static 'images\event-planner.png' %}"></img>
+      <p>Event Plan</p>
+    </div>
+  </a>
+  <a href="{%url 'myAPP:budget_requests' project.id %}" style='text-decoration: none;'>
+    <div class="card">
+      <img src="{% static 'images\budget.png' %}"></img>
+      <p>Budget</p>
+    </div>
+  </a>
+  </div>
+{% else %}
+  <div class="info-data" style='margin-left: 10%;margin-right:10%'>
+    <a href="{%url 'myAPP:ceo_aproval_dip' project.id %}" style='text-decoration: none;'>
+      <div class="card">
+        <img src="{% static 'images\dip.png' %}"></img>
+        <p>Detail Implementation Plan</p>
+      </div>
+    </a>
+    <a href="{%url 'myAPP:ceo_am_approve' project.id %}" style='text-decoration: none;'>
+      <div class="card">
+        <img src="{% static 'images\gantt-chart.png' %}"></img>
+        <p>Activity Matrix</p>
+      </div>
+    </a>
+    <a href="{%url 'myAPP:ceo_plan_approve' project.id %}" style='text-decoration: none;'>
+      <div class="card">
+        <img src="{% static 'images\monthly-planning.png' %}"></img>
+        <p>Monthly Plan</p>
+      </div>
+    </a>
+    <a href="{%url 'myAPP:ceo_event_approve' project.id %}" style='text-decoration: none;'>
+      <div class="card">
+        <img src="{% static 'images\event-planner.png' %}"></img>
+        <p>Event Plan</p>
+      </div>
+    </a>
+    <a href="{%url 'myAPP:budget_requests' project.id %}" style='text-decoration: none;'>
+      <div class="card">
+        <img src="{% static 'images\budget.png' %}"></img>
+        <p>Budget</p>
+      </div>
+    </a>
+  </div>
+{% endif %}
+{% endblock %}

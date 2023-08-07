@@ -1,0 +1,178 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Create Leave Application{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+     @media print {
+      .header {
+          display: none; /* Hide elements with the "no-print" class */
+      }
+    }
+    .popup {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+    
+    .popup-content {
+      background-color: #fefefe;
+      margin: 8% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 95%;
+    }
+    
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    
+    .close:hover,
+    .close:focus {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .image{
+      border-radius: 8px;
+      width: 150px;
+      float:right;
+      margin-right: 20px;
+      margin-top: 50px;
+    }
+    .btn {
+      background-color: #4CAF50;
+      border-radius: 10px;
+      color: white;
+      padding: 8px 30px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin-top: 5px;
+      margin-left: 1140px;
+      transition-duration: 0.4s;
+      cursor: pointer;
+    }
+    .button1 {
+      background-color: white;
+      color: black; 
+      border: 2px solid #4CAF50;
+    }
+    
+    .button1:hover {
+      background-color: #4CAF50;
+      color: white;
+    }
+    .popup2{
+      width: 400px;
+      background: #fff;
+      border-radius: 6px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%) scale(0.80);
+      text-align: center;
+      color: #333;
+      padding: 0 30px 30px;
+      display: none;
+      transition: transform 0.4s, top 0.4s; 
+      box-shadow: 0 20px 30px rgba(1,1,1,1);
+    }
+    .popup2 img{
+      width: 100px;
+      margin-top: -50px;
+      border-radius: 50%;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .popup2 h2{
+      font-size: 40px;
+      font-weight: 500;
+      margin: 30px 0 l0px;
+    }
+    .popup2 button{
+      width: 100%;
+      margin-top: 50px;
+      padding: 10px 0;
+      background: #6fd649;
+      color: #fff;
+      border: 0;
+      outline: none;
+      font-size: 18px;
+      border-radius: 4px;
+      cursor: pointer;
+      box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+  </head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <body>
+    <div class="header">
+      <a class="logo">{{ project.project_name}}</a>
+      <div class="header-right">
+        <a href="{% url 'myAPP:leave-application' project.pk %}" class=sel>Back</a>
+        <a href="{% url 'myAPP:governance-home' project.pk %}" class=sel><i class="fa fa-home"></i>Home</a>
+      </div>
+    </div>
+    <div id="body">
+      {% block content %}
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <body>
+        <div class="form-group" style='margin:15px'>
+            <form  method="POST">
+            {% csrf_token %}
+            <lable>Name of Staff:</lable>
+            {{form.name_of_staff}}<br>
+            <lable>Designation:</lable>
+            {{form.designation}}<br>
+            <lable>Leave requested from:</lable>
+            {{form.leave_requested_from}} to {{form.leave_requested_to}}<br><br>
+            <lable>Type of Leave:</lable>
+            {{form.type_of_leave}}<br><br>
+            <lable>Leave Balance till to date:</lable>
+            {{form.leave_balance_till_to_date}}<br>
+            <lable>Address:</lable>
+            {{form.address}}<br>
+            <lable>Contact Number:</lable>
+            {{form.phone_no}}<br>
+            <input class='button' type="submit" value="Save">
+            </form>
+        </div> 
+        <script>
+            function capitalizeText(inputId) {
+            var input = document.getElementById(inputId);
+            var inputValue = input.value;
+            var capitalizedText = "";
+            var capitalizeNext = true;
+
+            for (var i = 0; i < inputValue.length; i++) {
+                var currentChar = inputValue.charAt(i);
+                
+                if (capitalizeNext && currentChar.match(/[a-z]/i)) {
+                capitalizedText += currentChar.toUpperCase();
+                capitalizeNext = false;
+                } else {
+                capitalizedText += currentChar;
+                }
+            }
+            input.value = capitalizedText;
+            }
+        </script>  
+        </body>
+      {% endblock %}
+    </div>
+  </body>
+  </html>

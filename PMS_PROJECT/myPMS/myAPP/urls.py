@@ -1,23 +1,29 @@
 from django.urls import path
 from . import views
-from .views import  add_Category, add_WeeklyReport, add_project_clearance, add_report_achievement, add_report_backlog, add_report_highlights, am_remarks, ceo_am_approve, ceo_aproval_dip, ceoevent, ceoplanapproval, ceoreportapproval, create_weekly_report, dip_remarks, event_remarks, index,complince_home, location_count, add_Project, monthly_report, plan_remarks, report_remarks, timeframe, update_Activity, update_MonthPlan,update_Project,index1,add_Activity,registerPage,loginPage,logoutUser,index2,add_MonthPlan,index4,add_DIP_Details, update_WeeklyReport, update_component, update_location, update_report, update_timeframe, index6,add_event,update_event, update_weekly_report, weekly_report
+from .views import  *
+from django.conf import settings
+from django.conf.urls.static import static
 app_name = "myAPP"   
 
 
 urlpatterns = [
     path('login/', loginPage,name='login'),
     path('logout/', logoutUser,name='logout'),
-    path("<int:pk>/", views.home, name="home"),
-    path("", views.masterhome, name="masterhome"),
+    path("planning-home/<int:pk>/", home, name="home"),
+    path("dashboard/<int:pk>/", userhome, name="pm-home"),
+    path("", masterhome, name="masterhome"),
 
 
-    path('index/', index, name='index'),
     path('add-category/', add_Category, name='add-category'),
     path('add-project/',add_Project,name='add_Project'),
-    path('updateProject/<project_id>',update_Project, name='update'),
+    path('updateProject/<pk>',update_Project, name='update-project'),
+    path('project-list/',Projects_list,name='Project-list'),
     
+    path("profile/<int:pk>/", user_profile , name="profile"),
+    path("profile/", ceo_profile , name="ceo_profile"),
     
     path('dip-detalis/<int:pk>/',add_DIP_Details,name='add_DIP_Details'),
+    path('update/<int:pk>/',update_component,name='update_component'),
     path('add-activity/<int:pk>',add_Activity,name='add_ActivityMatrix'),
     path('update-activity/<int:pk>',update_Activity,name='update_ActivityMatrix'),
     path('ceo-dip-detalis/<int:pk>/',ceo_aproval_dip,name='ceo_aproval_dip'),
@@ -47,12 +53,17 @@ urlpatterns = [
     path('ceo-event-remark/<int:pk>/', event_remarks , name='ceo_event_remark'),
 
 
-    path('reporting/<int:pk>/', index4, name='manager-reporting'),
+    path('budget-requests-list/<int:pk>/', budget_requests , name='budget_requests'),
+    path('add-budget-request/<int:pk>/', add_budget_request , name='add_budget_request'),
+    path('edit-budget-request/<int:pk>/', edit_budget_request , name='edit_budget_request'),
+
+
+    path('reporting-home/<int:pk>/', index4, name='manager-reporting'),
     path('monthly-reporting/<int:pk>/', monthly_report, name='monthly-reporting'),
     path('add-monthly-achievements/<int:pk>/', add_report_achievement, name='add-monthly-achievements'),
     path('add-monthly-highlights/<int:pk>/', add_report_highlights, name='add-monthly-highlights'),
     path('add-monthly-backlog/<int:pk>/', add_report_backlog, name='add-monthly-backlog'),
-    path('update-monthly-backlog/<int:pk>/', update_report, name='update-monthly-backlog'),
+    path('update-monthly-backlog/<int:pk>/', update_report, name='update-monthly-report'),
     path('ceo-report/<int:pk>/', ceoreportapproval , name='ceo_report_approve'),
     path('ceo-report-remark/<int:pk>/', report_remarks , name='ceo_report_remark'),
     path('weekly-report/<int:pk>/', weekly_report, name='weekly-report'),
@@ -60,23 +71,38 @@ urlpatterns = [
     path('update-weekly-report/<int:pk>/',update_WeeklyReport,name='update-weekly-report'),
     path('create-weekly-report/<int:pk>/', create_weekly_report, name='create_weekly_report'),
     path('edit-weekly-report/<int:pk>/', update_weekly_report, name='update_weekly_report'),
-    # path('remarks-weekly-report/<int:pk>/',week_remarks,name='remarks-weekly-report'),
+    path('case-studies/<int:pk>/',upload_document,name='case-studies'),
+    path('download/<int:document_id>/', views.download_document, name='download_document'),
 
 
 
     path('complince-home/<int:pk>/', complince_home, name='complince-home'),
     path('add-Monthly-project-clearance-report/<int:pk>/',add_project_clearance,name='add-mpc-report'),
+    path('Monthly-project-clearance-report/<int:pk>/',project_clearance,name='mpc-report'),
+    path('Leave-Statement-Staff-Clearance/<int:pk>/', leaves ,name='leaves'),
+    path('add-leave-statement/<int:pk>/',add_leaves,name='add-leave'),
+    path('add-leave-monthly/<int:pk>/',add_leaves_monthly,name='add-leave-monthly'),
+    path('monthly-staff-clearance/<int:pk>/', msc ,name='msc'),
+    path('add-monthly-staff-clearance/<int:pk>/',add_msc,name='add-msc'),
 
 
-
-
-
-    
-
-
-    path('update/<int:pk>/',update_component,name='update_component'),
-
-    path('signup/',registerPage, name='signup'),
-    
-    
+    path('governance-home/<int:pk>/',governance_home,name='governance-home'),
+    path('leave-application/<int:pk>/',leave_application,name='leave-application'),
+    path('add-leave-application/<int:pk>/',add_leave_application,name='add-leave-application'),
+    path('edit-leave-application/<int:pk>/',edit_leave_application,name='edit-leave-application'),
+    path('appraisal-list/<int:pk>/',appraisals,name='appraisal'),
+    path('add-appraisal/<int:pk>/',add_appraisal,name='add-appraisal'),
+    path('assets-list/<int:pk>/',assets,name='assets'),
+    path('add-asset/<int:pk>/',add_asset,name='add-asset'),
+    path('edit-asset/<int:pk>/',update_asset,name='update-asset'),
+    path('clearance-admin/<int:pk>/',clearance_admin,name='clearance-admin'),
+    path('add-admin-clearance/<int:pk>/',add_admin_clearance,name='add-admin-clearance'),
+    path('clearance-programme/<int:pk>/',clearance_programme,name='clearance-programme'),
+    path('add-programme-clearance/<int:pk>/',add_programme_clearance,name='add-programme-clearance'),
+    path('leaving-station/<int:pk>/',leaving_station,name='leaving-station'),
+    path('add-leaving-station/<int:pk>/',add_leaving_station,name='add-leaving-station'),
 ]
+
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

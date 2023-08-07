@@ -1,111 +1,75 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+{% extends 'sidenav\sidenav_ceo.html' %}
+{% load static %}
+{% block title %} Report {% endblock %}
+{% block content %}
 <style>
-* {
-  box-sizing: border-box;
-}
-
-input[type=text], select, textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  resize: vertical;
-}
-
-label {
-  padding: 12px 12px 12px 0;
-  display: inline-block;
-}
-
-input[type=submit] {
-  background-color: #04AA6D;
-  color: white;
-  padding: 12px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  float: right;
-}
-
-input[type=submit]:hover {
-  background-color: #45a049;
-}
-
-.container {
-  border-radius: 5px;
-  background-color: #f2f2f2;
-  padding: 20px;
-}
-
-.col-25 {
-  float: left;
-  width: 25%;
-  margin-top: 6px;
-}
-
-.col-75 {
-  float: left;
-  width: 75%;
-  margin-top: 6px;
-}
-
-/* Clear floats after the columns */
-.row:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
-/* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
-@media screen and (max-width: 600px) {
-  .col-25, .col-75, input[type=submit] {
-    width: 100%;
-    margin-top: 0;
+  input[type=text], select {
+    width: 70%;
+    padding: 12px 20px;
+    margin: 10px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: #e7e6e6;
   }
-}
+  label {
+    color: #2706ca;
+    font-weight: bold;
+    {% comment %} padding: 5px 12px 12px 0; {% endcomment %}
+    display: inline-block;
+    float: left;
+    width: 25%;
+    margin-top: 10px
+  }
+  
+  input[type=submit] {
+    width: 15%;
+    background-color: #d378f8;
+    color: white;
+    padding: 14px 20px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 20px;
+  }
+  
+  input[type=submit]:hover {
+    background-color: #45a049;
+  }
 </style>
-</head>
-<body>
 
-<h2>Add Achievements</h2>
-
-<div class="container">
-  <form method="POST">
-    {% csrf_token %}
-    <div class="row">
-      <div class="col-25">
-        <label for="fname">Achievement</label>
-      </div>
-      <div class="col-75">
-        {{ form.achievements }}
-      </div>
-      <input type="submit" value="Submit">
-    </div>
-  </form>
+<div style='margin:50px;'>
+  <h2 style='color:#d378f8;margin-bottom:50px;'>Add Achievement</h2>
+  <div> 
+    <form  method="POST">
+      {% csrf_token %}
+      <label>Achievement : </label>
+      {{ form.achievements }}
+      <input type="submit" value="Save">
+    </form>
+  </div>
 </div>
 <script>
-    function capitalizeText(inputId) {
-      var input = document.getElementById(inputId);
-      var inputValue = input.value;
-      var capitalizedText = "";
-      var capitalizeNext = true;
-  
-      for (var i = 0; i < inputValue.length; i++) {
-        var currentChar = inputValue.charAt(i);
-        
-        if (capitalizeNext && currentChar.match(/[a-z]/i)) {
-          capitalizedText += currentChar.toUpperCase();
-          capitalizeNext = false;
-        } else {
-          capitalizedText += currentChar;
-        }
+  function capitalizeText(inputId) {
+    var input = document.getElementById(inputId);
+    var inputValue = input.value;
+    var capitalizedText = "";
+    var capitalizeNext = true;
+
+    for (var i = 0; i < inputValue.length; i++) {
+      var currentChar = inputValue.charAt(i);
+      
+      if (capitalizeNext && currentChar.match(/[a-z]/i)) {
+        capitalizedText += currentChar.toUpperCase();
+        capitalizeNext = false;
+      } else {
+        capitalizedText += currentChar;
       }
-  
-      input.value = capitalizedText;
     }
-  </script>
-</body>
-</html>
+
+    input.value = capitalizedText;
+  }
+</script>
+{% endblock %}

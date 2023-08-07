@@ -1,9 +1,15 @@
-{% extends 'myAPP/base_matrix.html' %}
+{% extends 'myAPP/user_nav.html' %}
 {% load post_tags %}
 {% load humanize %}
-{% block title %} Activity_Matrix {% endblock %}
+{% load static %}
+{% block title %} Activity Matrix {% endblock %}
 {% block content %}
 <style>
+  @media print {
+    .no-print {
+        display: none; /* Hide elements with the "no-print" class */
+    }
+  }
   .ingredient-form {
     border-bottom: 1px solid black;
   }
@@ -24,39 +30,13 @@
     cursor: pointer;
     margin: 30px;
     position: sticky;
+    background-color: #33cc33;
   }
-  
-  .button span {
-    cursor: pointer;
-    display: inline-block;
-    position: relative;
-    transition: 0.5s;
+  @media print {
+    .button {
+        display: none; 
+    }
   }
-  
-  .button span:after {
-    content: '\002B';
-    font-size: 50px;
-    position: absolute;
-    opacity: 0;
-    top: -22px;
-    left: 160px;
-    right: -100px;
-    transition: 0.5s;
-  }
-  
-  .button:hover span {
-    padding-right: 25px;
-  }
-  
-  .button:hover span:after {
-    opacity: 1;
-    right: 0;
-  }
-
-  body {font-family: Arial, Helvetica, sans-serif;}
-  * {box-sizing: border-box;}
-
-  /* Button used to open the contact form - fixed at the bottom of the page */
   .open-button {
     background-color: #555;
     color: white;
@@ -72,25 +52,67 @@
 
   #customers {
     font-family: Arial, Helvetica, sans-serif;
-    border-collapse: collapse;
-    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    width: 99%;
+    margin: 0 auto;
+    background-color: #fff;
+  }
+
+  #customers thead tr:first-child th:first-child {
+    border-top-left-radius: 10px;
+  }
+
+  #customers thead tr:first-child th:last-child {
+    border-top-right-radius: 10px;
   }
 
   #customers td, #customers th {
     border: 1px solid #ddd;
-    padding: 8px;
+    padding-left: 2px;
+    padding-right: 2px;
+    font-size: 15px;
+  }
+  #customers td{
+    color:#003366;
   }
 
   #customers tr:nth-child(even){background-color: #f2f2f2;}
 
+  #customers tr:hover {background-color: #ddd;}
+
   #customers th {
-    padding-top: 12px;
-    padding-bottom: 12px;
-    text-align: left;
+    padding-top: 5px;
+    padding-bottom: 5px;
     background-color: #f4b083;
     color: black;
+    text-align: center;
   }
-  .popup2 {
+  .list-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .list-container ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: disc;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 18px;
+  }
+
+  .list-container ul li {
+    margin-bottom: 5px;
+  }
+  @media print {
+    .header {
+        display: none;
+    }
+  }
+  .popup {
     display: none;
     position: fixed;
     z-index: 1;
@@ -101,13 +123,22 @@
     overflow: auto;
     background-color: rgba(0, 0, 0, 0.5);
   }
+  .popup::-webkit-scrollbar {
+    display: none;  
+  }
+  .popup::-webkit-scrollbar-thumb {
+    display: none;
+  }
+  .popup::-webkit-scrollbar-track {
+    display:none;
+  }
   
-  .popup2-content {
+  .popup-content {
     background-color: #fefefe;
-    margin: 10% auto;
+    margin: 7% auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 80%;
+    width: 95%;
   }
   
   .close {
@@ -123,15 +154,93 @@
     text-decoration: none;
     cursor: pointer;
   }
-  @media print {
-    .no-print {
-        display: none; /* Hide elements with the "no-print" class */
-    }
-  } 
+
+  .btn {
+    background-color: #4CAF50; /* Green */
+    border-radius: 10px;
+    color: white;
+    padding: 8px 30px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-top: 5px;
+    margin-left: 1120px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+  }
+  .button1 {
+    background-color: white;
+    color: black; 
+    border: 2px solid #4CAF50;
+  }
+  
+  .button1:hover {
+    background-color: #4CAF50;
+    color: white;
+  }
+  .popup2{
+    width: 400px;
+    background: #fff;
+    border-radius: 6px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%) scale(0.80);
+    text-align: center;
+    color: #333;
+    padding: 0 30px 30px;
+    display: none;
+    transition: transform 0.4s, top 0.4s; 
+    box-shadow: 0 20px 30px rgba(1,1,1,1);
+  }
+  .popup2 img{
+    width: 100px;
+    margin-top: -50px;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+  .popup2 h2{
+    font-size: 40px;
+    font-weight: 500;
+    margin: 30px 0 l0px;
+  }
+  .popup2 button{
+    width: 100%;
+    margin-top: 50px;
+    padding: 10px 0;
+    background: #6fd649;
+    color: #fff;
+    border: 0;
+    outline: none;
+    font-size: 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
+  }
+  .butn {
+    border-radius: 8px;
+    color: white;
+    padding: 10px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 15px;
+    margin-right:10px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    background-color: white; 
+    color: #003366; 
+    border: 2px solid #003366;
+  }
+  .butn:hover {
+    background-color: #003366;
+    color: white;
+  }
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-<body>
-  <center><h2 style='font-family:"Calibri", sans-serif;'><u>Activities Matrix ({{project.start_date|date:"F. Y"}} to {{project.end_date|date:"F. Y"}})</u></h1></center>
+<div style='margin-top:30px'>
+  <img src="{% static 'images\main-logo.png' %}" style='float:right;margin-right: 10px;width:10%'>
+  <center><h2 style='font-family:"Calibri", sans-serif;'><u>Activities Matrix ({{project.start_date|date:"F. Y"}} to {{project.end_date|date:"F. Y"}})</u></h2></center>
   <form method="POST">
     {% csrf_token %}
     <table id="customers">
@@ -142,17 +251,17 @@
             <th style="text-align: center;width: 10%;">Target</th>
             <th style="text-align: center;width: 15%;">Location</th>
             {% for next_month in next_months %}
-            <th style="width: 2%;text-align:center;">{{ next_month|date:"M" }}</th>
+            <th style="width: 5%;text-align:center;">{{ next_month|date:"M" }}</th>
             {% endfor %}
-            <th style='text-align:center;width:8%'>Approve<input type="checkbox" id="select-all-checkboxs"></th>
-            <th style='text-align:center;'>Remarks if any</th>
+            <th style='text-align:center;width:5%'>Approve <input type="checkbox" id="select-all-checkboxs"></th>
+            <th style='text-align:center;width:8%'>Remarks if any</th>
         </tr>
         </thead>
         <tbody>
         {% for a in component %}
         <tr>
             {% ifchanged %}
-            <td colspan="18" style="color: blue; font-weight: bold;">{{a.component}}</td>
+            <td colspan="18" style="color: blue; font-weight: bold;padding-top: 5px;padding-bottom: 5px;">{{a.component}}</td>
             {% endifchanged %}
         </tr>
         {% for x in a.dip_activities_set.all %}
@@ -281,15 +390,15 @@
                 <td style='background-color:#ffffff'></td>
                 <td style='background-color:#ffffff'></td>
                 {% if x.is_am_approved == 1 and x.is_am_rejected == 0 %}
-                <td>Approved</td>
+                <td style="color:Green;text-align:center;"><i class="fa-solid fa-check"></i>Approved</td>
                 {% elif x.is_am_approved == 0 and x.is_am_rejected == 1 %}
-                <td>Rejected</td>
+                <td style="color:red;text-align:center;"><i class="fa-solid fa-xmark"></i>Rejected</td>
                 {% else %}
                 <td style="text-align:center">
                 <input type="checkbox" name="selected_activities" value="{{ x.id }}">
                 </td>
                 {% endif %}
-                <td></td>
+                <td onclick="window.location='{% url 'myAPP:ceo_am_remark' x.id %}';" style="color:red;cursor: pointer;">&#10010; Add Remarks</td>
                 {% endif %}
             </tr>
             {% endif %}
@@ -315,5 +424,5 @@
         }
     </script>
   </div>
-</body>
+</div>
 {% endblock %}

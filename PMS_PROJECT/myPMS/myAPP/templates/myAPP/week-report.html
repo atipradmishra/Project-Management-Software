@@ -1,321 +1,761 @@
-{% extends 'myAPP/baseweek.html' %}
-{% block title %} Weekly Report {% endblock %}
+{% extends 'myAPP/user_nav.html' %}
+{% load static %}
+{% block title %}Weekly Report{% endblock %}
 {% block content %}
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
+	@media print {
+		.no-print {
+			display: none;
+		}
+		body {
+		  background-color: transparent;
+		}
+	  }
+  .hidden {
+      display: none
+  }
+  
+  @media print {
+    .button {
+        display: none; 
     }
-    
-    .month-list {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-        margin-top: 20px;
+  }
+
+  #customers {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    width: 99%;
+    margin: 0 auto;
+    background-color: #fff;
+  }
+
+  #customers thead tr:first-child th:first-child {
+    border-top-left-radius: 10px;
+  }
+
+  #customers thead tr:first-child th:last-child {
+    border-top-right-radius: 10px;
+  }
+
+  #customers td, #customers th {
+    border: 1px solid #ddd;
+    padding-left: 2px;
+    padding-right: 2px;
+    font-size: 15px;
+    text-align: center;
+  }
+  #customers td{
+    color:#003366;
+  }
+
+  #customers tr:nth-child(even){background-color: #f2f2f2;}
+
+  #customers tr:hover {background-color: #ddd;}
+
+  #customers th {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: #ead1dc;
+    color: black;
+  }
+  @media print {
+    .header {
+        display: none;
     }
-    
-    .month-list button {
-        font-size: 16px;
-        font-weight: bold;
-        padding: 10px;
-        margin-right: 10px;
-        background-color: #f2f2f2;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
+  }
+  .popup {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  .popup::-webkit-scrollbar {
+    display: none;  
+  }
+  .popup::-webkit-scrollbar-thumb {
+    display: none;
+  }
+  .popup::-webkit-scrollbar-track {
+    display:none;
+  }
+  
+  .popup-content {
+    background-color: #fefefe;
+    margin: 7% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 95%;
+  }
+  
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .btn {
+    background-color: #4CAF50; /* Green */
+    border-radius: 10px;
+    color: white;
+    padding: 8px 30px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-top: 5px;
+    margin-left: 1120px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+  }
+  .button1 {
+    background-color: white;
+    color: black; 
+    border: 2px solid #4CAF50;
+  }
+  
+  .button1:hover {
+    background-color: #4CAF50;
+    color: white;
+  }
+  .popup2{
+    width: 400px;
+    background: #fff;
+    border-radius: 6px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%) scale(0.80);
+    text-align: center;
+    color: #333;
+    padding: 0 30px 30px;
+    display: none;
+    transition: transform 0.4s, top 0.4s; 
+    box-shadow: 0 20px 30px rgba(1,1,1,1);
+  }
+  .popup2 img{
+    width: 100px;
+    margin-top: -50px;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+  .popup2 h2{
+    font-size: 40px;
+    font-weight: 500;
+    margin: 30px 0 l0px;
+  }
+  .popup2 button{
+    width: 100%;
+    margin-top: 50px;
+    padding: 10px 0;
+    background: #6fd649;
+    color: #fff;
+    border: 0;
+    outline: none;
+    font-size: 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
+  }
+  .butn {
+    border-radius: 8px;
+    color: white;
+    padding: 10px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 15px;
+    margin-right:10px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    background-color: white; 
+    color: #003366; 
+    border: 2px solid #003366;
+  }
+  .butn:hover {
+    background-color: #003366;
+    color: white;
+  }
+  @media print {
+    .helpers {
+        display: none; 
     }
-    
-    .month-list button:hover {
-        background-color: #e6e6e6;
+  }
+  #views {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    width: 100%;
+    margin: 0 auto;
+    background-color: #fff;
     }
-    
-    .month-list button.selected {
-        background-color: #4CAF50;
-        color: white;
+  
+    #views td, #views th {
+      border: 1px solid #ddd;
+      padding-left: 2px;
+      padding-right: 2px;
+      font-size: 15px;
+      text-align: center;
     }
-    
-    .data {
-        margin-top: 20px;
-        padding: 20px;
-        background-color: #f2f2f2;
+  
+    #views tr:nth-child(even){background-color: #f2f2f2;}
+  
+    #views tr:hover {background-color: #ddd;}
+  
+    #views th {
+      padding-top: 5px;
+      padding-bottom: 5px;
+      background-color: #ead1dc;
+      color: black;
+      text-align: center;
     }
-    
-    .data h2 {
-        font-size: 24px;
-        font-weight: bold;
-        margin: 0 0 10px;
-    }
-    
-    .data p {
-        font-size: 16px;
-        margin: 0 0 10px;
-    }
-    #customers {
-        font-family: Arial, Helvetica, sans-serif;
-        border-collapse: collapse;
-        width: 100%;
+    @media print {
+      @page {
+        size: auto; /* Use the default paper size */
+        margin: 5mm; /* Set the margins to create a printable area */
       }
-    
-      #customers td, #customers th {
-        border: 1px solid #ddd;
-        padding-left: 2px;
-        padding-right: 2px;
-        text-align: center;
+      
+      body {
+        margin: 0; /* Remove any body margin */
       }
-    
-      #customers tr:nth-child(even){background-color: #f2f2f2;}
-    
-      #customers tr:hover {background-color: #ddd;}
-    
-      #customers th {
-        padding-top: 12px;
-        padding-bottom: 12px;
-        background-color: #ead1dc;
-        color: black;
-      }
-      .image{
-        border-radius: 8px;
-        width: 150px;
-        float:right;
-        margin-right: 20px;
-        margin-top: 50px;
-      }
-      @media print {
-        @page {
-          size: auto; /* Use the default paper size */
-          margin: 5mm; /* Set the margins to create a printable area */
+      .wrap-text {
+          font-size: 10px;
+          margin: 0;
         }
-        
-        body {
-          margin: 0; /* Remove any body margin */
-        }
-        .wrap-text {
-            font-size: 10px;
-            margin: 0;
-          }
-        .printable {
-          width: 100%; /* Make the printable content occupy the full width */
-        }
+      .printable {
+        width: 100%; /* Make the printable content occupy the full width */
       }
+    }
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-<body>
-<img class="image" src="https://assets.letsendorse.com/20200111/VwBUYOZNdHaPdNqQgzsG15787235219596.png" style='margin-top: 20px;'></img>
-<div style='float:left;margin-left: 35%;'>
-    <h2 style="text-align:center;"><u>Weekly Reporting</u>({{month| date:"F"}})</h2>
+<div>
+  <div>
+    {% if user == 1 %}
+    <h2 style='font-family:"Calibri", sans-serif;margin-left:20px;margin-top:30px'>Weekly Reports</h2>
+    <div class="helpers" style='margin-left:20px;margin-top:10px'>
+      <img src="{% static 'images\main-logo.png' %}" style='float:right;margin-right: 10px;width:10%'></img>
+          <a href='{% url 'myAPP:add-weekly-report' project.id %}'><button class='butn'><i class="fa-solid fa-plus"></i> Add Weekly Report</button></a>
+          <button onclick="openPopup()" class='butn'><i class="fa fa-eye"></i> View</button>
+          <div id="popup" class="popup">
+          <div class="popup-content">
+            <span class="close" onclick="closePopup()">&times;</span>
+            <center><h2 style='font-family:"Calibri", sans-serif;'>{{ project.project_name }}</h1>
+            <h2 style='font-family:"Calibri", sans-serif;'><u>Monthly Budget Requests</u></h1></center>
+            <form method="POST" id="myForm">
+            {% csrf_token %}
+            <table id="views">
+              <thead>
+                <tr>
+                  <th style="width: 1%;font-size:12px">Sl. No.</th>
+                  <th style="width: 10%;">Activities</th>
+                  <th style="width: 4%;">No. of Unit</th>
+                  <th style="width: 5%;">Approved Budget</th>
+                  <th style="width: 10%;">Week 1 Progress</th>
+                  <th style="width: 10%;">Week 2 Progress</th>
+                  <th style="width: 10%;">Week 3 Progress</th>
+                  <th style="width: 10%;">Week 4 Progress</th>
+                  <th style="width: 10%;">Week 5 Progress</th>
+                  <th style="width: 10%;">Cumulative Progress</th>
+                  <th style="width: 10%;">Cumulative Utilisation</th>
+                  <th class='no-print'>Remarks if any</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for x in Plans %}
+                <tr>
+                    <td style="text-align:center;">{{ forloop.counter }}</td>
+                    <td style="text-align:center;">{{ x.activity_id.activity_name }}</td>
+                    <td style="text-align:center;">{% if  x.unit == null %}N/A{% else %}{{ x.unit }}{% endif %}</td>
+                    <td style="text-align:center;">{% if  x.approved_budget == null %}N/A{% else %}{{ x.approved_budget }}{% endif %}</td>
+                    {% for a in x.week_one_report_set.all %}
+                      {% if a.status == '1' %}
+                        <td style="text-align:center;background-color:#87c46c;">
+                          {% if a.report != null %}
+                          {{ a.report }}
+                          {% else %}
+                          N/A
+                          {% endif %}
+                        </td>
+                      {% elif a.status == '2' %}
+                        <td style="text-align:center;background-color:#cccc00;">
+                          {% if a.report != null %}
+                          {{ a.report }}
+                          {% else %}
+                          N/A
+                          {% endif %}
+                        </td>
+                      {% elif a.status == '3' %}
+                        <td style="text-align:center;background-color:#ff5c33;">
+                          {% if a.report != null %}
+                          {{ a.report }}
+                          {% else %}
+                          N/A
+                          {% endif %}
+                        </td>
+                      {% else %}
+                      <td style="text-align:center;">
+                        {% if a.report != null %}
+                        {{ a.report }}
+                        {% else %}
+                        N/A
+                        {% endif %}</td>
+                      {% endif %}
+                    {% endfor %}
+                    {% for a in x.week_two_report_set.all %}
+                      {% if a.status == '1' %}
+                        <td style="text-align:center;background-color:#87c46c;">
+                          {% if a.report != null %}
+                          {{ a.report }}
+                          {% else %}
+                          N/A
+                          {% endif %}
+                        </td>
+                      {% elif a.status == '2' %}
+                        <td style="text-align:center;background-color:#cccc00;">
+                          {% if a.report != null %}
+                          {{ a.report }}
+                          {% else %}
+                          N/A
+                          {% endif %}
+                        </td>
+                      {% elif a.status == '3' %}
+                        <td style="text-align:center;background-color:#ff5c33;">
+                          {% if a.report != null %}
+                          {{ a.report }}
+                          {% else %}
+                          N/A
+                          {% endif %}
+                        </td>
+                      {% else %}
+                      <td style="text-align:center;">
+                        {% if a.report != null %}
+                        {{ a.report }}
+                        {% else %}
+                        N/A
+                        {% endif %}</td>
+                      {% endif %}
+                    {% endfor %}
+                    {% for a in x.week_three_report_set.all %}
+                      {% if a.status == '1' %}
+                        <td style="text-align:center;background-color:#87c46c;">
+                          {% if a.report != null %}
+                          {{ a.report }}
+                          {% else %}
+                          N/A
+                          {% endif %}
+                        </td>
+                      {% elif a.status == '2' %}
+                        <td style="text-align:center;background-color:#cccc00;">
+                          {% if a.report != null %}
+                          {{ a.report }}
+                          {% else %}
+                          N/A
+                          {% endif %}
+                        </td>
+                      {% elif a.status == '3' %}
+                        <td style="text-align:center;background-color:#ff5c33;">
+                          {% if a.report != null %}
+                          {{ a.report }}
+                          {% else %}
+                          N/A
+                          {% endif %}
+                        </td>
+                      {% else %}
+                      <td style="text-align:center;">
+                        {% if a.report != null %}
+                        {{ a.report }}
+                        {% else %}
+                        N/A
+                        {% endif %}</td>
+                      {% endif %}
+                    {% endfor %}
+                    {% for a in x.week_four_report_set.all %}
+                      {% if a.status == '1' %}
+                        <td style="text-align:center;background-color:#87c46c;">
+                          {% if a.report != null %}
+                          {{ a.report }}
+                          {% else %}
+                          N/A
+                          {% endif %}
+                        </td>
+                      {% elif a.status == '2' %}
+                        <td style="text-align:center;background-color:#cccc00;">
+                          {% if a.report != null %}
+                          {{ a.report }}
+                          {% else %}
+                          N/A
+                          {% endif %}
+                        </td>
+                      {% elif a.status == '3' %}
+                        <td style="text-align:center;background-color:#ff5c33;">
+                          {% if a.report != null %}
+                          {{ a.report }}
+                          {% else %}
+                          N/A
+                          {% endif %}
+                        </td>
+                      {% else %}
+                      <td style="text-align:center;">
+                        {% if a.report != null %}
+                        {{ a.report }}
+                        {% else %}
+                        N/A
+                        {% endif %}</td>
+                      {% endif %}
+                    {% endfor %}
+                    {% for a in x.week_five_report_set.all %}
+                      {% if a.status == '1' %}
+                        <td style="text-align:center;background-color:#87c46c;">
+                          {% if a.report != null %}
+                          {{ a.report }}
+                          {% else %}
+                          N/A
+                          {% endif %}
+                        </td>
+                      {% elif a.status == '2' %}
+                        <td style="text-align:center;background-color:#cccc00;">
+                          {% if a.report != null %}
+                          {{ a.report }}
+                          {% else %}
+                          N/A
+                          {% endif %}
+                        </td>
+                      {% elif a.status == '3' %}
+                        <td style="text-align:center;background-color:#ff5c33;">
+                          {% if a.report != null %}
+                          {{ a.report }}
+                          {% else %}
+                          N/A
+                          {% endif %}
+                        </td>
+                      {% else %}
+                      <td style="text-align:center;">
+                        {% if a.report != null %}
+                        {{ a.report }}
+                        {% else %}
+                        N/A
+                        {% endif %}</td>
+                      {% endif %}
+                    {% endfor %}
+                    <td style="text-align:center;">{% if  x.cumulative_progress == null %}N/A{% else %}{{ x.cumulative_progress }}{% endif %}</td>
+                    <td style="text-align:center;">{% if  x.cumulative_utilisation == null %}N/A{% else %}{{ x.cumulative_utilisation }}{% endif %}</td>
+                    {% if x.remarks %}
+                      <td class='no-print' style="text-align: center;">{{ x.remarks }}</td>
+                    {% else %}
+                      <td style="text-align: center;" class='no-print'>No Remarks</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+            {% comment %} <button class="btn button1" type="submit"><i class="fa fa-send-o"></i>Submit</button> {% endcomment %}
+          </form>
+          </div>
+          </div>
+          <button onclick="printPage()" class='butn'><i class="fa fa-print"></i> Print</button>
+          <button class='butn'><i class="fa-solid fa-filter"></i> Filter</button>
+    </div>
+    {% else %}
+    <center><h2 style='font-family:"Calibri", sans-serif;margin-left:20px;'><u>Weekly Reports</u></h2></center>
+    <img src="{% static 'images\main-logo.png' %}" style='float:right;margin-right: 10px;width:10%'>
+    {% endif %}
+    <div id="successPopup" class="popup2">
+      <img src="{% static 'images\tick.png' %}">
+      <h2>Thank You!</h2>
+      <p style='font-size:20px'>Thanks!!!! Your Budget Request has been successfully submitted.</P>
+      <button type='button' onclick='submitForm()'>Ok</button>
+    </div>   
+  </div>
+  <table id="customers" class="printable">
+      <thead>
+          <tr>
+              <th style="width: 1%;font-size:12px">Sl. No.</th>
+              <th style="width: 10%;">Activities</th>
+              <th style="width: 4%;">No. of Unit</th>
+              <th style="width: 5%;">Approved Budget</th>
+              <th style="width: 10%;">Week 1 Progress</th>
+              <th style="width: 10%;">Week 2 Progress</th>
+              <th style="width: 10%;">Week 3 Progress</th>
+              <th style="width: 10%;">Week 4 Progress</th>
+              <th style="width: 10%;">Week 5 Progress</th>
+              <th style="width: 10%;">Cumulative Progress</th>
+              <th style="width: 10%;">Cumulative Utilisation</th>
+              <th class='no-print'>Remarks if any</th>
+              {% if user == 1 %}
+              <th style="width: 3%;" class='no-print'>Edit</th>
+              {% endif %}
+          </tr>
+      </thead>
+      <tbody>
+          {% for x in Plans %}
+          <tr>
+              <td style="text-align:center;">{{ forloop.counter }}</td>
+              <td style="text-align:center;">{{ x.activity_id.activity_name }}</td>
+              <td style="text-align:center;">{% if  x.unit == null %}N/A{% else %}{{ x.unit }}{% endif %}</td>
+              <td style="text-align:center;">{% if  x.approved_budget == null %}N/A{% else %}{{ x.approved_budget }}{% endif %}</td>
+              {% for a in x.week_one_report_set.all %}
+                {% if a.status == '1' %}
+                  <td style="text-align:center;background-color:#87c46c;">
+                    {% if a.report != null %}
+                    {{ a.report }}
+                    {% else %}
+                    N/A
+                    {% endif %}
+                  </td>
+                {% elif a.status == '2' %}
+                  <td style="text-align:center;background-color:#cccc00;">
+                    {% if a.report != null %}
+                    {{ a.report }}
+                    {% else %}
+                    N/A
+                    {% endif %}
+                  </td>
+                {% elif a.status == '3' %}
+                  <td style="text-align:center;background-color:#ff5c33;">
+                    {% if a.report != null %}
+                    {{ a.report }}
+                    {% else %}
+                    N/A
+                    {% endif %}
+                  </td>
+                {% else %}
+                <td style="text-align:center;">
+                  {% if a.report != null %}
+                  {{ a.report }}
+                  {% else %}
+                  N/A
+                  {% endif %}</td>
+                {% endif %}
+              {% endfor %}
+              {% for a in x.week_two_report_set.all %}
+                {% if a.status == '1' %}
+                  <td style="text-align:center;background-color:#87c46c;">
+                    {% if a.report != null %}
+                    {{ a.report }}
+                    {% else %}
+                    N/A
+                    {% endif %}
+                  </td>
+                {% elif a.status == '2' %}
+                  <td style="text-align:center;background-color:#cccc00;">
+                    {% if a.report != null %}
+                    {{ a.report }}
+                    {% else %}
+                    N/A
+                    {% endif %}
+                  </td>
+                {% elif a.status == '3' %}
+                  <td style="text-align:center;background-color:#ff5c33;">
+                    {% if a.report != null %}
+                    {{ a.report }}
+                    {% else %}
+                    N/A
+                    {% endif %}
+                  </td>
+                {% else %}
+                <td style="text-align:center;">
+                  {% if a.report != null %}
+                  {{ a.report }}
+                  {% else %}
+                  N/A
+                  {% endif %}</td>
+                {% endif %}
+              {% endfor %}
+              {% for a in x.week_three_report_set.all %}
+                {% if a.status == '1' %}
+                  <td style="text-align:center;background-color:#87c46c;">
+                    {% if a.report != null %}
+                    {{ a.report }}
+                    {% else %}
+                    N/A
+                    {% endif %}
+                  </td>
+                {% elif a.status == '2' %}
+                  <td style="text-align:center;background-color:#cccc00;">
+                    {% if a.report != null %}
+                    {{ a.report }}
+                    {% else %}
+                    N/A
+                    {% endif %}
+                  </td>
+                {% elif a.status == '3' %}
+                  <td style="text-align:center;background-color:#ff5c33;">
+                    {% if a.report != null %}
+                    {{ a.report }}
+                    {% else %}
+                    N/A
+                    {% endif %}
+                  </td>
+                {% else %}
+                <td style="text-align:center;">
+                  {% if a.report != null %}
+                  {{ a.report }}
+                  {% else %}
+                  N/A
+                  {% endif %}</td>
+                {% endif %}
+              {% endfor %}
+              {% for a in x.week_four_report_set.all %}
+                {% if a.status == '1' %}
+                  <td style="text-align:center;background-color:#87c46c;">
+                    {% if a.report != null %}
+                    {{ a.report }}
+                    {% else %}
+                    N/A
+                    {% endif %}
+                  </td>
+                {% elif a.status == '2' %}
+                  <td style="text-align:center;background-color:#cccc00;">
+                    {% if a.report != null %}
+                    {{ a.report }}
+                    {% else %}
+                    N/A
+                    {% endif %}
+                  </td>
+                {% elif a.status == '3' %}
+                  <td style="text-align:center;background-color:#ff5c33;">
+                    {% if a.report != null %}
+                    {{ a.report }}
+                    {% else %}
+                    N/A
+                    {% endif %}
+                  </td>
+                {% else %}
+                <td style="text-align:center;">
+                  {% if a.report != null %}
+                  {{ a.report }}
+                  {% else %}
+                  N/A
+                  {% endif %}</td>
+                {% endif %}
+              {% endfor %}
+              {% for a in x.week_five_report_set.all %}
+                {% if a.status == '1' %}
+                  <td style="text-align:center;background-color:#87c46c;">
+                    {% if a.report != null %}
+                    {{ a.report }}
+                    {% else %}
+                    N/A
+                    {% endif %}
+                  </td>
+                {% elif a.status == '2' %}
+                  <td style="text-align:center;background-color:#cccc00;">
+                    {% if a.report != null %}
+                    {{ a.report }}
+                    {% else %}
+                    N/A
+                    {% endif %}
+                  </td>
+                {% elif a.status == '3' %}
+                  <td style="text-align:center;background-color:#ff5c33;">
+                    {% if a.report != null %}
+                    {{ a.report }}
+                    {% else %}
+                    N/A
+                    {% endif %}
+                  </td>
+                {% else %}
+                <td style="text-align:center;">
+                  {% if a.report != null %}
+                  {{ a.report }}
+                  {% else %}
+                  N/A
+                  {% endif %}</td>
+                {% endif %}
+              {% endfor %}
+              <td style="text-align:center;">{% if  x.cumulative_progress == null %}N/A{% else %}{{ x.cumulative_progress }}{% endif %}</td>
+              <td style="text-align:center;">{% if  x.cumulative_utilisation == null %}N/A{% else %}{{ x.cumulative_utilisation }}{% endif %}</td>
+              {% if x.remarks %}
+                <td class='no-print' style="text-align: center;">{{ x.remarks }}</td>
+              {% else %}
+                <td style="text-align: center;" class='no-print'>No Remarks</td>
+              {% endif %}
+              {% if user == 1 %}
+              <td onclick="window.location='{% url 'myAPP:update-weekly-report' x.id %}';" style="cursor: pointer;text-align: center;" class="no-print"><label style="color: red;cursor: pointer;" >&#9998;Edit</label></td>
+              {% endif %}
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
 </div>
-<table id="customers" class="printable">
-    <thead>
-        <tr>
-            <th style="width: 1%;font-size:12px">Sl. No.</th>
-            <th style="width: 16%;text-align:center;font-size:15px">Activities</th>
-            <th style="width: 5%;text-align:center;font-size:15px">No. of Unit</th>
-            <th style="width: 5%;text-align:center;font-size:15px">Approved Budget</th>
-            <th style="width: 8%;text-align:center;font-size:15px">Week 1 Progress</th>
-            <th style="width: 8%;text-align:center;font-size:15px">Week 2 Progress</th>
-            <th style="width: 8%;text-align:center;font-size:15px">Week 3 Progress</th>
-            <th style="width: 8%;text-align:center;font-size:15px">Week 4 Progress</th>
-            <th style="width: 8%;text-align:center;font-size:15px">Week 5 Progress</th>
-            <th style="width: 12%;text-align:center;font-size:15px">Cumulative Progress</th>
-            <th style="width: 12%;text-align:center;font-size:15px">Cumulative Utilisation</th>
-            <th style="text-align: center;font-size:15px" class='no-print'>Remarks if any</th>
-            {% if user == 1 %}
-            <th style="font-size:15px;width: 5%;" class='no-print'>Edit</th>
-            {% endif %}
-        </tr>
-    </thead>
-    <tbody>
-        {% for x in Plans %}
-        <tr>
-            <td style="text-align:center;">{{ forloop.counter }}</td>
-            <td style="text-align:center;">{{ x.activity_id.activity_name }}</td>
-            <td style="text-align:center;">{% if  x.unit == null %}N/A{% else %}{{ x.unit }}{% endif %}</td>
-            <td style="text-align:center;">{% if  x.approved_budget == null %}N/A{% else %}{{ x.approved_budget }}{% endif %}</td>
-            {% for a in x.week_one_report_set.all %}
-              {% if a.status == '1' %}
-                <td style="text-align:center;background-color:#87c46c;">
-                  {% if a.report != null %}
-                  {{ a.report }}
-                  {% else %}
-                  N/A
-                  {% endif %}
-                </td>
-              {% elif a.status == '2' %}
-                <td style="text-align:center;background-color:#cccc00;">
-                  {% if a.report != null %}
-                  {{ a.report }}
-                  {% else %}
-                  N/A
-                  {% endif %}
-                </td>
-              {% elif a.status == '3' %}
-                <td style="text-align:center;background-color:#ff5c33;">
-                  {% if a.report != null %}
-                  {{ a.report }}
-                  {% else %}
-                  N/A
-                  {% endif %}
-                </td>
-              {% else %}
-              <td style="text-align:center;">
-                {% if a.report != null %}
-                {{ a.report }}
-                {% else %}
-                N/A
-                {% endif %}</td>
-              {% endif %}
-            {% endfor %}
-            {% for a in x.week_two_report_set.all %}
-              {% if a.status == '1' %}
-                <td style="text-align:center;background-color:#87c46c;">
-                  {% if a.report != null %}
-                  {{ a.report }}
-                  {% else %}
-                  N/A
-                  {% endif %}
-                </td>
-              {% elif a.status == '2' %}
-                <td style="text-align:center;background-color:#cccc00;">
-                  {% if a.report != null %}
-                  {{ a.report }}
-                  {% else %}
-                  N/A
-                  {% endif %}
-                </td>
-              {% elif a.status == '3' %}
-                <td style="text-align:center;background-color:#ff5c33;">
-                  {% if a.report != null %}
-                  {{ a.report }}
-                  {% else %}
-                  N/A
-                  {% endif %}
-                </td>
-              {% else %}
-              <td style="text-align:center;">
-                {% if a.report != null %}
-                {{ a.report }}
-                {% else %}
-                N/A
-                {% endif %}</td>
-              {% endif %}
-            {% endfor %}
-            {% for a in x.week_three_report_set.all %}
-              {% if a.status == '1' %}
-                <td style="text-align:center;background-color:#87c46c;">
-                  {% if a.report != null %}
-                  {{ a.report }}
-                  {% else %}
-                  N/A
-                  {% endif %}
-                </td>
-              {% elif a.status == '2' %}
-                <td style="text-align:center;background-color:#cccc00;">
-                  {% if a.report != null %}
-                  {{ a.report }}
-                  {% else %}
-                  N/A
-                  {% endif %}
-                </td>
-              {% elif a.status == '3' %}
-                <td style="text-align:center;background-color:#ff5c33;">
-                  {% if a.report != null %}
-                  {{ a.report }}
-                  {% else %}
-                  N/A
-                  {% endif %}
-                </td>
-              {% else %}
-              <td style="text-align:center;">
-                {% if a.report != null %}
-                {{ a.report }}
-                {% else %}
-                N/A
-                {% endif %}</td>
-              {% endif %}
-            {% endfor %}
-            {% for a in x.week_four_report_set.all %}
-              {% if a.status == '1' %}
-                <td style="text-align:center;background-color:#87c46c;">
-                  {% if a.report != null %}
-                  {{ a.report }}
-                  {% else %}
-                  N/A
-                  {% endif %}
-                </td>
-              {% elif a.status == '2' %}
-                <td style="text-align:center;background-color:#cccc00;">
-                  {% if a.report != null %}
-                  {{ a.report }}
-                  {% else %}
-                  N/A
-                  {% endif %}
-                </td>
-              {% elif a.status == '3' %}
-                <td style="text-align:center;background-color:#ff5c33;">
-                  {% if a.report != null %}
-                  {{ a.report }}
-                  {% else %}
-                  N/A
-                  {% endif %}
-                </td>
-              {% else %}
-              <td style="text-align:center;">
-                {% if a.report != null %}
-                {{ a.report }}
-                {% else %}
-                N/A
-                {% endif %}</td>
-              {% endif %}
-            {% endfor %}
-            {% for a in x.week_five_report_set.all %}
-              {% if a.status == '1' %}
-                <td style="text-align:center;background-color:#87c46c;">
-                  {% if a.report != null %}
-                  {{ a.report }}
-                  {% else %}
-                  N/A
-                  {% endif %}
-                </td>
-              {% elif a.status == '2' %}
-                <td style="text-align:center;background-color:#cccc00;">
-                  {% if a.report != null %}
-                  {{ a.report }}
-                  {% else %}
-                  N/A
-                  {% endif %}
-                </td>
-              {% elif a.status == '3' %}
-                <td style="text-align:center;background-color:#ff5c33;">
-                  {% if a.report != null %}
-                  {{ a.report }}
-                  {% else %}
-                  N/A
-                  {% endif %}
-                </td>
-              {% else %}
-              <td style="text-align:center;">
-                {% if a.report != null %}
-                {{ a.report }}
-                {% else %}
-                N/A
-                {% endif %}</td>
-              {% endif %}
-            {% endfor %}
-            <td style="text-align:center;">{% if  x.cumulative_progress == null %}N/A{% else %}{{ x.cumulative_progress }}{% endif %}</td>
-            <td style="text-align:center;">{% if  x.cumulative_utilisation == null %}N/A{% else %}{{ x.cumulative_utilisation }}{% endif %}</td>
-            {% if x.remarks %}
-              <td class='no-print' style="text-align: center;">{{ x.remarks }}</td>
-            {% else %}
-              <td style="text-align: center;" class='no-print'>No Remarks</td>
-            {% endif %}
-            {% if user == 1 %}
-            <td onclick="window.location='{% url 'myAPP:update-weekly-report' x.id %}';" style="cursor: pointer;text-align: center;" class="no-print"><label style="color: red;cursor: pointer;" >&#9998;Edit</label></td>
-            {% endif %}
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-</body>
+<script>
+  const form = document.getElementById('myForm');
+
+  form.addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent the form from submitting
+    
+    // Display the confirmation dialog
+    if (confirm('Do you really want to submit?')) {
+      // If the user confirms, submit the form
+      setTimeout(function() {
+        form.submit();
+      }, 5000);
+      // Display the success popup
+      closePopup();
+      showSuccessPopup();
+    }
+  });
+
+  function showSuccessPopup() {
+    var successPopup = document.getElementById("successPopup");
+    successPopup.style.display = "block";
+
+    setTimeout(function() {
+      successPopup.style.display = "none";
+    }, 5000);
+  }
+
+  function closeSuccessPopup() {
+    document.getElementById("successPopup").style.display = "none";
+  }
+
+  function submitForm() {
+    document.getElementById("myForm").submit();
+  }
+
+  var selectAllCheckbox = document.getElementById("select-all-checkbox");
+  selectAllCheckbox.addEventListener("click", selectAllCheckboxClicked);
+
+  // Function to handle the "Select All" checkbox
+  function selectAllCheckboxClicked() {
+    var checkboxes = document.querySelectorAll("input[type='checkbox']:not(#select-all-checkbox)");
+
+    for (var i = 0; i < checkboxes.length; i++) {
+      checkboxes[i].checked = selectAllCheckbox.checked;
+    }
+  }
+
+
+  function openPopup() {
+    document.getElementById("popup").style.display = "block";
+  }
+  
+  function closePopup() {
+    document.getElementById("popup").style.display = "none";
+  }
+  function printPage() {
+    removeElements(); // Call the function to remove elements before printing
+    window.print(); // Invoke the browser's print functionality
+  }
+  function removeElements() {
+    var elements = document.getElementsByClassName('no-print');
+    while (elements.length > 0) {
+        elements[0].parentNode.removeChild(elements[0]);
+    }
+  }
+</script>
 {% endblock %}

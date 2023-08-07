@@ -1,0 +1,84 @@
+{% extends "sidenav/sidenav_ceo.html" %}
+{% load static %}
+{% block title %} Case Studies {% endblock %}
+{% block content %}
+<style>
+    .popup {
+        display: none;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 90vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+      
+      .popup-content {
+        background-color: #fefefe;
+        margin: 20% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 60%;
+      }
+      
+      .close {
+        color: #aaa;
+        float: right;
+        margin-top: -20px;
+        font-size: 28px;
+        font-weight: bold;
+      }
+      
+      .close:hover,
+      .close:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+      }
+</style>
+<div>
+  <div class="card">
+    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <a>{{ project.project_name }}</a>
+                        </li>
+                        <a onclick="openPopup()" style='cursor: pointer;' class="btn btn-dark btn-block btn-sm m-1">&#10010;Add Case Studies</a>
+    </ul>
+  </div>
+  <div id="popup" class="popup">
+    <div class="popup-content">
+      <span class="close" onclick="closePopup()">&times;</span>
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-dark btn-block btn-sm m-1"><i class="fa fa-upload"></i>Upload</button>
+      </form>
+    </div>
+  </div>
+</div>
+<div>
+  <div class="row">
+    {% for case_study in case_studies %}
+    <div class="col-md-4">
+        <div class="card my-10">
+            <br><a href="{% url 'myAPP:download_document' case_study.id %}">Download</a>     
+        </div>
+        {% comment %} <a href="{% url 'myAPP:photo' photo.id %}" class="btn btn-outline-dark btn-sm m-1" style="width:97%;"><i class="fa fa-eye"></i>View</a> {% endcomment %}
+    </div>
+    {% empty %}
+    <h4>No Case Studies .....</h4>
+    {% endfor %}
+  </div>
+</div>
+<script>
+    function openPopup() {
+        document.getElementById("popup").style.display = "block";
+      }
+      
+      function closePopup() {
+        document.getElementById("popup").style.display = "none";
+      }
+</script>
+{% endblock %}

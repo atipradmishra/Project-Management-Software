@@ -1,0 +1,99 @@
+{% extends 'sidenav\sidenav_ceo.html' %}
+{% load static %}
+{% block title %} Add Event Plan {% endblock %}
+{% block content %}
+<style>
+  input[type=text], select , date{
+    width: 70%;
+    padding: 12px 20px;
+    margin: 10px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: #e7e6e6;
+  }
+  label {
+    color: #2706ca;
+    font-weight: bold;
+    {% comment %} padding: 5px 12px 12px 0; {% endcomment %}
+    display: inline-block;
+    float: left;
+    width: 25%;
+    margin-top: 10px
+  }
+  
+  input[type=submit] {
+    width: 15%;
+    background-color: #003366;
+    color: white;
+    padding: 14px 20px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 20px;
+  }
+  
+  input[type=submit]:hover {
+    background-color: #45a049;
+  }
+</style>
+<div style='margin:30px;'>
+  <h2 style='color:#003366;margin-bottom:30px;'>Add/Edit Event</h2>
+    <form  method="POST">
+      {% csrf_token %}
+      <label>Event Name : </label>
+      {{data.event_name}}<br>
+
+      <label >Venue : </label>
+      {{data.venue}}<br>
+    
+      <label >No of Participants : </label>
+      {{data.no_of_participants}}<br>
+
+      <label>Main Objective : </label>
+      {{data.main_objective}}<br>
+
+      <label>Key Event : </label>
+      {{data.key_event}}<br>
+
+      <label>Total Budget : </label>
+      {{data.total_budget}}<br>
+
+      <label>Point Person : </label>
+      {{data.point_person}}<br>
+
+      <label>Support Persons : </label>
+      {{data.support_persons}}<br>
+
+      <label>Any Important Point : </label>
+      {{data.any_imp_point}}<br><br>
+    
+      <spam style='margin-left:25%;margin-right:1%;color: #2706ca;font-weight: bold;'>Start Date : </spam>
+      {{data.start_date}}
+      <spam style='color: #2706ca;font-weight: bold;margin-left:10%;margin-right:1%;'>End Date : </spam>{{ data.end_date }}<br><br>
+      <input type="submit" value="Save">
+    </form>
+</div>
+  <script>
+    function capitalizeText(inputId) {
+      var input = document.getElementById(inputId);
+      var inputValue = input.value;
+      var capitalizedText = "";
+      var capitalizeNext = true;
+
+      for (var i = 0; i < inputValue.length; i++) {
+        var currentChar = inputValue.charAt(i);
+        
+        if (capitalizeNext && currentChar.match(/[a-z]/i)) {
+          capitalizedText += currentChar.toUpperCase();
+          capitalizeNext = false;
+        } else {
+          capitalizedText += currentChar;
+        }
+      }
+      input.value = capitalizedText;
+    }
+  </script> 
+{% endblock  %}

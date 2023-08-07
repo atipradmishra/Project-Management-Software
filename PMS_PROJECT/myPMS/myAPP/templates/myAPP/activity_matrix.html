@@ -1,0 +1,672 @@
+{% extends 'myAPP/user_nav.html' %}
+{% load static %}
+{% load post_tags %}
+{% load humanize %}
+{% block title %} Activities Matrix {% endblock %}
+{% block content %}
+<style>
+  @media print {
+    .no-print {
+        display: none;
+    }
+    body {
+      background-color: transparent;
+    }
+  }
+  .hidden {
+      display: none
+  }
+  
+  @media print {
+    .button {
+        display: none; 
+    }
+  }
+
+  #customers {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    width: 99%;
+    margin: 0 auto;
+    background-color: #fff;
+  }
+
+  #customers thead tr:first-child th:first-child {
+    border-top-left-radius: 10px;
+  }
+
+  #customers thead tr:first-child th:last-child {
+    border-top-right-radius: 10px;
+  }
+
+  #customers td, #customers th {
+    border: 1px solid #ddd;
+    padding-left: 2px;
+    padding-right: 2px;
+    font-size: 15px;
+  }
+  #customers td{
+    color:#003366;
+  }
+
+  #customers tr:nth-child(even){background-color: #f2f2f2;}
+
+  #customers tr:hover {background-color: #ddd;}
+
+  #customers th {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: #f4b083;
+    color: black;
+    text-align: center;
+  }
+  .list-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .list-container ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: disc;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 18px;
+  }
+
+  .list-container ul li {
+    margin-bottom: 5px;
+  }
+  @media print {
+    .header {
+        display: none;
+    }
+  }
+  .popup {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  .popup::-webkit-scrollbar {
+    display: none;  
+  }
+  .popup::-webkit-scrollbar-thumb {
+    display: none;
+  }
+  .popup::-webkit-scrollbar-track {
+    display:none;
+  }
+  
+  .popup-content {
+    background-color: #fefefe;
+    margin: 7% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 95%;
+  }
+  
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .btn {
+    background-color: #4CAF50; /* Green */
+    border-radius: 10px;
+    color: white;
+    padding: 8px 30px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-top: 5px;
+    margin-left: 1120px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+  }
+  .button1 {
+    background-color: white;
+    color: black; 
+    border: 2px solid #4CAF50;
+  }
+  
+  .button1:hover {
+    background-color: #4CAF50;
+    color: white;
+  }
+  .popup2{
+    width: 400px;
+    background: #fff;
+    border-radius: 6px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%) scale(0.80);
+    text-align: center;
+    color: #333;
+    padding: 0 30px 30px;
+    display: none;
+    transition: transform 0.4s, top 0.4s; 
+    box-shadow: 0 20px 30px rgba(1,1,1,1);
+  }
+  .popup2 img{
+    width: 100px;
+    margin-top: -50px;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+  .popup2 h2{
+    font-size: 40px;
+    font-weight: 500;
+    margin: 30px 0 l0px;
+  }
+  .popup2 button{
+    width: 100%;
+    margin-top: 50px;
+    padding: 10px 0;
+    background: #6fd649;
+    color: #fff;
+    border: 0;
+    outline: none;
+    font-size: 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
+  }
+  .butn {
+    border-radius: 8px;
+    color: white;
+    padding: 10px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 15px;
+    margin-right:10px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    background-color: white; 
+    color: #003366; 
+    border: 2px solid #003366;
+  }
+  .butn:hover {
+    background-color: #003366;
+    color: white;
+  }
+  @media print {
+    .helpers {
+        display: none; /* Hide elements with the "no-print" class */
+    }
+  }
+  #views {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    width: 100%;
+    margin: 0 auto;
+    background-color: #fff;
+    }
+  
+    #views td, #views th {
+      border: 1px solid #ddd;
+      padding-left: 2px;
+      padding-right: 2px;
+      font-size: 15px;
+      text-align: left;
+    }
+  
+    #views tr:nth-child(even){background-color: #f2f2f2;}
+  
+    #views tr:hover {background-color: #ddd;}
+  
+    #views th {
+      padding-top: 5px;
+      padding-bottom: 5px;
+      background-color: #f4b083;
+      color: black;
+      text-align: center;
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<div>
+  <h2 style='font-family:"Calibri", sans-serif;margin-left:20px;margin-top:30px'>Activities Matrix ({{project.start_date|date:"F Y"}} to {{project.end_date|date:"F Y"}})</h2>
+  <div class="helpers" style='margin-left:20px;margin-top:10px'>
+      <img src="{% static 'images\main-logo.png' %}" style='float:right;margin-right: 10px;width:10%'></img>
+        {% if user == 1 %}
+          <button onclick="openPopup2()" class='butn'><i class="fa fa-eye"></i> View</button>
+          <div id="popup2" class="popup">
+          <div class="popup-content">
+            <span class="close" onclick="closePopup2()">&times;</span>
+            <center><h2 style='font-family:"Calibri", sans-serif;'>{{ project.project_name }}</h1>
+            <h2 style='font-family:"Calibri", sans-serif;'><u>Detail Implementation Plan - DIP</u></h1></center>
+            <form method="POST" id="myForm">
+            {% csrf_token %}
+            <table id="views">
+              <thead>
+                <tr>
+                  <th style="width: 1%;font-size: 12px;">Sl. No.</th>
+                  <th style="text-align: center;width: 15%;">Activities</th>
+                  <th style="text-align: center;width: 8%;">Target</th>
+                  <th style="text-align: center;width: 8%;">Location</th>
+                  <th style="max-width: 5px;">Jan</th>
+                  <th style="max-width: 5px;">Feb</th>
+                  <th style="max-width: 5px;">Mar</th>
+                  <th style="max-width: 5px;">April</th>
+                  <th style="max-width: 5px;">May</th>
+                  <th style="max-width: 5px;">Jun</th>
+                  <th style="max-width: 5px;">Jul</th>
+                  <th style="max-width: 5px;">Aug</th>
+                  <th style="max-width: 5px;">Sep</th>
+                  <th style="max-width: 5px;">Oct</th>
+                  <th style="max-width: 5px;">Nov</th>
+                  <th style="max-width: 5px;">Dec</th>
+                  <th style="text-align:center;width: 20px;">Submit<input type="checkbox" id="select-all-checkbox"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for a in component %}
+                 <tr>
+                   {% ifchanged %}
+                   <td colspan="17" style="color: blue; font-weight: bold;">{{a.component}}</td>
+                   {% endifchanged %}
+                 </tr>
+                 {% for x in a.dip_activities_set.all %}
+                 <tr>
+                       <td>{{ forloop.counter }}</td>
+                       <td>{{ x.activity_name }}</td>
+                       <td>{{ x.target_participants }}</td>
+                       {% if x.activity_location_set.all %}
+                       <ul>
+                         <td>
+                         {% for b in x.activity_location_set.all %}
+                         <li>{{b.location_name}} - {{ b.count }}</li>
+                         {% endfor %}
+                         </td>
+                       </ul>
+                       {% else %}
+                       <td>No Data</td>
+                       {% endif %}
+                       {% if x.activity_timeframe_set.all %}
+                         {% for c in x.activity_timeframe_set.all %}
+                           {% if c.m1 == 0 %}
+                           <td style='background-color:#ffffff'></td>
+                           {% else %}
+                           <td style='background-color:#548dd4'></td>
+                           {% endif %}
+                         {% endfor %}
+                         {% for c in x.activity_timeframe_set.all %}
+                           {% if c.m2 == 0 %}
+                             <td style='background-color:#ffffff'></td>
+                           {% else %}
+                             <td style='background-color:#548dd4'></td>
+                           {% endif %}
+                         {% endfor %}
+                         {% for c in x.activity_timeframe_set.all %}
+                           {% if c.m3 == 0 %}
+                             <td style='background-color:#ffffff'></td>
+                           {% else %}
+                             <td style='background-color:#548dd4'></td>
+                           {% endif %}
+                         {% endfor %}
+                         {% for c in x.activity_timeframe_set.all %}
+                         {% if c.m4 == 0 %}
+                           <td style='background-color:#ffffff'></td>
+                         {% else %}
+                           <td style='background-color:#548dd4'></td>
+                         {% endif %}
+                         {% endfor %}
+                         {% for c in x.activity_timeframe_set.all %}
+                         {% if c.m5 == 0 %}
+                           <td style='background-color:#ffffff'></td>
+                         {% else %}
+                           <td style='background-color:#548dd4'></td>
+                         {% endif %}
+                         {% endfor %}
+                         {% for c in x.activity_timeframe_set.all %}
+                           {% if c.m6 == 0 %}
+                             <td style='background-color:#ffffff'></td>
+                           {% else %}
+                             <td style='background-color:#548dd4'></td>
+                           {% endif %}
+                         {% endfor %}
+                         {% for c in x.activity_timeframe_set.all %}
+                             {% if c.m7 == 0 %}
+                               <td style='background-color:#ffffff'></td>
+                             {% else %}
+                               <td style='background-color:#548dd4'></td>
+                             {% endif %}
+                         {% endfor %}
+                               {% for c in x.activity_timeframe_set.all %}
+                               {% if c.m8 == 0 %}
+                                 <td style='background-color:#ffffff'></td>
+                               {% else %}
+                                 <td style='background-color:#548dd4'></td>
+                               {% endif %}
+                             {% endfor %}
+                               {% for c in x.activity_timeframe_set.all %}
+                               {% if c.m9 == 0 %}
+                                 <td style='background-color:#ffffff'></td>
+                               {% else %}
+                                 <td style='background-color:#548dd4'></td>
+                               {% endif %}
+                             {% endfor %}
+                             {% for c in x.activity_timeframe_set.all %}
+                             {% if c.m10 == 0 %}
+                               <td style='background-color:#ffffff'></td>
+                             {% else %}
+                               <td style='background-color:#548dd4'></td>
+                             {% endif %}
+                           {% endfor %}
+                           {% for c in x.activity_timeframe_set.all %}
+                             {% if c.m11 == 0 %}
+                               <td style='background-color:#ffffff'></td>
+                             {% else %}
+                               <td style='background-color:#548dd4'></td>
+                             {% endif %}
+                           {% endfor %}
+                           {% for c in x.activity_timeframe_set.all %}
+                           {% if c.m12 == 0 %}
+                             <td style='background-color:#ffffff'></td>
+                           {% else %}
+                             <td style='background-color:#548dd4'></td>
+                           {% endif %}
+                           {% endfor %}
+                       {% else %}
+                       <td style='background-color:#ffffff'></td>
+                       <td style='background-color:#ffffff'></td>
+                       <td style='background-color:#ffffff'></td>
+                       <td style='background-color:#ffffff'></td>
+                       <td style='background-color:#ffffff'></td>
+                       <td style='background-color:#ffffff'></td>
+                       <td style='background-color:#ffffff'></td>
+                       <td style='background-color:#ffffff'></td>
+                       <td style='background-color:#ffffff'></td>
+                       <td style='background-color:#ffffff'></td>
+                       <td style='background-color:#ffffff'></td>
+                       <td style='background-color:#ffffff'></td>
+                       {% endif %}
+                       {% if x.is_am_submited == 1 %}
+                       <td>Submited</td>
+                       {% else %}
+                       <td style="text-align:center">
+                         <input type="checkbox" name="selected_activities" value="{{ x.id }}">
+                       </td>
+                       {% endif %}
+                   </tr>
+                 {% endfor %}
+                {% endfor %}
+              </tbody>
+            </table>
+            <button class="btn button1" type="submit"><i class="fa fa-send-o"></i>Submit</button>
+            </form>
+          </div>
+          </div>
+          <button onclick="printPage()" class='butn'><i class="fa fa-print"></i> Print</button>
+        {% else %}
+          <button href="{% url 'myAPP:home' project.pk %}" class='butn'>Back</button>
+        {% endif %}
+  </div>
+  <div id="successPopup" class="popup2">
+    <img src="{% static 'images\tick.png' %}">
+    <h2>Thank You!</h2>
+    <p style='font-size:20px'>Thanks!!!! Your Acivity Matrix has been successfully submitted.</P>
+    <button type='button' onclick='submitForm()'>Ok</button>
+  </div>  
+  <table id="customers">
+    <thead>
+      <tr>
+        <th style="width: 1%;font-size: 12px;">Sl. No.</th>
+        <th style="text-align: center;width: 15%;">Activities</th>
+        <th style="text-align: center;width: 8%;">Target</th>
+        <th style="text-align: center;width: 8%;">Location</th>
+        <th style="text-align: center;width: 4%;padding-left:0px;padding-right:0px;" class="no-print">Time Frame</th>
+        {% for next_month in next_months %}
+        <th style="width: 5%;text-align: center;">{{ next_month|date:"M" }}</th>
+        {% endfor %}
+        <th style="text-align: center;width:4%" class="no-print">Remarks if any</th>
+      </tr>
+    </thead>
+    <tbody>
+     {% for a in component %}
+      <tr>
+        {% ifchanged %}
+        <td colspan="18" style="color: blue; font-weight: bold; padding-top: 8px;padding-bottom: 8px;">{{a.component}}</td>
+        {% endifchanged %}
+      </tr>
+      {% for x in a.dip_activities_set.all %}
+      <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ x.activity_name }}</td>
+            <td>{{ x.target_participants }}</td>
+            {% if x.activity_location_set.all %}
+              <td onclick="window.location='{% url 'myAPP:update-location' x.id %}';">
+                <div class="list-container">
+                  <ul>
+                  {% for b in x.activity_location_set.all %}
+                  <li>{{b.location_name}}-{{ b.count }}</li>
+                  {% endfor %}
+                  </ul>
+                </div>
+                <label class="no-print" style="color:red;cursor: pointer;">&#9998;Edit</label>
+              </td>
+            {% else %}
+              {% if x.is_am_submited == 1 and x.is_am_approved == 0 %}
+                <td style='text-align:center'>Submited</td>
+              {% elif x.is_am_submited == 1 and x.is_am_approved == 1 %}
+                <td style="color:Green;text-align:center;"><i class="fa-solid fa-check"></i>Approved</td>
+              {% else %}
+                <td onclick="window.location='{% url 'myAPP:add_count' x.id %}';" style="color:red;cursor: pointer;">&#10010;Add</td>
+              {% endif %}
+            {% endif %}
+            {% if x.is_am_submited == 1 and x.is_am_approved == 0 %}
+              <td class="no-print" style='text-align:center' class="no-print">Submited</td>
+            {% elif x.is_am_submited == 1 and x.is_am_approved == 1 %}
+              <td style="color:Green;text-align:center;" class="no-print"><i class="fa-solid fa-check"></i>Approved</td>
+            {% else %}
+              {% if x.activity_timeframe_set.all %}
+              <td style="color:red;cursor: pointer;text-align: center;" onclick="window.location='{% url 'myAPP:update-timeframe' x.id %}';" class="no-print">&#9998;Edit</td>
+              {% else %}
+              <td style="color:red;cursor: pointer;text-align: center;" onclick="window.location='{% url 'myAPP:timeframe' x.id %}';" class="no-print">&#10010;Add</td>
+              {% endif %}
+            {% endif %}
+            {% if x.activity_timeframe_set.all %}
+              {% for c in x.activity_timeframe_set.all %}
+                {% if c.m1 == 0 %}
+                <td style='background-color:#ffffff'></td>
+                {% else %}
+                <td style='background-color:#548dd4'></td>
+                {% endif %}
+              {% endfor %}
+              {% for c in x.activity_timeframe_set.all %}
+                {% if c.m2 == 0 %}
+                  <td style='background-color:#ffffff'></td>
+                {% else %}
+                  <td style='background-color:#548dd4'></td>
+                {% endif %}
+              {% endfor %}
+              {% for c in x.activity_timeframe_set.all %}
+                {% if c.m3 == 0 %}
+                  <td style='background-color:#ffffff'></td>
+                {% else %}
+                  <td style='background-color:#548dd4'></td>
+                {% endif %}
+              {% endfor %}
+              {% for c in x.activity_timeframe_set.all %}
+              {% if c.m4 == 0 %}
+                <td style='background-color:#ffffff'></td>
+              {% else %}
+                <td style='background-color:#548dd4'></td>
+              {% endif %}
+              {% endfor %}
+              {% for c in x.activity_timeframe_set.all %}
+              {% if c.m5 == 0 %}
+                <td style='background-color:#ffffff'></td>
+              {% else %}
+                <td style='background-color:#548dd4'></td>
+              {% endif %}
+              {% endfor %}
+              {% for c in x.activity_timeframe_set.all %}
+                {% if c.m6 == 0 %}
+                  <td style='background-color:#ffffff'></td>
+                {% else %}
+                  <td style='background-color:#548dd4'></td>
+                {% endif %}
+              {% endfor %}
+              {% for c in x.activity_timeframe_set.all %}
+                  {% if c.m7 == 0 %}
+                    <td style='background-color:#ffffff'></td>
+                  {% else %}
+                    <td style='background-color:#548dd4'></td>
+                  {% endif %}
+              {% endfor %}
+                    {% for c in x.activity_timeframe_set.all %}
+                    {% if c.m8 == 0 %}
+                      <td style='background-color:#ffffff'></td>
+                    {% else %}
+                      <td style='background-color:#548dd4'></td>
+                    {% endif %}
+                  {% endfor %}
+                    {% for c in x.activity_timeframe_set.all %}
+                    {% if c.m9 == 0 %}
+                      <td style='background-color:#ffffff'></td>
+                    {% else %}
+                      <td style='background-color:#548dd4'></td>
+                    {% endif %}
+                  {% endfor %}
+                  {% for c in x.activity_timeframe_set.all %}
+                  {% if c.m10 == 0 %}
+                    <td style='background-color:#ffffff'></td>
+                  {% else %}
+                    <td style='background-color:#548dd4'></td>
+                  {% endif %}
+                {% endfor %}
+                {% for c in x.activity_timeframe_set.all %}
+                  {% if c.m11 == 0 %}
+                    <td style='background-color:#ffffff'></td>
+                  {% else %}
+                    <td style='background-color:#548dd4'></td>
+                  {% endif %}
+                {% endfor %}
+                {% for c in x.activity_timeframe_set.all %}
+                {% if c.m12 == 0 %}
+                  <td style='background-color:#ffffff'></td>
+                {% else %}
+                  <td style='background-color:#548dd4'></td>
+                {% endif %}
+                {% endfor %}
+                {% if x.am_remarks %}
+                <td style="text-align: center;"class="no-print">{{ x.am_remarks }}</td>
+                {% else %}
+                <td style="text-align: center;"class="no-print">No Remarks</td>
+                {% endif %}
+            {% else %}
+            <td style='background-color:#ffffff'></td>
+            <td style='background-color:#ffffff'></td>
+            <td style='background-color:#ffffff'></td>
+            <td style='background-color:#ffffff'></td>
+            <td style='background-color:#ffffff'></td>
+            <td style='background-color:#ffffff'></td>
+            <td style='background-color:#ffffff'></td>
+            <td style='background-color:#ffffff'></td>
+            <td style='background-color:#ffffff'></td>
+            <td style='background-color:#ffffff'></td>
+            <td style='background-color:#ffffff'></td>
+            <td style='background-color:#ffffff'></td>
+              {% if x.remarks %}
+                <td class="no-print">{{ x.remarks }}</td>
+              {% else %}
+                <td style="text-align: center;" class="no-print">No Remarks</td>
+              {% endif %}
+            {% endif %}
+        </tr>
+      {% endfor %}
+     {% endfor %}
+    </tbody>
+    
+  </table>
+  <script>
+    const form = document.getElementById('myForm');
+
+    form.addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent the form from submitting
+      
+      // Display the confirmation dialog
+      if (confirm('Do you really want to submit?')) {
+        // If the user confirms, submit the form
+        setTimeout(function() {
+          form.submit();
+        }, 5000);
+        // Display the success popup
+        closePopup2();
+        showSuccessPopup();
+      }
+    });
+
+    function showSuccessPopup() {
+      var successPopup = document.getElementById("successPopup");
+      successPopup.style.display = "block";
+
+      setTimeout(function() {
+        successPopup.style.display = "none";
+      }, 5000);
+    }
+
+    function closeSuccessPopup() {
+      document.getElementById("successPopup").style.display = "none";
+    }
+
+    function submitForm() {
+      document.getElementById("myForm").submit();
+    }
+
+    var selectAllCheckbox = document.getElementById("select-all-checkbox");
+    selectAllCheckbox.addEventListener("click", selectAllCheckboxClicked);
+  
+    // Function to handle the "Select All" checkbox
+    function selectAllCheckboxClicked() {
+      var checkboxes = document.querySelectorAll("input[type='checkbox']:not(#select-all-checkbox)");
+  
+      for (var i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].checked = selectAllCheckbox.checked;
+      }
+    }
+
+    function openPopup2() {
+      document.getElementById("popup2").style.display = "block";
+    }
+    
+    function closePopup2() {
+      document.getElementById("popup2").style.display = "none";
+    }
+    function removeElements() {
+      var elements = document.getElementsByClassName('no-print');
+      while (elements.length > 0) {
+          elements[0].parentNode.removeChild(elements[0]);
+      }
+    }
+
+    function printPage() {
+      removeElements(); // Call the function to remove elements before printing
+      window.print(); // Invoke the browser's print functionality
+    }       
+  </script>
+</div>
+{% endblock %}

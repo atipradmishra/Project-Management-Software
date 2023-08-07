@@ -1,0 +1,179 @@
+{% extends 'sidenav\sidenav_ceo.html' %}
+{% load static %}
+{% block title %} Dashboard {% endblock %}
+{% block content %}
+<style>
+    .content-data::-webkit-scrollbar {
+		width: 9px;  
+	  }
+	  .content-data::-webkit-scrollbar-thumb {
+		background-image: linear-gradient(135deg, #FAB2FF 10%, #1904E5 100%);
+		box-shadow: inset 2px 2px 5px 0 rgba(#fff, 0.5);
+		border-radius: 100px;
+	  }
+</style>
+<h1 class="title">Dashboard</h1>
+<ul class="breadcrumbs">
+    <li><a href="#">Home</a></li>
+    <li class="divider">/</li>
+    <li><a href="#" class="active">Dashboard</a></li>
+</ul>
+<div class="info-data">
+    <div class="card">
+        <div class="head">
+            <div>
+                <h2>1500</h2>
+                <p>Tbd</p>
+            </div>
+            <i class='bx bx-trending-up icon' ></i>
+        </div>
+        <span class="progress" data-value="40%"></span>
+        <span class="label">40%</span>
+    </div>
+    <div class="card">
+        <div class="head">
+            <div>
+                <h2>234</h2>
+                <p>Tbd</p>
+            </div>
+            <i class='bx bx-trending-down icon down' ></i>
+        </div>
+        <span class="progress" data-value="60%"></span>
+        <span class="label">60%</span>
+    </div>
+    <div class="card">
+        <div class="head">
+            <div>
+                <h2>465</h2>
+                <p>Tbd</p>
+            </div>
+            <i class='bx bx-trending-up icon' ></i>
+        </div>
+        <span class="progress" data-value="30%"></span>
+        <span class="label">30%</span>
+    </div>
+    <div class="card">
+        <div class="head">
+            <div>
+                <h2>235</h2>
+                <p>Tbd</p>
+            </div>
+            <i class='bx bx-trending-up icon' ></i>
+        </div>
+        <span class="progress" data-value="30%"></span>
+        <span class="label">80%</span>
+    </div>
+</div>
+<div class="data">
+    <div class="content-data" style='height:50vh;overflow: auto;'>
+        <div class="head">
+            <h3>Notifications</h3>
+            <div class="menu">
+                <i class="fa-solid fa-calendar-days icon"></i>
+                <ul class="menu-link">
+                    <li><a href="#">Edit</a></li>
+                    <li><a href="#">Save</a></li>
+                    <li><a href="#">Remove</a></li>
+                </ul>
+            </div>
+        </div>
+        <div style='margin-top:20px;overflow-y:auto;overflow-x:hidden;'>
+            {% for x in projects %}
+                {% for a in x.dip_details_set.all %}
+                    {% ifchanged  %}
+                        {% for b in a.dip_activities_set.all %}
+                            {% if b.is_dip_submited == 1 and b.is_dip_approved == 0 %}
+                                <p style='color:#3c91e6;margin-bottom:10px;'>D.I.P for {{ x.project_name }} is pending for Approval.</p>
+                            {% endif %}
+                        {% endfor %}
+                    {% endifchanged  %}
+                    {% ifchanged  %}
+                        {% for b in a.dip_activities_set.all %}
+                            {% if b.is_am_submited == 1 and b.is_am_approved == 0 %}
+                                <p style='color:#3c91e6;margin-bottom:10px;'>Activity Matrix for {{ x.project_name }} is pending for Approval.</p>
+                            {% endif %}
+                        {% endfor %}
+                    {% endifchanged  %}
+                    {% for b in a.dip_activities_set.all %}
+                        {% for c in b.month_plan_set.all %}
+                        {% ifchanged  %}
+                            {% if c.is_plan_submited == 1 and c.is_plan_approved == 0 %}
+                                <p style='color:#3c91e6;margin-bottom:10px;'>Monthly plan for {{ x.project_name }} is pending for Approval.</p>
+                            {% endif %}
+                        {% endifchanged  %}
+                        {% ifchanged  %}
+                            {% if c.is_report_submited == 1 and c.is_report_approved == 0 %}
+                                <p style='color:#3c91e6;margin-bottom:10px;'>Monthly Report for {{ x.project_name }} is pending for Approval.</p>
+                            {% endif %}
+                        {% endifchanged  %}
+                        {% endfor %}
+                    {% endfor %}
+                {% endfor %}
+                {% for b in x.event_plan_set.all %}
+                    {% ifchanged  %}
+                        {% if b.is_submited == 1 and b.is_approved == 0 %}
+                            <p style='color:#3c91e6;margin-bottom:10px;'>Event plan for {{ x.project_name }} is pending for Approval.</p>
+                        {% endif %}
+                    {% endifchanged  %}
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+    <div class="content-data">
+        <div class="head">
+            <h3>T.B.D</h3>
+            <div class="menu">
+                <i class='bx bx-dots-horizontal-rounded icon'></i>
+                <ul class="menu-link">
+                    <li><a href="#">Edit</a></li>
+                    <li><a href="#">Save</a></li>
+                    <li><a href="#">Remove</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="chat-box">
+            {% comment %} <p class="day"><span>Today</span></p> {% endcomment %}
+            <div class="msg">
+                {% comment %} <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8cGVvcGxlfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt=""> {% endcomment %}
+                <div class="chat">
+                    {% comment %} <div class="profile">
+                        <span class="username">Alan</span>
+                        <span class="time">18:30</span>
+                    </div>
+                    <p>Hello</p> {% endcomment %}
+                </div>
+            </div>
+            <div class="msg me">
+                {% comment %} <div class="chat">
+                    <div class="profile">
+                        <span class="time">18:30</span>
+                    </div>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eaque voluptatum eos quam dolores eligendi exercitationem animi nobis reprehenderit laborum! Nulla.</p>
+                </div> {% endcomment %}
+            </div>
+            <div class="msg me">
+                {% comment %} <div class="chat">
+                    <div class="profile">
+                        <span class="time">18:30</span>
+                    </div>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam, architecto!</p>
+                </div> {% endcomment %}
+            </div>
+            <div class="msg me">
+                {% comment %} <div class="chat">
+                    <div class="profile">
+                        <span class="time">18:30</span>
+                    </div>
+                    <p>Lorem ipsum, dolor sit amet.</p>
+                </div> {% endcomment %}
+            </div>
+        </div>
+        {% comment %} <form action="#">
+            <div class="form-group">
+                <input type="text" placeholder="Type...">
+                <button type="submit" class="btn-send"><i class='bx bxs-send' ></i></button>
+            </div>
+        </form> {% endcomment %}
+    </div>
+</div>
+{% endblock %}

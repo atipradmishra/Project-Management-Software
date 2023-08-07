@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Activity_location, Activity_timeframe, Dip_Activities, Dip_Indicator, Dip_Process, Dip_expected_out_come, Dip_mov, Monthly_Project_Clearance, Project_Category, Project_DIP,Month_Plan,Dip_details,Event_Plan, Week_five_Report, Week_four_Report, Week_one_Report, Week_three_Report, Week_two_Report, Weekly_Report
+from .models import *
 from django.forms import ModelForm
 
 
@@ -28,12 +28,12 @@ class ProjectForm(forms.ModelForm):
         fields =['project_name','start_date','end_date','assigned_to','donor_name','category_id','budget']
         widgets = {
         'period' : forms.HiddenInput(),
-        'project_name': forms.TextInput(attrs={'class':'form-control','placeholder' :"Project name...."}),
-        'start_date': forms.TextInput(attrs={'type' : 'date'}),
-        'end_date': forms.TextInput(attrs={'type' : 'date'}),
+        'project_name': forms.TextInput(attrs={'placeholder' :"Project name...."}),
+        'start_date': forms.DateInput(attrs={'type' : 'date','style':'color:black'}),
+        'end_date': forms.DateInput(attrs={'type' : 'date','style':'color:black'}),
         'assigned_to' : forms.Select(choices=['test']),
-        'donor_name' : forms.TextInput(attrs={'class':'form-control','placeholder' :"Donor name...."}),
-        'budget' : forms.TextInput(attrs={'class':'form-control'}),
+        'donor_name' : forms.TextInput(attrs={'placeholder' :"Donor name...."}),
+        'budget' : forms.TextInput(attrs={'placeholder' :"Budget...."}),
         }        
 
 class DipComponentForm(ModelForm):
@@ -276,19 +276,19 @@ class WeeklyReportForm(ModelForm):
         model = Weekly_Report
         fields = ['activity_id','unit','approved_budget','cumulative_progress','cumulative_utilisation','remarks'] 
         widgets = {
-        'activity_id': forms.Select(choices=['test'],attrs={'class':'form-control'}),
-        'unit': forms.TextInput(attrs={'id':"input1" ,'onkeyup':"capitalizeText('input1')",'class':'form-control'}),
-        'approved_budget': forms.TextInput(attrs={'id':"input2" ,'onkeyup':"capitalizeText('input2')",'class':'form-control'}),
-        'cumulative_progress': forms.TextInput(attrs={'id':"input7" ,'onkeyup':"capitalizeText('input7')",'class':'form-control'}),
-        'cumulative_utilisation': forms.TextInput(attrs={'id':"input8" ,'onkeyup':"capitalizeText('input8')",'class':'form-control'}),
-        'remarks': forms.TextInput(attrs={'id':"input9" ,'onkeyup':"capitalizeText('input9')",'class':'form-control'}),
+        'activity_id': forms.Select(choices=['test'],attrs={'class':"box"}),
+        'unit': forms.TextInput(attrs={'id':"input1" ,'onkeyup':"capitalizeText('input1')"}),
+        'approved_budget': forms.TextInput(attrs={'id':"input2" ,'onkeyup':"capitalizeText('input2')"}),
+        'cumulative_progress': forms.TextInput(attrs={'id':"input7" ,'onkeyup':"capitalizeText('input7')"}),
+        'cumulative_utilisation': forms.TextInput(attrs={'id':"input8" ,'onkeyup':"capitalizeText('input8')"}),
+        'remarks': forms.TextInput(attrs={'id':"input9" ,'onkeyup':"capitalizeText('input9')"}),
         }
 
 
 class eventForm(ModelForm):
     class Meta:
         model = Event_Plan
-        fields = ['event_name','start_date','end_date','venue','no_of_participants','main_objective','key_event','total_budget','point_person','support_persons','any_imp_point','any_imp_point']
+        fields = ['event_name','start_date','end_date','venue','no_of_participants','main_objective','key_event','total_budget','point_person','support_persons','any_imp_point']
         widgets={
               'event_name': forms.TextInput(attrs={'class':'form-control','id':"input1" ,'onkeyup':"capitalizeText('input1')"}),
               'venue': forms.TextInput(attrs={'class':'form-control','id':"input2" ,'onkeyup':"capitalizeText('input2')"}),
@@ -304,7 +304,7 @@ class eventForm(ModelForm):
         }
 
 class MPCForm(ModelForm):
-    monthly_project_plan = forms.BooleanField(required=False,initial=False,widget=forms.RadioSelect(choices=((True, ''), (False, ''))))
+    monthly_project_plan = forms.BooleanField(required=False,initial=False,widget=forms.RadioSelect(choices=((True, 'Yes'), (False, 'No'))))
     individual_plan_updated = forms.BooleanField(required=False,initial=False,widget=forms.RadioSelect(choices=((True, 'Yes'), (False, 'No'))))
     individual_worksheet_updated = forms.BooleanField(required=False,initial=False,widget=forms.RadioSelect(choices=((True, 'Yes'), (False, 'No'))))
     monthly_progress_report_updated = forms.BooleanField(required=False,initial=False,widget=forms.RadioSelect(choices=((True, 'Yes'), (False, 'No'))))
@@ -318,11 +318,166 @@ class MPCForm(ModelForm):
         fields = ['reporting_month','monthly_project_plan','individual_plan_updated','individual_worksheet_updated','monthly_progress_report_updated','outstation_report','monthly_budget_submited','settlement_completed','project_staff_completed_required_project_compliances','release_Salary_project_staff_recommend','staff_reason']
         widgets={
             'reporting_month': forms.Select(choices=[Monthly_Project_Clearance.MONTH_CHOICES]),
-            'staff_reason': forms.TextInput(attrs={'null':'True','class':'form-control','id':"input2" ,'onkeyup':"capitalizeText('input2')"}),
+            'staff_reason': forms.TextInput(attrs={'class':'form-control','id':"input2" ,'onkeyup':"capitalizeText('input2')"}),
         }
-
 
 class DipActivitiesForm(ModelForm):
         class Meta:
          model = Dip_Activities
          fields = ['activity_name','objectives','coverage','duration','target_participants']
+
+
+class LeaveForm(ModelForm):
+    class Meta:
+        model = Leave_Statement
+        fields = ['total_leaves_allowed','name_of_staff','designation','date_of_joining','remarks']
+        widgets={
+              'total_leaves_allowed': forms.NumberInput(attrs={'class':'form-control','id':"input1" ,'onkeyup':"capitalizeText('input1')"}),
+              'name_of_staff': forms.TextInput(attrs={'class':'form-control','id':"input2" ,'onkeyup':"capitalizeText('input2')"}),
+              'designation': forms.TextInput(attrs={'class':'form-control','id':"input3" ,'onkeyup':"capitalizeText('input3')"}),
+              'date_of_joining': forms.DateInput(attrs={'type' :"date"}),
+              'remarks': forms.TextInput(attrs={'class':'form-control','id':"input5" ,'onkeyup':"capitalizeText('input5')"}),
+        }
+
+class MonthlyLeaveForm(ModelForm):
+    class Meta:
+        model = Leave_Statement
+        fields = ['m1_leave','m2_leave','m3_leave','m4_leave','m5_leave','m6_leave','m7_leave','m8_leave','m9_leave','m10_leave','m11_leave','m12_leave']     
+
+
+class MscForm(ModelForm):
+    mpr = forms.BooleanField(required=False,initial=False,widget=forms.RadioSelect(choices=((True, 'Yes'), (False, 'No'))))
+    planning = forms.BooleanField(required=False,initial=False,widget=forms.RadioSelect(choices=((True, 'Yes'), (False, 'No'))))
+    budget = forms.BooleanField(required=False,initial=False,widget=forms.RadioSelect(choices=((True, 'Yes'), (False, 'No'))))
+    settlement_completed = forms.BooleanField(required=False,initial=False,widget=forms.RadioSelect(choices=((True, 'Yes'), (False, 'No'))))
+    class Meta:
+        model = Monthly_staff_clearance
+        fields = ['name_of_staff','designation','leave_taken_this_month','mpr','planning','budget','settlement_completed']
+        widgets={
+              'name_of_staff': forms.TextInput(attrs={'class':'form-control','id':"input2" ,'onkeyup':"capitalizeText('input2')"}),
+              'designation': forms.TextInput(attrs={'class':'form-control','id':"input3" ,'onkeyup':"capitalizeText('input3')"}),
+              'leave_taken_this_month': forms.DateInput(attrs={'type' :"date"}),
+        }
+
+class LeaverequestForm(ModelForm):
+    class Meta:
+        model = Leave_Application
+        fields = ['name_of_staff','designation','leave_requested_from','leave_requested_to','type_of_leave','leave_balance_till_to_date','address','phone_no']
+        widgets={
+              'total_leaves_allowed': forms.NumberInput(attrs={'class':'form-control','id':"input1" ,'onkeyup':"capitalizeText('input1')"}),
+              'name_of_staff': forms.TextInput(attrs={'class':'form-control','id':"input2" ,'onkeyup':"capitalizeText('input2')"}),
+              'designation': forms.TextInput(attrs={'class':'form-control','id':"input3" ,'onkeyup':"capitalizeText('input3')"}),
+              'leave_requested_from': forms.DateInput(attrs={'type' :"date"}),
+              'leave_requested_to': forms.DateInput(attrs={'type' :"date"}),
+              'type_of_leave': forms.Select(choices=['Test']),
+              'leave_balance_till_to_date': forms.NumberInput(attrs={'type' :"number",'class':'form-control'}),
+              'address': forms.TextInput(attrs={'class':'form-control','id':"input4" ,'onkeyup':"capitalizeText('input4')"}),
+              'phone_no': forms.NumberInput(attrs={'class':'form-control'}),
+        }
+
+class AssetForm(ModelForm):
+    class Meta:
+        model = Asset
+        fields = ['name_of_asset','asset_id_no','unit','status']
+        widgets={
+              'name_of_asset': forms.TextInput(attrs={'class':'form-control','id':"input1" ,'onkeyup':"capitalizeText('input1')"}),
+              'asset_id_no': forms.TextInput(attrs={'class':'form-control'}),
+              'status': forms.Select(choices=['Test'],attrs={'class':'form-control'}),
+              'unit': forms.NumberInput(attrs={'type' :"number",'class':'form-control'}),
+        }
+
+class Ad_clerance_Form(ModelForm):
+    class Meta:
+        model = Clearance_Admin
+        fields = ['name','designation','last_date','location','resignation','programme_remarks','programme_signature','misc_remarks','misc_signature','office_secretary_remarks','office_secretary_signature','administration_remarks','administration_signature','finance_remarks','finance_signature']
+        widgets={
+              'name': forms.TextInput(attrs={'class':'form-control','id':"input1" ,'onkeyup':"capitalizeText('input1')"}),
+              'designation': forms.TextInput(attrs={'class':'form-control'}),
+              'location': forms.TextInput(attrs={'class':'form-control'}),
+              'resignation': forms.TextInput(attrs={'class':'form-control'}),
+              'last_date': forms.DateInput(attrs={'type' :"date"}),
+        }
+
+
+class AppraisalForm(ModelForm):
+    class Meta:
+        model = Appraisal
+        fields = ['name_of_staff','designation','appraisal_period_start_date','appraisal_period_end_date','type_of_appraisal', 'name_of_the_appraisal_authority', 'appraisal_authority_designation','dedication', 'performance', 'cooperation', 'initiative', 'communication', 'teamwork', 'documentation_reporting', 'problem_solving','personality','overall_Rating','recommendation']
+        widgets={
+            'name_of_staff':forms.TextInput(attrs={'class':'form-control','id':"input1" ,'onkeyup':"capitalizeText('input1')"}),
+            'designation':forms.TextInput(attrs={'class':'form-control','id':"input1" ,'onkeyup':"capitalizeText('input1')"}),
+            'appraisal_period_start_date':forms.DateInput(attrs={'type' :"date"}),
+            'appraisal_period_end_date':forms.DateInput(attrs={'type' :"date"}),
+            'type_of_appraisal':forms.Select(choices=['Test'],attrs={'class':'form-control'}), 
+            'name_of_the_appraisal_authority':forms.TextInput(attrs={'class':'form-control','id':"input2" ,'onkeyup':"capitalizeText('input2')"}), 
+            'appraisal_authority_designation':forms.TextInput(attrs={'class':'form-control','id':"input3" ,'onkeyup':"capitalizeText('input3')"}),
+            'dedication': forms.RadioSelect(), 
+            'performance': forms.RadioSelect(), 
+            'cooperation': forms.RadioSelect(), 
+            'initiative': forms.RadioSelect(), 
+            'communication': forms.RadioSelect(),
+            'teamwork': forms.RadioSelect(), 
+            'documentation_reporting': forms.RadioSelect(), 
+            'problem_solving': forms.RadioSelect(),
+            'personality': forms.RadioSelect(),
+            'overall_Rating': forms.RadioSelect(),
+            'recommendation':forms.TextInput(attrs={'class':'form-control','id':"input4" ,'onkeyup':"capitalizeText('input4')"}),
+         }
+        
+
+class pr_clerance_Form(ModelForm):
+    class Meta:
+        model = Clearance_Programme
+        fields = ['name','designation','location']
+        widgets={
+              'name': forms.TextInput(attrs={'class':'form-control','id':"input1" ,'onkeyup':"capitalizeText('input1')"}),
+              'designation': forms.TextInput(attrs={'class':'form-control','id':"input2" ,'onkeyup':"capitalizeText('input2')"}),
+              'location': forms.TextInput(attrs={'class':'form-control','id':"input3" ,'onkeyup':"capitalizeText('input3')"}),
+        }
+
+class pr_clerance_activity_Form(ModelForm):
+    class Meta:
+        model = Clearance_Programme_key_activities
+        fields = ['activity_name','current_status','way_forward']
+        widgets={
+              'activity_name': forms.TextInput(attrs={'class':'form-control','id':"input4" ,'onkeyup':"capitalizeText('input4')"}),
+              'current_status': forms.TextInput(attrs={'class':'form-control','id':"input5" ,'onkeyup':"capitalizeText('input5')"}),
+              'way_forward': forms.TextInput(attrs={'class':'form-control','id':"input6" ,'onkeyup':"capitalizeText('input6')"}),
+        }
+
+class OutstationForm(ModelForm):
+    class Meta:
+        model = OutStation
+        fields = ['name','designation','period_of_travel_from','period_of_travel_to','purpose','place_to_be_visited','tentative_programme_during_visit','estimated_travel_cost','means_of_transportation','remarks' ]
+        widgets={
+              'name': forms.TextInput(attrs={'class':'form-control','id':"input1" ,'onkeyup':"capitalizeText('input1')"}),
+              'designation': forms.TextInput(attrs={'class':'form-control','id':"input2" ,'onkeyup':"capitalizeText('input2')"}),
+              'purpose': forms.TextInput(attrs={'class':'form-control','id':"input3" ,'onkeyup':"capitalizeText('input3')"}),
+              'place_to_be_visited': forms.TextInput(attrs={'class':'form-control','id':"input4" ,'onkeyup':"capitalizeText('input4')"}),
+              'tentative_programme_during_visit': forms.TextInput(attrs={'class':'form-control','id':"input5" ,'onkeyup':"capitalizeText('input5')"}),
+              'means_of_transportation': forms.TextInput(attrs={'class':'form-control','id':"input6" ,'onkeyup':"capitalizeText('input6')"}),
+              'remarks': forms.TextInput(attrs={'class':'form-control','id':"input6" ,'onkeyup':"capitalizeText('input6')"}),
+              'period_of_travel_from':forms.DateInput(attrs={'type' :"date"}),
+              'period_of_travel_to':forms.DateInput(attrs={'type' :"date"}),
+              'estimated_travel_cost':forms.NumberInput(attrs={'type' :"number",'class' :'form-control'})
+        }
+
+
+class DocumentForm(forms.ModelForm):
+    class Meta:
+        model = Case_study
+        fields = ['case_studies']
+
+
+
+class MonthlyBudgetRequestForm(ModelForm):
+    class Meta:
+        model = MonthlyBudget
+        fields = ['name','designation','programme','budget_head','approved_budget','requsted_budget']
+        widgets={
+              'name': forms.TextInput(attrs={'id':"input1" ,'onkeyup':"capitalizeText('input1')"}),
+              'designation': forms.TextInput(attrs={'id':"input2" ,'onkeyup':"capitalizeText('input2')"}),
+              'programme': forms.TextInput(attrs={'id':"input3" ,'onkeyup':"capitalizeText('input3')"}),
+              'approved_budget': forms.NumberInput(),
+              'requsted_budget': forms.NumberInput(),
+        }

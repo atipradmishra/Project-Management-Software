@@ -1,0 +1,147 @@
+{% extends 'sidenav\sidenav_ceo.html' %}
+{% load static %}
+{% block title %} Project List {% endblock %}
+{% block content %}
+<style>
+	@media print {
+		.no-print {
+			display: none;
+		}
+		body {
+		  background-color: transparent;
+		}
+	  }
+  .hidden {
+      display: none
+  }
+  
+  @media print {
+    .button {
+        display: none; 
+    }
+  }
+  .content-data::-webkit-scrollbar {
+    width: 9px;  
+  }
+  .content-data::-webkit-scrollbar-thumb {
+    background-image: linear-gradient(135deg, #FAB2FF 10%, #1904E5 100%);
+    box-shadow: inset 2px 2px 5px 0 rgba(#fff, 0.5);
+    border-radius: 100px;
+  }
+  #customers {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  #customers thead tr:first-child th:first-child {
+    border-top-left-radius: 10px;
+  }
+
+  #customers thead tr:first-child th:last-child {
+    border-top-right-radius: 10px;
+  }
+
+  #customers td, #customers th {
+    border: 1px solid #ddd;
+    padding-left: 4px;
+    padding-right: 4px;
+    font-size: 15px;
+    text-align: center;
+  }
+  #customers td{
+    color:#003366;
+  }
+
+  #customers tr:hover {background-color: #ddd;}
+
+  #customers th {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: #7996b5;
+    color: black;
+  }
+  @media print {
+    .header {
+        display: none;
+    }
+  }
+    .form-group {
+        position: relative;
+        display: inline-block;
+        border-radius: 20px;
+    }
+
+    .search-input {
+        padding-right: 30px;
+        width: 100%;
+    }
+    .form-group .icon {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+    }
+    .btn {
+        background-color: #7996b5;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        padding: 5px 8px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+</style>
+<h1 class="title">Projects</h1>
+<div class="info-data" style='margin-top:0px'>
+    <div class="card">
+        <div class="head">
+            <div>
+                <h4>What are You looking for?</h4>
+                <form action="#">
+                    <div class="form-group">
+                        <input type="text" class="search-input" placeholder="Search...">
+                        <i class='bx bx-search icon' ></i>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="data">
+    <div class="content-data" style='height:70vh;overflow: auto;'>
+        <div class="head" style='margin-top:20px;overflow-y:auto;overflow-x:hidden;margin: -5px;'>
+            <table id="customers">
+                <thead>
+                  <tr>
+                    <th style='width:5%;font-size:12px'>Sl. No.</th>
+                    <th>Project Name</th>
+                    <th>Budget(INR)</th>
+                    <th style='width:10%'>Duration</th>
+                    <th>Project Manager</th>
+                    <th>Status</th>
+                    <th class="no-print" >Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                 {% for a in projects %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ a.project_name }}</td>
+                        <td>{{a.budget}}</td>
+                        <td>{{a.start_date}} to {{a.end_date}}</td>
+                        <td>{{a.assigned_to.first_name}} {{a.assigned_to.last_name}}</td>
+                        <td>Active</td>
+                        <td><a href='{%url 'myAPP:update-project' a.id %}'><button class="btn"><i class="fa-regular fa-pen-to-square"></i></button></a> <button class="btn"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+            
+                 {% endfor %}
+                </tbody>
+            </table> 
+        </div>
+    </div>
+</div>
+{% endblock  %}

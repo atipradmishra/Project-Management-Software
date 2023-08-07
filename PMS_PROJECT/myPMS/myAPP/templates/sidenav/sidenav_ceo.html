@@ -1,0 +1,175 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>{% block title %}{% endblock %}</title>
+	<link rel="icon" href="{% static 'images/logo.png'%}">
+	<link rel="stylesheet" href="{% static 'style/style.css' %}" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+	
+	<!-- SIDEBAR -->
+	<section id="sidebar">
+		<div class="brand"><i class='icon'><img src="{% static "images/ycda-30-years-celebration-logo-sm.png" %}"></i></div>
+		{% if user == 1 %}
+			<ul class="side-menu" style='margin-top: 30%'>
+				<li><a href="{% url 'myAPP:pm-home' project.id %}" ><i class="fa-solid fa-house-chimney icon"></i> Dashboard</a></li>
+				<li><a href="{% url 'myAPP:home' project.id %}"><i class="fa-brands fa-product-hunt icon"></i>Planning</a></li>
+				<li><a href="{% url 'myAPP:manager-reporting' project.id %}"><i class='bx bxs-report icon'></i>Reporting</a></li>
+				<li><a href="{% url 'myAPP:complince-home' project.id %}"><i class="fa-solid fa-copyright icon"></i>Compliance</a></li>
+				<li><a href="{% url 'myAPP:governance-home' project.id %}"><i class="fa-solid fa-circle-h icon"></i>Governance</a></li>
+			</ul>
+		{% else %}
+			<ul class="side-menu">
+			<li><a href="{%url 'myAPP:masterhome' %}" ><i class="fa-solid fa-house-chimney icon"></i> Dashboard</a></li>
+			<li class="divider" data-text="main">Main</li>
+			<li>
+				<a href="#"><i class="fa-brands fa-product-hunt icon"></i>Planning<i class='bx bx-chevron-right icon-right' ></i></a>
+				<ul class="side-dropdown">
+					{% for a in projects %}
+              			<a href="{% url 'myAPP:home' a.id %}"><li>{{ a.project_name }}</li></a>
+              		{% endfor %}
+				</ul>
+			</li>
+			<li>
+				<a href="#"><i class='bx bxs-report icon'></i>Reporting<i class='bx bx-chevron-right icon-right' ></i></a>
+				<ul class="side-dropdown">
+					{% for a in projects %}
+					<a href="{% url 'myAPP:manager-reporting' a.id %}"><li>{{ a.project_name }}</li></a>
+					{% endfor %}
+				</ul>
+			</li>
+			<li>
+				<a href="#"><i class="fa-solid fa-copyright icon"></i>Compliance<i class='bx bx-chevron-right icon-right' ></i></a>
+				<ul class="side-dropdown">
+					{% for a in projects %}
+					<a href="{% url 'myAPP:complince-home' a.id %}"><li>{{ a.project_name }}</li></a>
+					{% endfor %}
+				</ul>
+			</li>
+			<li>
+				<a href="#"><i class="fa-solid fa-circle-h icon"></i>Governance<i class='bx bx-chevron-right icon-right' ></i></a>
+				<ul class="side-dropdown">
+					{% for a in projects %}
+					<a href="{% url 'myAPP:governance-home' a.id %}"><li>{{ a.project_name }}</li></a>
+					{% endfor %}
+				</ul>
+			</li>
+			<li>
+				<a href="#"><i class="fa-solid fa-coins icon"></i>Finance<i class='bx bx-chevron-right icon-right' ></i></a>
+				<ul class="side-dropdown">
+					{% for a in projects %}
+					<a href="{% url 'myAPP:budget_requests' a.id %}"><li>{{ a.project_name }}</li></a>
+					{% endfor %}
+				</ul>
+			</li>
+			<li><a href="#"><i class="fa-solid fa-bullhorn icon"></i> Broadcast Message</a></li>
+			<li class="divider" data-text="Adds">Adds</li>
+			<li><a href="{%url 'myAPP:add_Project' %}"><i class="fa-solid fa-plus icon"></i> Add Project</a></li>
+			<li><a href="#"><i class="fa-solid fa-user-plus icon"></i> Add User</a></li>
+			<li><a href="{%url 'myAPP:add-category' %}"><i class="fa-solid fa-plus icon"></i> Add Categories</a></li>
+			<li class="divider" data-text="Lists">Lists</li>
+			<li><a href="{%url 'myAPP:Project-list' %}"><i class="fa-solid fa-diagram-project icon"></i> Projects</a></li>
+			<li><a href="#"><i class='bx bx-category-alt icon'></i> Categories</a></li>
+			<li><a href="#"><i class="fa-solid fa-users icon"></i> Users</a></li>
+			</ul>
+		{% endif %}
+	</section>
+	<!-- SIDEBAR -->
+	<!-- MAIN CONTAINT -->
+	<section id="content">
+
+		<!-- TOPBAR -->
+		<div class="top-bar">
+			<div class="container">
+			  <div class="top-bar-content">
+				<div class="social-links">
+				  <div class="social-list">
+					<div class="social-title">Follow us</div>
+					  <a href="https://www.facebook.com/ycdaodishaindia/" class="social-item" target="_blank"><i class="fab fa-fw fa-facebook-f"></i></a>
+					  <a href="https://twitter.com/YCDAOdisha" class="social-item" target="_blank"><i class="fab fa-fw fa-twitter"></i></a>
+					  <a href="https://www.instagram.com/ycdaodisha/" class="social-item" target="_blank"><i class="fa-brands fa-instagram"></i></i></a>
+					  <a href="https://ycdaindia.org/" class="social-item" target="_blank"><i class="fab fa-fw fa-google"></i></a>
+					  <a href="https://www.linkedin.com/in/youth-council-for-development-alternatives-662951255/" class="social-item" target="_blank"><i class="fab fa-fw fa-linkedin-in"></i></a>
+					</div>
+				  </div>
+				<div class="contact-links">
+				  <div class="contact-list">
+					<div id="scroll-container">
+						<p id="scroll-text">
+							WELCOME TO YCDA PROJECT MANAGEMENT SYSTEM
+						</p>
+					</div>
+					<div class='contact'>
+						<a href="tel:07750018377" class="contact-item"><i class="fas fa-fw fa-phone fa-flip-horizontal"></i>07750018377</a>
+						<a href="mailto:info@ycda.in" class="contact-item"><i class="fas fa-fw fa-envelope"></i>info@ycda.in</a>
+					</div>
+					</div>
+				</div>
+			  </div>
+			</div>
+		</div>
+
+		<!-- NAVBAR -->
+		{% comment %} <nav>
+			<i class='bx bx-menu toggle-sidebar' ></i>
+			<div class="action">
+				<img class='profile' src='{% static 'images/profile.png' %}' onclick='menuToggle();'>
+				<div class="menu">
+					<h3>{{ request.user.first_name }} {{ request.user.last_name }}<br><spam>{{ request.user.groups.first.name }}</spam></h3>
+					<ul>
+						<li><a href="#"><i class="fa-regular fa-circle-user" style='font-size:20px;margin-right:10px;'></i></i> Profile</li></a>
+						<li><a href="{% url 'myAPP:logout'%}"><i class="fa-solid fa-arrow-right-from-bracket" style='font-size:18px;margin-right:20px'></i> Log Out</li></a>
+					</ul>
+				</div>
+			</div>
+		</nav> {% endcomment %}
+		<!-- NAVBAR -->
+		<i class="fa-solid fa-bars toggle-sidebar" style='display:flex;margin:10px;cursor:pointer;'></i>
+		<div class='action'>
+			<img class='profile' src='{% static 'images/profile.png' %}' onclick='menuToggle();'>
+			<div class="menu" style='z-index:1;'>
+				<h3>{{ request.user.first_name }} {{ request.user.last_name }}<br><spam>{{ request.user.profile.designation }}</spam></h3>
+				<ul>
+					{% if user == 1%}
+					<li><a href="{% url 'myAPP:profile' project.id %}"><i class="fa-regular fa-circle-user" style='font-size:20px;margin-right:10px;'></i></i> Profile</li></a>
+					{% else %}
+					<li><a href="{% url 'myAPP:ceo_profile' %}"><i class="fa-regular fa-circle-user" style='font-size:20px;margin-right:10px;'></i></i> Profile</li></a>
+					{% endif %}
+					<li><a href="{% url 'myAPP:logout'%}"><i class="fa-solid fa-arrow-right-from-bracket" style='font-size:18px;margin-right:20px'></i> Log Out</li></a>
+				</ul>
+			</div>
+		</div>
+	
+		  <!-- MAIN -->
+		<main id="main-content">
+			{% block content %}{% endblock %}
+		</main>
+		<!-- MAIN -->
+	</section>
+
+	<script src="{% static 'style/script.js' %}"></script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			// Get the current path from the URL
+			const currentPath = window.location.pathname;
+	
+			// Get all links in the sidebar
+			const sidebarLinks = document.querySelectorAll("#sidebar a");
+	
+			// Loop through the links and add the "active" class to the link with matching URL
+			sidebarLinks.forEach(function(link) {
+				if (link.getAttribute("href") === currentPath) {
+					link.classList.add("active");
+				}
+			});
+		});
+	</script>
+	  
+</body>
+</html>
