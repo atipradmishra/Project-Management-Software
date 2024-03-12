@@ -3,6 +3,15 @@
 {% block title %} Case Studies {% endblock %}
 {% block content %}
 <style>
+  .pdfcard{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 10vh;
+    gap: 1vw;
+  }
     .popup {
         display: none;
         justify-content: center;
@@ -63,7 +72,11 @@
     {% for case_study in case_studies %}
     <div class="col-md-4">
         <div class="card my-10">
-            <br><a href="{% url 'myAPP:download_document' case_study.id %}">Download</a>     
+          <div class="pdfcard">
+            <p>{{ case_study.case_studies.name}}</p>
+            <a href="{% url 'myAPP:download_document' case_study.id %}">Download</a> 
+            <a href="{{ case_study.case_studies.url }}">View</a>  
+          </div>  
         </div>
         {% comment %} <a href="{% url 'myAPP:photo' photo.id %}" class="btn btn-outline-dark btn-sm m-1" style="width:97%;"><i class="fa fa-eye"></i>View</a> {% endcomment %}
     </div>

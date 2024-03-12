@@ -468,6 +468,7 @@
           </div>
           <button onclick="printPage()" class='butn'><i class="fa fa-print"></i> Print</button>
           <button class='butn'><i class="fa-solid fa-filter"></i> Filter</button>
+          <a href="{% url 'myAPP:manager-reporting' project.pk %}" class='butn'><i class="fa-solid fa-left-long"></i> Back</a>
     </div>
     {% else %}
     <center><h2 style='font-family:"Calibri", sans-serif;margin-left:20px;'><u>Weekly Reports</u></h2></center>

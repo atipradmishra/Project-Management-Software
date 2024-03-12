@@ -1,6 +1,6 @@
-{% extends 'sidenav\sidenav_ceo.html' %}
+{% extends 'sidenav/sidenav_ceo.html' %}
 {% load static %}
-{% block title %} Add Project {% endblock %}
+{% block title %} Add Location Count {% endblock %}
 {% block content %}
 <style>
   .ingredient-form {
@@ -77,10 +77,10 @@
     if (event) {
         event.preventDefault()
     }
-  
+
     const totalNewForms = document.getElementById('id_activity_location_set-TOTAL_FORMS')
     const currentForms = document.getElementsByClassName('location-form')
-    const currentFormCount = currentForms.length + 1// + 1
+    const currentFormCount = currentForms.length// + 1
     const formCopyTarget = document.getElementById('location-form-list')
     const copyEmptyFormEl = document.getElementById('empty-form').cloneNode(true)
     copyEmptyFormEl.setAttribute('class', 'location-form')
@@ -88,7 +88,6 @@
     const regex = new RegExp('__prefix__', 'g')
     copyEmptyFormEl.innerHTML = copyEmptyFormEl.innerHTML.replace(regex, currentFormCount)
     totalNewForms.setAttribute('value', currentFormCount + 1)
-    // now add new empty form element to our html form
     formCopyTarget.append(copyEmptyFormEl)
   }
   function capitalizeText(inputId) {
@@ -99,7 +98,7 @@
 
     for (var i = 0; i < inputValue.length; i++) {
       var currentChar = inputValue.charAt(i);
-      
+
       if (capitalizeNext && currentChar.match(/[a-z]/i)) {
         capitalizedText += currentChar.toUpperCase();
         capitalizeNext = false;

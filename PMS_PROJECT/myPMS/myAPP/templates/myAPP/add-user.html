@@ -1,9 +1,9 @@
 {% extends 'sidenav\sidenav_ceo.html' %}
 {% load static %}
-{% block title %} Add Budget Request {% endblock %}
+{% block title %} Add Project {% endblock %}
 {% block content %}
 <style>
-  input[type=text],[type=select] , [type=number]{
+  input[type=text],[type=email],[type=password], select {
     width: 70%;
     padding: 12px 20px;
     margin: 10px 0;
@@ -39,31 +39,27 @@
     background-color: #45a049;
   }
 </style>
-<div style='margin:2vw;'>
-  <a href="{% url 'myAPP:budget_requests' project.pk %}" style='color:#1775f1;font-weight:bold'><i class="fa-solid fa-left-long"></i> Back</a>
-  <center><h2 style='color:#003366;margin-bottom:50px;'>Add Budget Request</h2></center>
+<div style='margin:50px;'>
+  <h2 style='color:#003366;margin-bottom:50px;'>Add User</h2>
   <div> 
     <form  method="POST">
       {% csrf_token %}
-      <label>Name : </label>
-      {{form.name}}<br>
+      <label>First Name: </label>
+      {{form.first_name}}<br>
 
-      <label >Designation : </label>
-      {{form.designation}}<br>
+      <label >Last Name: </label>
+      {{form.last_name}}<br>
     
-      <label >Programme : </label>
-      {{form.programme}}<br>
+      <label >Email : </label>
+      {{form.email}}<br>
 
-      <label >Budget Head : </label>
-      {{form.budget_head}}<br>
+      <label >Password : </label>
+      {{form.password1}}<br>
 
-      <label >Approved budget : </label>
-      {{form.approved_budget}}<br>
+      <label >Confirm Password : </label>
+      {{form.password2}}<br><br>
     
-      <label >Budget Requsted : </label>
-      {{form.requsted_budget}}<br>
-
-      <input type="submit" value="Save">
+      <input type="submit" value="Create">
     </form>
   </div>
 </div>

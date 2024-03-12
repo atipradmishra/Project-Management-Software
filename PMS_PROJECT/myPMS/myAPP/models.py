@@ -7,10 +7,12 @@ class Profile(models.Model):
    user = models.OneToOneField(User, on_delete=models.CASCADE , null=True)
    gender = models.CharField(max_length=6, choices=[('Male','Male'),('Female','Female'),('Others','Others')],null=True, blank=True)
    designation = models.CharField(max_length=30,null=True, blank=True)
-   address = models.CharField(max_length=100,null=True, blank=True)
+   address = models.CharField(max_length=200,null=True, blank=True)
    phone_no = models.IntegerField(null=True, blank=True)
    profile_pic = models.ImageField(upload_to='images/Profile_pics',null=True, blank=True)
-
+   
+   def __str__(self):
+        return self.user.username
 
 
 class Project_Category(models.Model):   
@@ -37,13 +39,45 @@ class Project_DIP(models.Model):
         return self.project_name
 
 
+class TrackingYear(models.Model):
+   """
+   This will be used as a filter element to
+   Filter different compinenets falling in filtered tracking_year
+   given a project.
+   """
+   name =  models.CharField(max_length=200)
+   def __str__(self):
+        return self.name
 class Dip_details(models.Model):
- project_id= models.ForeignKey("Project_DIP", on_delete=models.CASCADE)
- component = models.CharField(max_length=200)
- created_at = models.DateTimeField('created at', auto_now_add=True)
- updated_at = models.DateTimeField('updated at', auto_now=True)
- def __str__(self):
-        return self.component  
+   """
+   This is the object for Component, Connected to a project.
+   """
+   project_id  = models.ForeignKey("Project_DIP", on_delete=models.CASCADE)
+   component   = models.CharField(max_length=200)
+   tracking_year = models.ForeignKey(TrackingYear ,
+                                      blank  =  True,
+                                      null   =  True ,
+                                      on_delete =   models.CASCADE) #BUDD
+   # ^ This will be used to label a component
+   # according to the finacial year they fall in-to
+   created_at = models.DateTimeField('created at', auto_now_add=True)
+   updated_at = models.DateTimeField('updated at', auto_now=True)
+   def __str__(self):
+         return self.component
+   def save(self, *args, **kwargs):
+        project_month = self.project_id.start_date.month
+        print('project_month -- ',project_month)
+
+        if project_month <= self.created_at.month:
+            # If the start month is same or after the project month
+            tracking_year_name = f"Tracking Year of {self.created_at.year} - {self.created_at.year + 1}"
+        else:
+            tracking_year_name = f"Tracking Year of {self.created_at.year - 1} - {self.created_at.year }"
+
+        tracking_year, _   = TrackingYear.objects.get_or_create(name=tracking_year_name)
+        self.tracking_year = tracking_year
+
+        super().save(*args, **kwargs)
 
 class Dip_Activities(models.Model):
    project_detail_id= models.ForeignKey("DIP_details", on_delete=models.CASCADE)
@@ -305,7 +339,11 @@ class Monthly_staff_clearance(models.Model):
  mpr = models.BooleanField()
  planning = models.BooleanField()
  budget = models.BooleanField()
+ case_study = models.BooleanField()
+ outstation_report = models.BooleanField()
+ event_report = models.BooleanField()
  settlement_completed = models.BooleanField()
+ any_other = models.CharField(max_length=300,null=True,blank=True)
  is_submited = models.BooleanField(default=False)
  created_at = models.DateTimeField('created at', auto_now_add=True)
  updated_at = models.DateTimeField('updated at', auto_now=True)

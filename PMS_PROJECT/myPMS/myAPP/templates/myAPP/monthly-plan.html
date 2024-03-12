@@ -335,14 +335,15 @@
 			  </div>
 			  <button onclick="printPage()" class='butn'><i class="fa fa-print"></i> Print</button>
 			  <button class='butn'><i class="fa-solid fa-filter"></i> Filter</button>
+			  <a href="{% url 'myAPP:home' project.pk %}" class='butn'><i class="fa-solid fa-left-long"></i> Back</a>
 			{% else %}
-			  <button href="{% url 'myAPP:home' project.pk %}" class='butn'>Back</button>
+			  <a href="{% url 'myAPP:home' project.pk %}" class='butn'>Back</a>
 			{% endif %}
 		</div>
 		<div id="successPopup" class="popup2">
 			<img src="{% static 'images\tick.png' %}">
 			<h2>Thank You!</h2>
-			<p style='font-size:20px'>Thanks!!!! Your Budget Request has been successfully submitted.</P>
+			<p style='font-size:20px'>Thanks!!!! Your Monthly Plan has been successfully submitted.</P>
 			<button type='button' onclick='submitForm()'>Ok</button>
 		</div>   
 	  </div>

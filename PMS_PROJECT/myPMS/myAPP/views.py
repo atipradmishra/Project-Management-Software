@@ -7,7 +7,7 @@ from django.contrib.auth import login, authenticate,logout
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from .models import *
-from .forms import ActivityAproveForm, ActivityMatrixAproveForm, ActivityMatrixCeoForm, Ad_clerance_Form, AmRemarkForm, AppraisalForm, AssetForm, CategoryForm, CeoAproveForm, DipActivitiesForm, DipComponentForm, DipIndicatorForm, DipMovForm, DipOutcomeForm, DipProcessForm, DipRemarkForm, DipUpdateForm, DocumentForm, EventPlanAproveForm, EventRemarkForm, LeaveForm, LeaverequestForm, LocationCountForm, MPCForm, MonthlyBudgetRequestForm, MonthlyLeaveForm, MonthlyPlanAproveForm, MonthlyReportUpdateForm, MonthlyachievementForm, MonthlybacklogForm, MonthlyhighlightForm, MscForm, OutstationForm, PlanRemarkForm, ProjectForm, ReportAproveForm, ReportRemarkForm, TimeFrameForm, WeekOneForm, WeekTwoForm, WeeklyReportForm, MonthPlanForm,eventForm, pr_clerance_Form, pr_clerance_activity_Form
+from .forms import ActivityAproveForm, ActivityMatrixAproveForm, ActivityMatrixCeoForm, Ad_clerance_Form, AmRemarkForm, AppraisalForm, AssetForm, CategoryForm, CeoAproveForm, DipActivitiesForm, DipComponentForm, DipIndicatorForm, DipMovForm, DipOutcomeForm, DipProcessForm, DipRemarkForm, DipUpdateForm, DocumentForm, EditProfileForm, EditUserForm, EventPlanAproveForm, EventRemarkForm, LeaveForm, LeaverequestForm, LocationCountForm, MPCForm, MonthlyBudgetRequestForm, MonthlyLeaveForm, MonthlyPlanAproveForm, MonthlyReportUpdateForm, MonthlyachievementForm, MonthlybacklogForm, MonthlyhighlightForm, MscForm, OutstationForm, PlanRemarkForm, ProjectForm, ReportAproveForm, ReportRemarkForm, TimeFrameForm, WeekOneForm, WeekTwoForm, WeeklyReportForm, MonthPlanForm,eventForm, pr_clerance_Form, pr_clerance_activity_Form
 from django.contrib import messages
 from .forms import  CreateUserForm
 from .decorators import admin_only, allowed_users, unauthenticated_user
@@ -17,6 +17,54 @@ from django.contrib.auth.models import Group
 from django.utils import timezone
 from django.shortcuts import HttpResponse, get_object_or_404
 from django.core.exceptions import PermissionDenied
+import os
+from django.conf import settings
+from django.core.files.storage import default_storage
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+
+
+def user_belongs_to_group(user, group_name):
+    try:
+        group = Group.objects.get(name=group_name)
+    except Group.DoesNotExist:
+        return False
+    return user.groups.filter(name=group_name).exists()
+
+
+# login and logout
+@unauthenticated_user
+def loginPage(request):
+    projects = Project_DIP.objects.order_by('-created_at')[:50]
+    if request.method == 'POST':
+      username = request.POST.get('username')
+      password = request.POST.get('password')
+      projectname= request.POST.get('projectname')
+      user = authenticate(request, username=username, password=password)
+      assigned = Project_DIP.objects.filter(assigned_to = user).values_list('id', flat=True)
+      if user is not None:
+          if user_belongs_to_group(user,'Project Manager'):
+            if projectname != 'null':
+              if int(projectname) in assigned:
+                login(request, user)
+                return redirect('myAPP:pm-home', projectname)
+              else:
+                messages.info(request, 'You are unauthorized to open this Project')
+            else:
+                messages.info(request, 'Please Select a Project')
+          else:
+              login(request, user)
+              if user_belongs_to_group(user,'HR Manager'):
+                  return redirect('myAPP:hr-home')
+              else:
+                return redirect('myAPP:masterhome')
+      else:
+          messages.info(request, 'Username OR password is incorrect')
+    return render(request, 'registration/index.html',{"projects":projects})
+
+def logoutUser(request):
+	logout(request)
+	return redirect('login')
 
 # project_manager landingpage
 @login_required(login_url='login')
@@ -47,18 +95,33 @@ def masterhome(request):
     else:
         user = 0
     projects = Project_DIP.objects.all()
-    categories = Project_Category.objects.all()
-    activities = Dip_Activities.objects.all()
-    monthlyplans = Month_Plan.objects.all()
-    eventplans = Event_Plan.objects.all()
+    profile = Profile.objects.get(user=request.user)
+    projects_with_submitted_dip = Project_DIP.objects.filter(
+        dip_details__dip_activities__is_dip_submited=True , dip_details__dip_activities__is_dip_approved=False
+    ).distinct()
+    projects_with_submitted_am = Project_DIP.objects.filter(
+        dip_details__dip_activities__is_am_submited=True , dip_details__dip_activities__is_am_approved=False 
+    ).distinct()
+    projects_with_submitted_plan = Project_DIP.objects.filter(
+        dip_details__dip_activities__month_plan__is_plan_submited=True , dip_details__dip_activities__month_plan__is_plan_approved = False
+    ).distinct()
+    projects_with_submitted_report = Project_DIP.objects.filter(
+        dip_details__dip_activities__month_plan__is_report_submited=True , dip_details__dip_activities__month_plan__is_report_approved = False
+    ).distinct()
+    projects_with_submitted_event = Project_DIP.objects.filter(
+        event_plan__is_submited=True , event_plan__is_approved = False
+    ).distinct()
+
 
     context = {
         'user':user,
         'projects':projects,
-        'categories':categories,
-        'activities':activities,
-        'monthlyplans': monthlyplans,
-        'eventplans': eventplans
+        'projects_with_submitted_dip' : projects_with_submitted_dip,
+        'projects_with_submitted_am' : projects_with_submitted_am,
+        'projects_with_submitted_plan': projects_with_submitted_plan,
+        'projects_with_submitted_report' : projects_with_submitted_report,
+        'projects_with_submitted_event' : projects_with_submitted_event,
+        'profile' : profile
         }
     return render(request, 'myAPP/dashboard_ceo.html',context)
 
@@ -72,52 +135,50 @@ def userhome(request,pk):
     project = Project_DIP.objects.get(id=pk)
     projects = Project_DIP.objects.all()
     categories = Project_Category.objects.all()
+    profile = Profile.objects.get(user=request.user)
     context = {
         'user':user,
         'projects':projects,
         'categories':categories,
-        'project' : project
+        'project' : project,
+        'profile': profile
         }
     return render(request, 'myAPP/dashboard_user.html',context)
 
-# login and logout
-@unauthenticated_user
-def loginPage(request):
-    projects = Project_DIP.objects.order_by('-created_at')[:50]
-    if request.method == 'POST':
-      username = request.POST.get('username')
-      password = request.POST.get('password')
-      projectname= request.POST.get('projectname')
-      user = authenticate(request, username=username, password=password)
-      assigned = Project_DIP.objects.filter(assigned_to = user).values_list('id', flat=True)
-      if user is not None:
-          if user_belongs_to_group(user,'Project Manager'):
-            if projectname != 'null':
-              if int(projectname) in assigned:
-                login(request, user)
-                return redirect('myAPP:pm-home', projectname)
-              else:
-                messages.info(request, 'You are unauthorized to open this Project')
-            else:
-                messages.info(request, 'Please Select a Project')
-          else:
-              login(request, user)
-              return redirect('myAPP:masterhome')
-      else:
-          messages.info(request, 'Username OR password is incorrect')
-    return render(request, 'registration/index.html',{"projects":projects})
+login_required(login_url='login')
+def hrhome(request):
+    user=0
+    if user_belongs_to_group(request.user,'Hr Manager'):
+        user = 1
+    else:
+        user = 0
+    projects = Project_DIP.objects.all()
+    categories = Project_Category.objects.all()
+    profile = Profile.objects.get(user=request.user)
+    context = {
+        'user':user,
+        'projects':projects,
+        'categories':categories,
+        'profile': profile
+        }
+    return render(request, 'myAPP/dashboard_hr.html',context)
 
-def logoutUser(request):
-	logout(request)
-	return redirect('login')
-
-def user_belongs_to_group(user, group_name):
-    try:
-        group = Group.objects.get(name=group_name)
-    except Group.DoesNotExist:
-        return False
-    return user.groups.filter(name=group_name).exists()
-
+@login_required(login_url='login')
+@allowed_users("CEO")
+def add_user(request):
+      form = CreateUserForm(request.POST)
+      if request.POST == 'POST':
+        form = CreateUserForm(request.POST)  
+        if form.is_valid():  
+           data = form.save(commit=False)
+           data.username = form.email
+           data.save()
+      else:  
+        form = CreateUserForm()  
+      context = {  
+        'form':form  
+      }  
+      return render(request,'myAPP/add-user.html',context)
 
 @login_required(login_url='login')
 def user_profile(request,pk):
@@ -127,10 +188,28 @@ def user_profile(request,pk):
     else:
       user = 0
     project = get_object_or_404(Project_DIP, id=pk)
+    u = User.objects.get(pk=request.user.id)
+    profile = Profile.objects.get(user=request.user)
+    form =  EditUserForm(instance=u)
+    profileform = EditProfileForm(instance=profile)
+    if request.method == 'POST':
+            form =  EditUserForm(request.POST,instance=u)
+            profileform = EditProfileForm(request.POST,request.FILES,instance=profile)
+            if form.is_valid() and profileform.is_valid():
+              old_profile_pic = request.user.profile.profile_pic
+              if old_profile_pic:
+                  old_path = os.path.join(settings.MEDIA_ROOT, str(old_profile_pic))
+                  if default_storage.exists(old_path):
+                      default_storage.delete(old_path)
+              form.save()
+              profileform.save()
+              return redirect('myAPP:pm-home' ,project.id)
     profile = Profile.objects.get(user=request.user)
     context = {
         'profile' : profile,
         'user' : user,
+        'form' : form,
+        'profileform' : profileform,
         'project': project
     }
     return render(request, 'myAPP/profile.html',context)
@@ -143,12 +222,32 @@ def ceo_profile(request):
       user = 1
     else:
       user = 0
+    projects = Project_DIP.objects.all()
+    u = User.objects.get(pk=request.user.id)
     profile = Profile.objects.get(user=request.user)
+    form =  EditUserForm(instance=u)
+    profileform = EditProfileForm(instance=profile)
+    if request.method == 'POST':
+            form =  EditUserForm(request.POST,instance=u)
+            profileform = EditProfileForm(request.POST,request.FILES,instance=profile)
+            if form.is_valid() and profileform.is_valid():
+                old_profile_pic = request.user.profile.profile_pic
+                if old_profile_pic:
+                  old_path = os.path.join(settings.MEDIA_ROOT, str(old_profile_pic))
+                  if default_storage.exists(old_path):
+                      default_storage.delete(old_path)
+                form.save()
+                profileform.save()
+                return redirect('myAPP:masterhome')
     context = {
         'profile' : profile,
         'user' : user,
+        'form' : form,
+        'projects' : projects,
+        'profileform' : profileform
     }
     return render(request, 'myAPP/profile.html',context)
+
 
 # ceo adding user,category and project
 @login_required(login_url='login')
@@ -157,6 +256,20 @@ def add_Category(request):
       form = CategoryForm()
       if request.method == 'POST':
             form = CategoryForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect('myAPP:masterhome')
+            else:
+                form = CategoryForm() 
+      return render(request,'myAPP/addcategory.html',{'form': form})
+
+@login_required(login_url='login')
+@admin_only
+def update_Category(request,pk):
+      category = Project_Category.objects.get(pk=pk)
+      form = CategoryForm(instance=category)
+      if request.method == 'POST':
+            form = CategoryForm(request.POST,instance=category)
             if form.is_valid():
                 form.save()
                 return redirect('myAPP:masterhome')
@@ -194,8 +307,17 @@ def update_Project(request,pk):
     if form.is_valid():
                form.save()  
                messages.success(request,'ProjectDIP updated Successfully')
-               return redirect('myAPP:index')
+               return redirect('myAPP:Project-list')
    return render(request,'myAPP/add-project.html',{'data':form,'project':project,'projects':projects}) 
+
+@login_required(login_url='login')
+@admin_only
+def category_list(request):
+      categories = Project_Category.objects.all()
+      context = {
+          'categories':categories,
+          } 
+      return render(request,'myAPP/category-list.html',context)
 
 @login_required(login_url='login')
 @admin_only
@@ -206,6 +328,14 @@ def Projects_list(request):
           } 
       return render(request,'myAPP/projects-list.html',context) 
 
+@login_required(login_url='login')
+@admin_only
+def users_list(request):
+      users = User.objects.exclude(is_superuser=True)
+      context = {
+          'users':users,
+          } 
+      return render(request,'myAPP/users-list.html',context) 
 
 
 # planning DIP
@@ -285,7 +415,7 @@ def ceo_aproval_dip(request,pk):
                 data.is_dip_approved = True
                 data.is_dip_rejected = False
                 data.save()
-        acty = Dip_Activities.objects.filter(is_dip_submited = 1)
+        acty = Dip_Activities.objects.filter(is_dip_submited = 1 , project_detail_id__project_id =  project)
         for a in acty:
             ac = Dip_Activities.objects.get(id=a.id)
             if a.is_dip_approved == False:
@@ -336,7 +466,13 @@ def update_component(request, pk):
 
 @login_required(login_url='login')
 def add_Activity(request,pk):
+      user=0
+      if user_belongs_to_group(request.user,'Project Manager'):
+        user = 1
+      else:
+        user = 0
       component = Dip_details.objects.get(id=pk)
+      project = get_object_or_404(Project_DIP, id=component.project_id.id)
       MyFirstModelFormSet = inlineformset_factory(
         Dip_Activities,  # parent model
         Dip_Process,  # child model
@@ -421,6 +557,8 @@ def add_Activity(request,pk):
         return redirect('myAPP:add_DIP_Details',component.project_id.id) 
 
       context = {
+          'user' : user,
+          'project' : project,
           "component": component,
           "formset1":formset1,
           "formset2":formset2,
@@ -431,8 +569,14 @@ def add_Activity(request,pk):
 
 @login_required(login_url='login')
 def update_Activity(request,pk):
+      user=0
+      if user_belongs_to_group(request.user,'Project Manager'):
+        user = 1
+      else:
+        user = 0
       activity = Dip_Activities.objects.get(id=pk)
       component = Dip_details.objects.get(id=activity.project_detail_id.id)
+      project = get_object_or_404(Project_DIP, id=component.project_id.id)
       MyFirstModelFormSet = inlineformset_factory(
         Dip_Activities,  # parent model
         Dip_Process,  # child model
@@ -517,6 +661,8 @@ def update_Activity(request,pk):
             print(formset4.errors) 
         return redirect('myAPP:add_DIP_Details',component.project_id.id) 
       context = {
+          'user' : user,
+          'project' : project,
           "component": component,
           "formset1":formset1,
           "formset2":formset2,
@@ -594,7 +740,7 @@ def ceo_am_approve(request, pk):
           data.is_am_approved = True
           data.is_am_rejected = False
           data.save()
-      acty = Dip_Activities.objects.filter(is_am_submited = 1)
+      acty = Dip_Activities.objects.filter(is_am_submited = 1 , project_detail_id__project_id =  project)
       for a in acty:
         ac = Dip_Activities.objects.get(id=a.id)
         if a.is_am_approved == False:
@@ -799,7 +945,7 @@ def ceoplanapproval(request,pk):
           data.is_plan_approved = True
           data.is_plan_rejected = False
           data.save()
-      plan = Month_Plan.objects.filter(is_plan_submited = 1)
+      plan = Month_Plan.objects.filter(is_plan_submited = 1 ,activity_id__project_detail_id__project_id =  project)
       for a in plan:
         ac = Month_Plan.objects.get(id=a.id)
         if a.is_plan_approved == False:
@@ -921,7 +1067,7 @@ def ceoevent(request,pk):
           data.is_submited = True
           data.is_rejected = False
           data.save()
-      plan = Event_Plan.objects.filter(is_submited = 1)
+      plan = Event_Plan.objects.filter(is_submited = 1, project_id =  project)
       for a in plan:
         ac = Event_Plan.objects.get(id=a.id)
         if a.is_approved == False:
@@ -1172,6 +1318,11 @@ def add_report_backlog(request,pk):
 
 @login_required(login_url='login')
 def update_report(request,pk):
+      user=0
+      if user_belongs_to_group(request.user,'Project Manager'):
+        user = 1
+      else:
+        user = 0
       plan = get_object_or_404(Month_Plan, id=pk)
       project = get_object_or_404(Project_DIP, id=plan.activity_id.project_detail_id.project_id.id)
       form = MonthlyReportUpdateForm(instance=plan)
@@ -1182,7 +1333,7 @@ def update_report(request,pk):
                 return redirect('myAPP:monthly-reporting', project.id)
             else:
                form = MonthlyReportUpdateForm(instance=plan)  
-      return render(request,'myAPP/report-update.html',{'form': form,'plan':plan,'project':project}) 
+      return render(request,'myAPP/report-update.html',{'form': form,'plan':plan,'project':project,'user':user}) 
 
 @login_required(login_url='login')
 @admin_only
@@ -1207,7 +1358,7 @@ def ceoreportapproval(request,pk):
           # data.is_report_submited = True
           data.is_report_rejected = False
           data.save()
-      plan = Month_Plan.objects.filter(is_report_submited = 1)
+      plan = Month_Plan.objects.filter(is_report_submited = 1, activity_id__project_detail_id__project_id =  project)
       for a in plan:
         ac = Month_Plan.objects.get(id=a.id)
         if a.is_report_approved == False:
@@ -1269,11 +1420,17 @@ def weekly_report(request,pk):
 
 @login_required(login_url='login')
 def add_WeeklyReport(request,pk):
+      user=0
+      if user_belongs_to_group(request.user,'Project Manager'):
+        user = 1
+      else:
+        user = 0
       project = get_object_or_404(Project_DIP, id=pk)
       form = WeeklyReportForm(pk=pk)
       context= {
           'form': form,
           'project':project,
+          'user':user
           }
       return render(request,'myAPP/add-weekly.html',context) 
 
@@ -1439,7 +1596,9 @@ def download_document(request, document_id):
     except FileNotFoundError:
         raise Http404("File not found")
 
-
+def display_docs(request,document_id):
+    pdfs = get_object_or_404(Case_study, id=document_id)
+    return render(request, 'myAPP/view_casestudies.html', {'pdfs': pdfs})
 
 
 @login_required(login_url='login')
@@ -1628,6 +1787,29 @@ def add_msc(request,pk):
   }
   return render(request,'myAPP/add-msc.html', context)
 
+@login_required(login_url='login')
+def update_msc(request,pk):
+  user=0
+  if user_belongs_to_group(request.user,'Project Manager'):
+    user = 1
+  else:
+    user = 0
+  msc =  get_object_or_404(Monthly_staff_clearance , id=pk)
+  project = get_object_or_404(Project_DIP, id=msc.project_id.id)
+  form = MscForm(instance=msc)
+  if request.method == 'POST':
+            form = MscForm(request.POST,instance=msc)
+            if form.is_valid():
+                form.save()
+                return redirect('myAPP:msc', project.id)
+            else:
+               form = LeaveForm()  
+  context= {
+        'project':project,
+        'user': user,
+        'form':form,
+  }
+  return render(request,'myAPP/add-msc.html', context)
 
 
 @login_required(login_url='login')
@@ -1746,7 +1928,6 @@ def add_appraisal(request,pk):
   form = AppraisalForm()
   x = request.POST.get('rg1')
   if request.method == 'POST':
-    print(x)
     form = AppraisalForm(request.POST)
     if form.is_valid():
       data = form.save(commit=False)

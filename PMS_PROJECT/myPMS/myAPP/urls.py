@@ -1,6 +1,5 @@
 from django.urls import path
-from . import views
-from .views import  *
+from .views import Projects_list, add_Activity, add_Category, add_DIP_Details, add_MonthPlan, add_Project, add_WeeklyReport, add_admin_clearance, add_appraisal, add_asset, add_budget_request, add_event, add_leave_application, add_leaves, add_leaves_monthly, add_leaving_station, add_msc, add_programme_clearance, add_project_clearance, add_report_achievement, add_report_backlog, add_report_highlights, add_user, am_remarks, appraisals, assets, budget_requests, category_list, ceo_am_approve, ceo_aproval_dip, ceo_profile, ceoevent, ceoplanapproval, ceoreportapproval, clearance_admin, clearance_programme, complince_home, create_weekly_report, dip_remarks, display_docs, download_document, edit_budget_request, edit_leave_application, event_remarks, governance_home, home, hrhome, index1, index2, index4, index6, leave_application, leaves, leaving_station, location_count, loginPage, logoutUser, masterhome, monthly_report, msc, plan_remarks, project_clearance, report_remarks, timeframe, update_Activity, update_Category, update_MonthPlan, update_Project, update_WeeklyReport, update_asset, update_component, update_event, update_location, update_msc, update_report, update_timeframe, update_weekly_report, upload_document, user_profile, userhome, users_list, weekly_report 
 from django.conf import settings
 from django.conf.urls.static import static
 app_name = "myAPP"   
@@ -9,15 +8,19 @@ app_name = "myAPP"
 urlpatterns = [
     path('login/', loginPage,name='login'),
     path('logout/', logoutUser,name='logout'),
-    path("planning-home/<int:pk>/", home, name="home"),
     path("dashboard/<int:pk>/", userhome, name="pm-home"),
+    path("hr-dashboard", hrhome, name="hr-home"),
     path("", masterhome, name="masterhome"),
 
-
+    path("planning-home/<int:pk>/", home, name="home"),
+    path('add-user/', add_user, name='add-user'),
     path('add-category/', add_Category, name='add-category'),
+    path('edit-category/<int:pk>', update_Category, name='edit-category'),
     path('add-project/',add_Project,name='add_Project'),
-    path('updateProject/<pk>',update_Project, name='update-project'),
+    path('updateProject/<int:pk>',update_Project, name='update-project'),
     path('project-list/',Projects_list,name='Project-list'),
+    path('category-list/',category_list,name='Category-list'),
+    path('users-list/',users_list,name='user-list'),
     
     path("profile/<int:pk>/", user_profile , name="profile"),
     path("profile/", ceo_profile , name="ceo_profile"),
@@ -72,7 +75,8 @@ urlpatterns = [
     path('create-weekly-report/<int:pk>/', create_weekly_report, name='create_weekly_report'),
     path('edit-weekly-report/<int:pk>/', update_weekly_report, name='update_weekly_report'),
     path('case-studies/<int:pk>/',upload_document,name='case-studies'),
-    path('download/<int:document_id>/', views.download_document, name='download_document'),
+    path('view/<int:document_id>/', display_docs, name='view_document'),
+    path('download/<int:document_id>/', download_document, name='download_document'),
 
 
 
@@ -84,6 +88,7 @@ urlpatterns = [
     path('add-leave-monthly/<int:pk>/',add_leaves_monthly,name='add-leave-monthly'),
     path('monthly-staff-clearance/<int:pk>/', msc ,name='msc'),
     path('add-monthly-staff-clearance/<int:pk>/',add_msc,name='add-msc'),
+    path('edit-monthly-staff-clearance/<int:pk>/',update_msc,name='edit-msc'),
 
 
     path('governance-home/<int:pk>/',governance_home,name='governance-home'),

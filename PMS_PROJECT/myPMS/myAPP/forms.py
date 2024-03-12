@@ -8,7 +8,7 @@ from django.forms import ModelForm
 class CreateUserForm(UserCreationForm):
 	class Meta:
 		model = User
-		fields = ['username', 'email', 'password1', 'password2' ]
+		fields = ['email', 'password1', 'password2','first_name', 'last_name' ]
 
 class CategoryForm(ModelForm):
      class Meta:
@@ -21,8 +21,15 @@ class CategoryForm(ModelForm):
 
 class ProjectForm(forms.ModelForm):
     
-    assigned_to = forms.ModelChoiceField(queryset=User.objects.exclude(is_superuser = True))
-
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # Customize the queryset for the 'assigned_to' field
+        self.fields['assigned_to'].queryset = User.objects.exclude(is_superuser=True)
+        
+        # Modify the choices to display first and last names instead of usernames
+        self.fields['assigned_to'].choices = [(user.id, f'{user.first_name} {user.last_name}' ) for user in self.fields['assigned_to'].queryset]
+        self.fields['assigned_to'].widget.choices = [('', 'Select Project Manager')] + list(self.fields['assigned_to'].widget.choices)[1:]
     class Meta:
         model = Project_DIP
         fields =['project_name','start_date','end_date','assigned_to','donor_name','category_id','budget']
@@ -255,7 +262,7 @@ class MonthPlanForm(ModelForm):
         model = Month_Plan
         fields = ['activity_id','strategy','duration','no_Of_Participants','location_Of_Activity','main_Responsibility','supportive_Responsibility','result_Expected'] 
         widgets = {
-        'activity_id': forms.Select(choices=['test'],attrs={'class':'form-control'}),
+        'activity_id': forms.Select(choices=['test']),
         'strategy': forms.TextInput(attrs={'id':"input1" ,'onkeyup':"capitalizeText('input1')",'class':'form-control'}),
         'component': forms.TextInput(attrs={'id':"input2" ,'onkeyup':"capitalizeText('input2')",'class':'form-control'}),
         'duration': forms.TextInput(attrs={'id':"input3" ,'onkeyup':"capitalizeText('input3')",'class':'form-control'}),
@@ -265,6 +272,9 @@ class MonthPlanForm(ModelForm):
         'supportive_Responsibility': forms.TextInput(attrs={'id':"input7" ,'onkeyup':"capitalizeText('input7')",'class':'form-control'}),
         'result_Expected': forms.TextInput(attrs={'id':"input8" ,'onkeyup':"capitalizeText('input8')",'class':'form-control'}),
         }
+        labels = {
+                'activity_id': 'Activity Name',
+                }
 
 
 class WeeklyReportForm(ModelForm):
@@ -350,12 +360,16 @@ class MscForm(ModelForm):
     planning = forms.BooleanField(required=False,initial=False,widget=forms.RadioSelect(choices=((True, 'Yes'), (False, 'No'))))
     budget = forms.BooleanField(required=False,initial=False,widget=forms.RadioSelect(choices=((True, 'Yes'), (False, 'No'))))
     settlement_completed = forms.BooleanField(required=False,initial=False,widget=forms.RadioSelect(choices=((True, 'Yes'), (False, 'No'))))
+    case_study = forms.BooleanField(required=False,initial=False,widget=forms.RadioSelect(choices=((True, 'Yes'), (False, 'No'))))
+    outstation_report= forms.BooleanField(required=False,initial=False,widget=forms.RadioSelect(choices=((True, 'Yes'), (False, 'No'))))
+    event_report= forms.BooleanField(required=False,initial=False,widget=forms.RadioSelect(choices=((True, 'Yes'), (False, 'No'))))
     class Meta:
         model = Monthly_staff_clearance
-        fields = ['name_of_staff','designation','leave_taken_this_month','mpr','planning','budget','settlement_completed']
+        fields = ['name_of_staff','designation','leave_taken_this_month','mpr','planning','budget','settlement_completed','case_study','outstation_report','event_report','any_other']
         widgets={
               'name_of_staff': forms.TextInput(attrs={'class':'form-control','id':"input2" ,'onkeyup':"capitalizeText('input2')"}),
               'designation': forms.TextInput(attrs={'class':'form-control','id':"input3" ,'onkeyup':"capitalizeText('input3')"}),
+              'any_other': forms.TextInput(attrs={'id':"input1" ,'onkeyup':"capitalizeText('input1')"}),
               'leave_taken_this_month': forms.DateInput(attrs={'type' :"date"}),
         }
 
@@ -467,6 +481,9 @@ class DocumentForm(forms.ModelForm):
     class Meta:
         model = Case_study
         fields = ['case_studies']
+        widgets ={
+            'case_studies': forms.FileInput(attrs={'accept':'.pdf,.doc,.docx'})
+        }
 
 
 
@@ -481,3 +498,29 @@ class MonthlyBudgetRequestForm(ModelForm):
               'approved_budget': forms.NumberInput(),
               'requsted_budget': forms.NumberInput(),
         }
+
+
+class EditUserForm(forms.ModelForm):
+	class Meta:
+		model = User
+		fields = ['username', 'email','first_name','last_name']
+
+class EditUserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email','first_name','last_name']
+        widgets={
+            'username': forms.TextInput(attrs={'style':"width:95%;"})
+            }
+
+class EditProfileForm(ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['phone_no', 'address','designation','gender','profile_pic']
+        widgets={
+            'address': forms.Textarea(attrs={'style':"width:95%;",'cols':"30",'rows':"5"}),
+            'profile_pic': forms.FileInput(attrs={'style':"display: none;",'id':'profile-picture-input','accept':"image/png, image/jpg, image/jpeg"})
+            }
+
+    
+

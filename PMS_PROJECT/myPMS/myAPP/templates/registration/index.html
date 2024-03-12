@@ -5,11 +5,12 @@
   <meta charset="UTF-8">
   <title>YCDA</title>
   <link rel="icon" href="{% static 'images/logo.png'%}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous"><link rel="stylesheet" href="./style.css">
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
 <style>
 	body {
 		background-image: linear-gradient(135deg, #FAB2FF 10%, #1904E5 100%);
@@ -180,6 +181,36 @@
   #errorMesssage {
 	color: red;
   }
+  /* Small screens (up to 767px) */
+@media (max-width: 767px) {
+  body {
+    /* Adjust body or background styles for smaller screens */
+  }
+  .box-form {
+    flex-direction: column;
+    width: 100%;
+  }
+  .box-form .left {
+    width: 100%;
+    height: auto;
+  }
+  .box-form .right {
+    width: 100%;
+    padding-left: 5%;
+    padding-right: 5%;
+  }
+}
+
+/* Medium screens (768px to 979px) */
+@media (min-width: 768px) and (max-width: 979px) {
+  /* Adjust styles as needed */
+}
+
+/* Large screens (980px and above) */
+@media (min-width: 980px) {
+  /* Adjust styles as needed */
+}
+
 </style>
 </head>
 <body>
@@ -199,7 +230,7 @@
 	
 	
 		<div class="right">
-			<img src="{% static '\images\ycda-30-years-celebration-logo-sm.png' %}" alt="Logo" style='height: 18%;padding-top: 50px;' />
+			<img src="{% static 'images/main-logo.png' %}" alt="Logo" style='height: 18%;padding-top: 50px;' />
 			<div class="inputs">
 				<form id="stripe-login" method="POST" >
 					{% csrf_token %}
@@ -207,8 +238,8 @@
 					<input type="password" name="password" id='password' placeholder="Password" required/><br><br>
 					<select name="projectname" id="projectname" >
 						<option value = 'null'>------------------</option>
-						<option value = 'master' class='master'>Master</option>
-						<option value = 'finance' class='master'>Finance</option>
+						<option value = 'master' class='master'>HR Manager</option>
+						<option value = 'finance' class='master'>Finance Manager</option>
 						{% for project in projects %}
 							<option value = {{project.id}}>{{project.project_name}}</option>
 						{% endfor %}

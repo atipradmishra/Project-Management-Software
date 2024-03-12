@@ -45,11 +45,11 @@
     padding-right: 2px;
     font-size: 15px;
     text-align: center;
-    padding-top: 5px;
-    padding-bottom: 5px;
   }
   #customers td{
     color:#003366;
+    padding-top: 4px;
+    padding-bottom: 4px;
   }
 
   #customers tr:nth-child(even){background-color: #f2f2f2;}
@@ -57,10 +57,11 @@
   #customers tr:hover {background-color: #ddd;}
 
   #customers th {
-    padding-top: 8px;
-    padding-bottom: 8px;
     background-color: #806200;
     color: #fff;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    border: none;
   }
   @media print {
     .header {
@@ -211,7 +212,7 @@
       border: 1px solid #ddd;
       padding-left: 2px;
       padding-right: 2px;
-      font-size: 15px;
+      font-size: 14px;
       text-align: center;
     }
   
@@ -220,10 +221,10 @@
     #views tr:hover {background-color: #ddd;}
   
     #views th {
-      padding-top: 5px;
-      padding-bottom: 5px;
+      padding-top: 1px;
+      padding-bottom: 1px;
       background-color: #806200;
-      color: black;
+      color: #fff;
       text-align: center;
     }
 </style>
@@ -244,28 +245,36 @@
             <table id="views">
                 <thead>
                     <tr>
-                        <th style='width:2%;font-size:12px'>Sl. No.</th>
-                        <th style="width:20%">Name of Staff</th>
-                        <th style="width:15%">Designation</th>
-                        <th>Leave taken in this Month</th>
-                        <th style='background-color: #ffda65;color:black;'>MPR Status for Report Return</th>
-                        <th style='background-color: #ffda65;color:black;'>Planning Status for Report Return</th>
-                        <th style='background-color: #ffda65;color:black;'>Budget Status for Report Return</th>
-                        <th style='background-color: #ffda65;color:black;'>Settelement Status for Report Return</th>
-                        <th class='no-print' style='width:6%'>Submit<input type="checkbox" id="select-all-checkboxs"></th>
+                        <th style='width:1%;font-size:12px'>Sl. No.</th>
+                        <th style="width:15%">Name of Staff</th>
+                        <th style="width:10%">Designation</th>
+                        <th style="width:8%">Leave taken in this Month</th>
+                        <th style='background-color: #ffda65;color:black;width:7%'>MPR Status for Report Return</th>
+                        <th style='background-color: #ffda65;color:black;width:7%'>Planning Status for Report Return</th>
+                        <th style='background-color: #ffda65;color:black;width:7%'>Budget Status for Report Return</th>
+                        <th style='background-color: #ffda65;color:black;width:7%'>Settelement Status for Report Return</th>
+                        <th style='background-color: #ffda65;color:black;width:7%'>Case Study Submited</th>
+                        <th style='background-color: #ffda65;color:black;width:7%'>OutStation Report Submited</th>
+                        <th style='background-color: #ffda65;color:black;width:7%'>Event Report Submited</th>
+                        <th style='background-color: #ffda65;color:black;width:7%'>Any Other</th>
+                        <th class='no-print' style='width:6%'>Submit <input type="checkbox" id="select-all-checkboxs"></th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for x in msc %}
                     <tr>
-                        <td style="text-align:center;">{{ forloop.counter }}</td>
-                        <td style="text-align:center;">{{ x.name_of_staff }}</td>
-                        <td style="text-align:center;">{{ x.designation }}</td>
-                        <td style="text-align:center;">{{ x.leave_taken_this_month }}</td>
-                        <td style="text-align:center;">{% if x.mpr == 1 %}Yes{% else %}No{% endif %}</td>
-                        <td style="text-align:center;">{% if x.planning == 1 %}Yes{% else %}No{% endif %}</td>
-                        <td style="text-align:center;">{% if x.budget == 1 %}Yes{% else %}No{% endif %}</td>
-                        <td style="text-align:center;">{% if x.settlement_completed == 1 %}Yes{% else %}No{% endif %}</td>
+                      <td style="text-align:center;">{{ forloop.counter }}</td>
+                      <td style="text-align:center;">{{ x.name_of_staff }}</td>
+                      <td style="text-align:center;">{{ x.designation }}</td>
+                      <td style="text-align:center;">{{ x.leave_taken_this_month }}</td>
+                      <td style="text-align:center;">{% if x.mpr == 1 %}Yes{% else %}No{% endif %}</td>
+                      <td style="text-align:center;">{% if x.planning == 1 %}Yes{% else %}No{% endif %}</td>
+                      <td style="text-align:center;">{% if x.budget == 1 %}Yes{% else %}No{% endif %}</td>
+                      <td style="text-align:center;">{% if x.settlement_completed == 1 %}Yes{% else %}No{% endif %}</td>
+                      <td style="text-align:center;">{% if x.case_study == 1 %}Yes{% else %}No{% endif %}</td>
+                      <td style="text-align:center;">{% if x.outstation_report == 1 %}Yes{% else %}No{% endif %}</td>
+                      <td style="text-align:center;">{% if x.event_report == 1 %}Yes{% else %}No{% endif %}</td>
+                      <td style="text-align:center;">{% if x.any_other != null %}{{x.any_other}}{% else %}N/A{% endif %}</td>
                         {% if x.is_submited == 1 %}
                         <td class="no-print">Submited</td>
                         {% comment %} {% elif x.is_plan_approved == 1 %}
@@ -298,6 +307,7 @@
           </div>
           <button onclick="printPage()" class='butn'><i class="fa fa-print"></i> Print</button>
           <button class='butn'><i class="fa-solid fa-filter"></i> Filter</button>
+          <a href="{% url 'myAPP:complince-home' project.pk %}" class='butn'><i class="fa-solid fa-left-long"></i> Back</a>
     </div>
     {% else %}
     <center><h2 style='font-family:"Calibri", sans-serif;margin-left:20px;'><u>Monthly Budget Requests</u></h2></center>
@@ -306,23 +316,27 @@
     <div id="successPopup" class="popup2">
       <img src="{% static 'images\tick.png' %}">
       <h2>Thank You!</h2>
-      <p style='font-size:20px'>Thanks!!!! Your Budget Request has been successfully submitted.</P>
+      <p style='font-size:20px'>Thanks!!!! Your Monthly Staff Clearances has been successfully submitted.</P>
       <button type='button' onclick='submitForm()'>Ok</button>
     </div>   
-  </div>
+</div>
 <div>
     <table id="customers">
             <thead>
                 <tr>
-                    <th style='width:2%;font-size:12px'>Sl. No.</th>
-                    <th style="width:20%">Name of Staff</th>
-                    <th style="width:15%">Designation</th>
-                    <th>Leave taken in this Month</th>
-                    <th style='background-color: #ffda65;color:black;'>MPR Status for Report Return</th>
-                    <th style='background-color: #ffda65;color:black;'>Planning Status for Report Return</th>
-                    <th style='background-color: #ffda65;color:black;'>Budget Status for Report Return</th>
-                    <th style='background-color: #ffda65;color:black;'>Settelement Status for Report Return</th>
-                    <th class='no-print' style='width:4%'>Edit</th>
+                    <th style='width:1%;font-size:12px'>Sl. No.</th>
+                    <th style="width:15%">Name of Staff</th>
+                    <th style="width:10%">Designation</th>
+                    <th style="width:8%">Leave taken in this Month</th>
+                    <th style='background-color: #ffda65;color:black;width:8%'>MPR Status for Report Return</th>
+                    <th style='background-color: #ffda65;color:black;width:8%'>Planning Status for Report Return</th>
+                    <th style='background-color: #ffda65;color:black;width:8%'>Budget Status for Report Return</th>
+                    <th style='background-color: #ffda65;color:black;width:8%'>Settelement Status for Report Return</th>
+                    <th style='background-color: #ffda65;color:black;width:8%'>Case Study Submited</th>
+                    <th style='background-color: #ffda65;color:black;width:8%'>OutStation Report Submited</th>
+                    <th style='background-color: #ffda65;color:black;width:8%'>Event Report Submited</th>
+                    <th style='background-color: #ffda65;color:black;width:8%'>Any Other</th>
+                    <th class='no-print' style='width:2%'>Edit</th>
                 </tr>
             </thead>
             <tbody>
@@ -336,12 +350,16 @@
                     <td style="text-align:center;">{% if x.planning == 1 %}Yes{% else %}No{% endif %}</td>
                     <td style="text-align:center;">{% if x.budget == 1 %}Yes{% else %}No{% endif %}</td>
                     <td style="text-align:center;">{% if x.settlement_completed == 1 %}Yes{% else %}No{% endif %}</td>
+                    <td style="text-align:center;">{% if x.case_study == 1 %}Yes{% else %}No{% endif %}</td>
+                    <td style="text-align:center;">{% if x.outstation_report == 1 %}Yes{% else %}No{% endif %}</td>
+                    <td style="text-align:center;">{% if x.event_report == 1 %}Yes{% else %}No{% endif %}</td>
+                    <td style="text-align:center;">{% if x.any_other %}{{x.any_other}}{% else %}N/A{% endif %}</td>
                     {% if x.is_submited == 1 %}
                         <td class="no-print">Submited</td>
                     {% elif x.is_approved == 1 %}
                         <td style="color:Green;text-align:center;" class='no-print'><i class="fa-solid fa-check"></i>Approved</td>
                     {% else %}
-                        <td onclick="window.location='{% url 'myAPP:update_MonthPlan' x.id %}';" style="cursor: pointer;" class="no-print"><label style="color: red;cursor: pointer;" >&#9998;Edit</label></td>
+                        <td onclick="window.location='{% url 'myAPP:edit-msc' x.id %}';" style="cursor: pointer;" class="no-print"><label style="color: red;cursor: pointer;" >&#9998;Edit</label></td>
                     {% endif %}
                 </tr>
                 {% endfor %}

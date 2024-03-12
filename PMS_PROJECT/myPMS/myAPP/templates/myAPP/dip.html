@@ -274,12 +274,14 @@
     }
 </style>
 <div>
-  <h2 style='font-family:"Calibri", sans-serif;margin-left:20px;margin-top:30px'>Detail Implementation Plan - DIP</h2>
+  <h2 style='font-family:"Calibri", sans-serif;margin-left:20px;margin-top:30px'>Detail Implementation Plan - DIP ({{project.start_date|date:"F Y"}} to {{project.end_date|date:"F Y"}})</h2>
   <div class="helpers" style='margin-left:20px;margin-top:10px'>
     <img src="{% static 'images\main-logo.png' %}" style='float:right;margin-right: 10px;width:10%'></img>
       {% if user == 1 %}
         <button class='butn' id='add-more'><i class="fa-solid fa-plus"></i> Add Component</button>
+        <button onclick="upload()" class='butn'><input type="file" name="upload" id="upload"style="display: none;"><i class="fa-solid fa-cloud-arrow-up"></i> Upload</button>
         <button onclick="openPopup()" class='butn'><i class="fa fa-eye"></i> View</button>
+        <button class='butn'><i class="fa-solid fa-filter"></i> Filter</button>
         <div id="popup" class="popup">
         <div class="popup-content">
           <span class="close" onclick="closePopup()">&times;</span>
@@ -363,8 +365,9 @@
         </div>
         </div>
         <button onclick="printPage()" class='butn'><i class="fa fa-print"></i> Print</button>
+        <a href="{% url 'myAPP:home' project.pk %}" class='butn'><i class="fa-solid fa-left-long"></i> Back</a>
       {% else %}
-        <button href="{% url 'myAPP:home' project.pk %}" class='butn'>Back</button>
+        <a href="{% url 'myAPP:home' project.pk %}" class='butn'>Back</a>
       {% endif %}
   </div>
   <table id="customers">
@@ -596,5 +599,20 @@
   function closePopup() {
     document.getElementById("popup").style.display = "none";
   }
+</script>
+<script>
+  function upload() {
+    document.getElementById('upload').click();
+  }
+  document.getElementById('upload').addEventListener('change', function(event) {
+    const input = event.target;
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        document.querySelector('.profile-pic').src = e.target.result;
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  });
 </script>
 {% endblock  %}

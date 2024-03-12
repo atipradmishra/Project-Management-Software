@@ -39,8 +39,9 @@
     background-color: #45a049;
   }
 </style>
-<div style='margin:30px;'>
-  <h2 style='color:#003366;margin-bottom:30px;'>Add/Edit Event</h2>
+<div style='margin:2vw;'>
+  <a href="{% url 'myAPP:index6' project.pk %}" style='color:#1775f1;font-weight:bold'><i class="fa-solid fa-left-long"></i> Back</a>
+  <center><h2 style='color:#003366;margin-bottom:30px;'>Add/Edit Event</h2></center>
     <form  method="POST">
       {% csrf_token %}
       <label>Event Name : </label>

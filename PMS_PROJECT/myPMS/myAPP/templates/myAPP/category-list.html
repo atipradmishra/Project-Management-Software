@@ -1,6 +1,6 @@
 {% extends 'sidenav/sidenav_ceo.html' %}
 {% load static %}
-{% block title %} Project List {% endblock %}
+{% block title %} Categories {% endblock %}
 {% block content %}
 <style>
 	@media print {
@@ -96,51 +96,25 @@
         cursor: pointer;
       }
 </style>
-<h1 class="title">Projects</h1>
-<div class="info-data" style='margin-top:0px'>
-    <div class="card">
-        <div class="head">
-            <div>
-                <h4>What are You looking for?</h4>
-                <form action="#">
-                    <div class="form-group">
-                        <input type="text" class="search-input" placeholder="Search...">
-                        <i class='bx bx-search icon' ></i>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+<h1 class="title">Categories</h1>
 <div class="data">
     <div class="content-data" style='height:70vh;overflow: auto;'>
         <div class="head" style='margin-top:20px;overflow-y:auto;overflow-x:hidden;margin: -5px;'>
             <table id="customers">
                 <thead>
                   <tr>
-                    <th style='width:5%;font-size:12px'>Sl. No.</th>
-                    <th>Project Name</th>
-                    <th>Category</th>
-                    <th>Budget(INR)</th>
-                    <th style='width:10%'>Duration</th>
-                    <th>Project Manager</th>
-                    <th>Status</th>
-                    <th class="no-print" >Actions</th>
+                    <th>Sl. No.</th>
+                    <th>Category Name</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                 {% for a in projects %}
+                 {% for a in categories %}
                     <tr>
                         <td>{{ forloop.counter }}</td>
-                        <td>{{ a.project_name }}</td>
-                        <td>{{ a.category_id.Category_name }}</td>
-                        <td>{{a.budget}}</td>
-                        <td>{{a.start_date| date:'M. Y' }} to {{a.end_date| date:'M. Y' }}</td>
-                        <td>{{a.assigned_to.first_name}} {{a.assigned_to.last_name}}</td>
-                        <td>Active</td>
-                        <td><a href='{%url 'myAPP:update-project' a.id %}'><button class="btn"><i class="fa-regular fa-pen-to-square"></i></button></a> <button class="btn"><i class="fa-solid fa-trash"></i></button></td>
-                    </tr>
-            
+                        <td>{{ a.Category_name }}</td>
+                        <td><a href='{%url 'myAPP:edit-category' a.id %}'><button class="btn"><i class="fa-regular fa-pen-to-square"></i></button></a> <button class="btn"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>          
                  {% endfor %}
                 </tbody>
             </table> 

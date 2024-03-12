@@ -1,14 +1,15 @@
-{% extends "myAPP/ceo_dashboard.html" %}
+{% extends "myAPP/dashboard_ceo.html" %}
 {% load static %}
 {% block title %} Profile {% endblock %}
 {% block content %}
 <style>
     .profile-pic {
-        width: 150px;
-        height: 150px;
+        width: 15vw;
+        height: 15vw;
         border-radius: 50%;
         object-fit: cover;
         margin: 0 auto 20px;
+        cursor: pointer;
       }
       .profile-info {
         margin-bottom: 20px;
@@ -25,18 +26,120 @@
       .edit-button:hover {
         background-color: #0056b3;
       }
+      .two-col {
+        overflow: hidden;
+        margin-top:2vh;
+    }
+    
+    .two-col .col1,
+    .two-col .col2 {
+        width: 50%;
+    }
+    
+    .two-col .col1 {
+        float: left;
+    }
+    
+    .two-col .col2 {
+        float: right;
+    }
+    
+    .two-col label {
+        display: block;
+    }
+    input[type=text],[type=email],[type=number], select ,textarea{
+      width: 90%;
+      padding: 12px 20px;
+      margin: 10px 0;
+      display: inline-block;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+      background-color: #e7e6e6;
+    }
+    .button-cointainer{
+      display: flex;
+      justify-content: flex-end;
+      align-items: flex-end;
+      gap: 1vw;
+    }
 </style>
-<div class="data" style='margin-top:60px'>
+<div class="data" style='margin-top:40px'>
+  <div style='width:25%'>
     <div class="content-data" style='text-align: center;'>
-        <img class="profile-pic" src="{% static 'images/profile.png' %}" alt="Profile Picture">
-        <div class="profile-info">
-            <h2>{{ request.user.first_name }} {{ request.user.last_name }}</h2>
-            <p>Designation: {{ request.user.profile.designation }}</p>
-            <p>Email: {{ request.user.email }}</p>
-            <p>Phone Number: {{ request.user.profile.phone_no }}</p>
-            <p>Location: {{ request.user.profile.address }}</p>
-          </div>
-          <button class="edit-button">Edit Profile</button>
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <img class="profile-pic" src="{% if profile.profile_pic %}{{ profile.profile_pic.url }}{% else %}{% static 'images/profile.png' %}{% endif %}" alt="Profile Picture" onclick="chooseProfilePicture()">
+        {{ profileform.profile_pic}}
+      <div class="profile-info">
+          <h2>{{ request.user.first_name }} {{ request.user.last_name }}</h2>
+          <p style='font-size:12px;color: #9fa8b9;'>Designation: {{ request.user.profile.designation }}</p>
+          <p style='font-size:12px;color: #9fa8b9;'>Email: {{ request.user.email }}</p>
+          <p style='font-size:12px;color: #9fa8b9;'>Phone Number: {{ request.user.profile.phone_no }}</p>
+          <p style='font-size:12px;color: #9fa8b9;'>Location: {{ request.user.profile.address }}</p>
+        </div>
     </div>
+  </div>
+  <div style='width:70%'>
+    <div class="content-data" style='text-align: start;'>
+        <h5 style='color:#527bff;font-size: 15px'>User Name</h5>
+        {{ form.username }}
+        <h5 style='color:#527bff;font-size: 15px'>Personal Details</h5>
+        <div class="two-col">
+          <div class="col1">
+              <label for="field1">First Name:</label>
+              {{ form.first_name }}
+          </div>
+
+          <div class="col2">
+              <label for="field2">Last Name:</label>
+              {{ form.last_name }}
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="col1">
+              <label for="field1">Email:</label>
+              {{ form.email }}
+          </div>
+
+          <div class="col2">
+              <label for="field2">Phone no.:</label>
+              {{ profileform.phone_no }}
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="col1">
+              <label for="field1">Designation:</label>
+              {{ profileform.designation }}
+          </div>
+
+          <div class="col2">
+              <label for="field2">Gender:</label>
+              {{ profileform.gender }}
+          </div>
+        </div>
+        <h5 style='color:#527bff;font-size: 15px'>Address</h5>
+          {{ profileform.address }}
+        <div class="button-cointainer">
+          <input type='submit' class="edit-button" value='Update'/>
+        </div>
+      </form>
+  </div>
 </div>
+<script>
+  function chooseProfilePicture() {
+    document.getElementById('profile-picture-input').click();
+  }
+  document.getElementById('profile-picture-input').addEventListener('change', function(event) {
+    const input = event.target;
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        document.querySelector('.profile-pic').src = e.target.result;
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  });
+</script>
+
 {% endblock %}

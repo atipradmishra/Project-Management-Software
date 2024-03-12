@@ -22,30 +22,34 @@
       width: 100%;
     }
     body {
-        margin: 0;
-        background: #f5f7fb;
-        height: 100vh;
-        max-width: 100%;
-        overflow-x: hidden;
+      background:  #f5f7fb;
+      overflow-x: hidden;
+      margin: 0;
+      height: 100vh;
+      max-width: 100%;
     }
     a {
       text-decoration: none;
     }
     body::-webkit-scrollbar {
-      display: none;  
+      width: 10px;   
     }
     body::-webkit-scrollbar-thumb {
-      display: none;
+      background-image: linear-gradient(0deg, rgba(23,117,241,1) 0%, rgba(34,193,195,1) 100%);
+    box-shadow: inset 2px 2px 5px 0 rgba(#fff, 0.5);
+    border-radius: 100px;
     }
     body::-webkit-scrollbar-track {
-      display:none;
+      background-color: #e4e4e4;
+    border-radius: 100px;
     }
     .top-bar{
       background:#1f1c2c;
       padding:0;
       overflow:hidden;
+      height: 30px;
       font-family:'Fira Sans',sans-serif;
-      width: 100%;
+      width: auto;
     }
     .top-bar .top-bar-content{
       display:flex;
@@ -67,6 +71,7 @@
       text-transform:uppercase;
       font-weight:400;
       margin-right:50px;
+      margin-left:10px;
     }
     .top-bar .social-links .social-list .social-item{
       color:#fff;
@@ -99,16 +104,18 @@
     .top-bar .contact-links .contact-list{
       display:flex;
       justify-content:flex-end;
-      line-height:20px;
-      margin:0 -20px;
     }
-    .top-bar .contact-links .contact-list .contact-item{
-      color:#fff;
+    .top-bar .contact-links .contact-list .contact{
+      width: 35%;
       display:block;
+    }
+    .top-bar .contact-links .contact-list .contact .contact-item{
+      position:relative;
+      color:#ffffff;
       text-decoration: none;
       line-height:20px;
       text-align:center;
-      margin:0 20px;
+      margin:0 5px;
       font-size:12px;
       font-weight:400;
     }
@@ -405,8 +412,8 @@
             <div class="contact-links" id="scroll-container">
               <div class="contact-list">
                 <div style='margin-right:400px;color:#fff' id="scroll-text">WELCOME TO YCDA PROJECT MANAGEMENT SYSTEM</div>
-                <a href="tel:07750018377" class="contact-item"><i class="fas fa-fw fa-phone fa-flip-horizontal"></i> 07750018377</a>
-                <a href="mailto:info@ycda.in" class="contact-item"><i class="fas fa-fw fa-envelope"></i> info@ycda.in</a>
+                <a href="tel:07750018377" class="contact-item" style="color:#ffffff;font-size:1vw"><i class="fas fa-fw fa-phone fa-flip-horizontal"></i> 07750018377</a>
+                <a href="mailto:info@ycda.in" class="contact-item" style="color:#ffffff;font-size:1vw"><i class="fas fa-fw fa-envelope"></i> info@ycda.in</a>
               </div>
             </div>
           </div>
@@ -417,9 +424,10 @@
       {% if user == 1 %}
       <nav style='width:100%'>
         <div class="logo">
-          <a href="#"><img src="{% static '\images\ycda-30-years-celebration-logo-sm.png' %}" alt="Logo"></a>
+          <a href="#"><img src="{% static 'images/main-logo.png' %}" alt="Logo"></a>
         </div>
         <ul class="menu">
+          <li><a href="{%url 'myAPP:pm-home' project.id %}" class="options">Dashboard</a></li>
           <li><a href="{% url 'myAPP:home' project.id %}" class="options">Planning</a></li>
           <li><a href="{% url 'myAPP:manager-reporting' project.id %}" class="options">Reporting</a></li>
           <li><a href="{% url 'myAPP:complince-home' project.id %}" class="options">Compliance</a></li>
@@ -439,7 +447,7 @@
       {% else %}
       <nav>
         <div class="logo">
-          <a href="#"><img src="{% static "images/ycda-30-years-celebration-logo-sm.png" %}"></a>
+          <a href="#"><img src="{% static "images/main-logo.png" %}"></a>
         </div>
         <ul class="menu">
           <li><a href="{%url 'myAPP:masterhome' %}" class="options">Dashboard</a></li>
@@ -481,7 +489,11 @@
             <div class="menus">
               <h3>{{ request.user.first_name }} {{ request.user.last_name }}<br><spam>{{ request.user.groups.first.name }}</spam></h3>
               <ul>
-                <li><a href="#"><i class="fa-regular fa-circle-user" style='font-size:20px;margin-right:10px;'></i></i> Profile</li></a>
+                {% if user == 1%}
+                <li><a href="{% url 'myAPP:profile' project.id %}"><i class="fa-regular fa-circle-user" style='font-size:20px;margin-right:10px;'></i></i> Profile</li></a>
+                {% else %}
+                <li><a href="{% url 'myAPP:ceo_profile' %}"><i class="fa-regular fa-circle-user" style='font-size:20px;margin-right:10px;'></i></i> Profile</li></a>
+                {% endif %}
                 <li><a href="{% url 'myAPP:logout'%}"><i class="fa-solid fa-arrow-right-from-bracket" style='font-size:18px;margin-right:20px'></i> Log Out</li></a>
               </ul>
           </li>

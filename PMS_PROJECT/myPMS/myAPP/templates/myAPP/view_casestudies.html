@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+ <h2>Uploaded Files</h2>
+ <ul>
+    {% for file in files %}
+      <li>
+        {% if file.file.name.endswith('.pdf') %}
+          <!-- Display PDF files using the <embed> tag -->
+          <embed src="{{ file.file.url }}" type="application/pdf" width="600" height="500" />
+        {% elif file.file.name.endswith('.doc') or file.file.name.endswith('.docx') %}
+          <!-- Display DOC files using Google Docs Viewer -->
+          <iframe src="https://docs.google.com/viewer?url={{ file.file.url|urlencode }}&embedded=true" width="600" height="500"></iframe>
+        {% else %}
+          <!-- Fallback for other file types -->
+          <a href="{{ file.file.url }}">{{ file.file.name }}</a>
+        {% endif %}
+      </li>
+    {% endfor %}
+ </ul>
+{% endblock %}

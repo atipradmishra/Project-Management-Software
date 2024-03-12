@@ -15,8 +15,8 @@
 	
 	<!-- SIDEBAR -->
 	<section id="sidebar">
-		<div class="brand"><i class='icon'><img src="{% static "images/ycda-30-years-celebration-logo-sm.png" %}"></i></div>
 		{% if user == 1 %}
+		<a href="{% url 'myAPP:pm-home' project.id %}"><div class="brand"><i class='icon'><img src="{% static "images/main-logo.png" %}"></i></div></a>
 			<ul class="side-menu" style='margin-top: 30%'>
 				<li><a href="{% url 'myAPP:pm-home' project.id %}" ><i class="fa-solid fa-house-chimney icon"></i> Dashboard</a></li>
 				<li><a href="{% url 'myAPP:home' project.id %}"><i class="fa-brands fa-product-hunt icon"></i>Planning</a></li>
@@ -25,6 +25,7 @@
 				<li><a href="{% url 'myAPP:governance-home' project.id %}"><i class="fa-solid fa-circle-h icon"></i>Governance</a></li>
 			</ul>
 		{% else %}
+		<a href="{% url 'myAPP:masterhome'%}"><div class="brand"><i class='icon'><img src="{% static "images/main-logo.png" %}"></i></div></a>
 			<ul class="side-menu">
 			<li><a href="{%url 'myAPP:masterhome' %}" ><i class="fa-solid fa-house-chimney icon"></i> Dashboard</a></li>
 			<li class="divider" data-text="main">Main</li>
@@ -71,12 +72,12 @@
 			<li><a href="#"><i class="fa-solid fa-bullhorn icon"></i> Broadcast Message</a></li>
 			<li class="divider" data-text="Adds">Adds</li>
 			<li><a href="{%url 'myAPP:add_Project' %}"><i class="fa-solid fa-plus icon"></i> Add Project</a></li>
-			<li><a href="#"><i class="fa-solid fa-user-plus icon"></i> Add User</a></li>
-			<li><a href="{%url 'myAPP:add-category' %}"><i class="fa-solid fa-plus icon"></i> Add Categories</a></li>
+			<li><a href="{%url 'myAPP:add-category' %}"><i class='bx bx-add-to-queue icon'></i> Add Category</a></li>
+			<li><a href="{%url 'myAPP:add-user' %}"><i class="fa-solid fa-user-plus icon"></i> Add User</a></li>
 			<li class="divider" data-text="Lists">Lists</li>
 			<li><a href="{%url 'myAPP:Project-list' %}"><i class="fa-solid fa-diagram-project icon"></i> Projects</a></li>
-			<li><a href="#"><i class='bx bx-category-alt icon'></i> Categories</a></li>
-			<li><a href="#"><i class="fa-solid fa-users icon"></i> Users</a></li>
+			<li><a href="{%url 'myAPP:Category-list' %}"><i class='bx bx-category-alt icon'></i> Categories</a></li>
+			<li><a href="{%url 'myAPP:user-list' %}"><i class="fa-solid fa-users icon"></i> Users</a></li>
 			</ul>
 		{% endif %}
 	</section>
@@ -132,7 +133,7 @@
 		<!-- NAVBAR -->
 		<i class="fa-solid fa-bars toggle-sidebar" style='display:flex;margin:10px;cursor:pointer;'></i>
 		<div class='action'>
-			<img class='profile' src='{% static 'images/profile.png' %}' onclick='menuToggle();'>
+			<img class="profile" src="{% if profile.profile_pic %}{{ profile.profile_pic.url }}{% else %}{% static 'images/profile.png' %}{% endif %}" alt="Profile Picture" onclick='menuToggle();'>
 			<div class="menu" style='z-index:1;'>
 				<h3>{{ request.user.first_name }} {{ request.user.last_name }}<br><spam>{{ request.user.profile.designation }}</spam></h3>
 				<ul>

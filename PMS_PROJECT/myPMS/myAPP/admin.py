@@ -4,13 +4,17 @@ from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 from import_export.admin import ImportExportMixin
 from import_export.admin import ImportExportModelAdmin
-from .resources import ProjectResource, UserResource
+from .resources import ProfileResource, ProjectResource, UserResource
 
 class CustomUserAdmin(ImportExportMixin, UserAdmin):
     resource_class = UserResource
 
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
+
+@admin.register(Profile)
+class CustomProfileAdmin(ImportExportModelAdmin):
+    resource_class = ProfileResource
 
 @admin.register(Project_DIP)
 class CustomProjectAdmin(ImportExportModelAdmin):
@@ -21,9 +25,31 @@ class ProjectAdmin(admin.ModelAdmin):
   list_filter = ('period','project_name')
   search_fields = ['project_name','period']
 # admin.site.register(Project_DIP, ProjectAdmin)
-admin.site.register(Profile)
+# admin.site.register(Profile)
+  
+class Dip_detailsAdmin(admin.ModelAdmin):
+    list_display = ('project_id', 'component','tracking_year', 'created_at', 'updated_at')
+    list_filter = ('project_id', 'created_at', 'updated_at')
+    search_fields = ('project_id__name', 'component')
+
+    fieldsets = (
+        (None, {
+            'fields': ('project_id', 'component','tracking_year', )
+        }),
+        ('Date Information', {
+            'fields': ('created_at','created',  'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    readonly_fields = ('created_at', 'updated_at')
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return self.readonly_fields + ('project_id', 'component')
+        return self.readonly_fields
+
+admin.site.register(Dip_details, Dip_detailsAdmin)
 admin.site.register(Activity_timeframe)
-admin.site.register(Dip_details)
 admin.site.register(Project_Category)
 admin.site.register(Dip_Activities)
 admin.site.register(Dip_Process)

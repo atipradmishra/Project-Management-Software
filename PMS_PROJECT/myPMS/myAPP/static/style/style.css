@@ -26,6 +26,7 @@
 }
 
 html {
+	font-family: 'Open Sans', sans-serif;
 	height: 100vh;
 	width: 100%;
 }
@@ -236,8 +237,8 @@ li {
   }
 .action .profile{
 	position: relative;
-	width: 60px;
-	height: 60px;
+	width: 4vw;
+	height: 4vw;
 	border-radius: 50%;
 	cursor: pointer;
   }
@@ -788,27 +789,27 @@ main .btn-send:hover {
   .top-bar .contact-links .contact-list{
     display:flex;
     justify-content:flex-end;
-    padding-right: 20px;
   }
   .top-bar .contact-links .contact-list .contact{
-	width: auto;
+	width: 35%;
 	display:block;
   }
   .top-bar .contact-links .contact-list .contact .contact-item{
+	position:relative;
     color:#fff;
     text-decoration: none;
-    line-height:0px;
+	line-height:20px;
     text-align:center;
-    margin:0 10px;
+    margin:0 5px;
     font-size:12px;
     font-weight:400;
   }
   #scroll-container {
     overflow: hidden;
+	width: 100%;
   }
   
   #scroll-text {
-    margin-right:170px;
     color:#fff;
     /* animation properties */
     -moz-transform: translateX(100%);
@@ -817,7 +818,7 @@ main .btn-send:hover {
     
     -moz-animation: my-animation 15s linear infinite;
     -webkit-animation: my-animation 15s linear infinite;
-    animation: my-animation 12s linear infinite;
+    animation: my-animation 20s linear infinite;
   }
   
   /* for Firefox */
