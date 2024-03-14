@@ -37,7 +37,7 @@ class Dip_detailsAdmin(admin.ModelAdmin):
             'fields': ('project_id', 'component','tracking_year', )
         }),
         ('Date Information', {
-            'fields': ('created_at', 'updated_at'),
+            'fields': ('created_at',  'updated_at'),
             'classes': ('collapse',)
         }),
     )

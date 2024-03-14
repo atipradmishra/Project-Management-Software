@@ -3,7 +3,7 @@
 {% block title %} Report {% endblock %}
 {% block content %}
 <style>
-  input[type=text], select {
+  input[type=text],[type=number], select {
     width: 70%;
     padding: 12px 20px;
     margin: 10px 0;
@@ -40,13 +40,16 @@
   }
 </style>
 
-<div style='margin:50px;'>
+<div style='margin:1vw;'>
+  <a href="{% url 'myAPP:monthly-reporting' project.pk %}" style='color:#1775f1;font-weight:bold'><i class="fa-solid fa-left-long"></i> Back</a>
   <h2 style='color:#d378f8;margin-bottom:50px;'>Add Achievement</h2>
   <div> 
     <form  method="POST">
       {% csrf_token %}
       <label>Achievement : </label>
       {{ form.achievements }}
+      <label>Target Achived : </label>
+      {{ form.target_achived }}
       <input type="submit" value="Save">
     </form>
   </div>

@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import login, authenticate,logout
 from django.contrib import messages
 from django.shortcuts import render, redirect
+import pandas as pd
 from .models import *
 from .forms import ActivityAproveForm, ActivityMatrixAproveForm, ActivityMatrixCeoForm, Ad_clerance_Form, AmRemarkForm, AppraisalForm, AssetForm, CategoryForm, CeoAproveForm, DipActivitiesForm, DipComponentForm, DipIndicatorForm, DipMovForm, DipOutcomeForm, DipProcessForm, DipRemarkForm, DipUpdateForm, DocumentForm, EditProfileForm, EditUserForm, EventPlanAproveForm, EventRemarkForm, LeaveForm, LeaverequestForm, LocationCountForm, MPCForm, MonthlyBudgetRequestForm, MonthlyLeaveForm, MonthlyPlanAproveForm, MonthlyReportUpdateForm, MonthlyachievementForm, MonthlybacklogForm, MonthlyhighlightForm, MscForm, OutstationForm, PlanRemarkForm, ProjectForm, ReportAproveForm, ReportRemarkForm, TimeFrameForm, WeekOneForm, WeekTwoForm, WeeklyReportForm, MonthPlanForm,eventForm, pr_clerance_Form, pr_clerance_activity_Form
 from django.contrib import messages
@@ -75,6 +76,8 @@ def home(request,pk):
     user=0
     if user_belongs_to_group(request.user,'Project Manager'):
         user = 1
+    elif user_belongs_to_group(request.user,'HR Manager'):
+        user = 2
     else:
         user = 0
     context = {
@@ -147,11 +150,7 @@ def userhome(request,pk):
 
 login_required(login_url='login')
 def hrhome(request):
-    user=0
-    if user_belongs_to_group(request.user,'Hr Manager'):
-        user = 1
-    else:
-        user = 0
+    user=2
     projects = Project_DIP.objects.all()
     categories = Project_Category.objects.all()
     profile = Profile.objects.get(user=request.user)
@@ -348,6 +347,7 @@ def add_DIP_Details(request,pk):
         user = 0
       project = get_object_or_404(Project_DIP, id=pk)
       projects = Project_DIP.objects.all()
+      trackingyear = TrackingYear.objects.all()
       categories = Project_Category.objects.all()
       component = project.dip_details_set.all()
       activities = Dip_Activities.objects.filter(project_detail_id__in=component)
@@ -360,6 +360,10 @@ def add_DIP_Details(request,pk):
       )
       formset = MyFirstModelFormSet
       if request.method == 'POST':
+        excel_file = request.FILES['excel_file']
+        # Assuming the project ID is passed as a GET parameter
+        if excel_file:
+            import_excel_data(excel_file, project.id)
         formset = MyFirstModelFormSet(request.POST)
         if formset.is_valid():
          for form in formset:
@@ -388,9 +392,66 @@ def add_DIP_Details(request,pk):
         'activities':activities,
         'user': user,
         'projects': projects,
-        'categories':categories
+        'categories':categories,
+        'TrackingYear':trackingyear
       }
       return render(request,'myAPP/dip.html',context)
+
+
+def import_excel_data(file_path,pk):
+    project = Project_DIP.objects.get(id=pk)
+    df = pd.read_excel(file_path)
+    for index, row in df.iterrows():
+        dip_details, _ = Dip_details.objects.get_or_create(component=row['Components'], project_id=project)
+
+        dip_activity, _ = Dip_Activities.objects.get_or_create(
+            project_detail_id=dip_details,
+            activity_name=row['Activities']
+        )
+        dip_activity.objectives = row['Objectives']
+        dip_activity.target_participants = row['Target Participants']
+        dip_activity.coverage = row['Coverage']
+        dip_activity.duration = row['Duration']
+        dip_activity.save()
+
+        # Create related objects Dip_Process, Dip_Indicator, Dip_expected_out_come, Dip_mov
+        if not pd.isna(row['Process']):
+            processes = row['Process'].split('\n')  
+            for process in processes:
+                process = process.strip()  
+                if process.startswith("- "):  # Remove the prefix
+                    process = process[2:]
+                if process:
+                    Dip_Process.objects.get_or_create(project_activity_id=dip_activity, process=process)
+
+        if not pd.isna(row['Indicator']):
+            indicators = row['Indicator'].split('\n')  
+            for indicator in indicators:
+                indicator = indicator.strip()  
+                if indicator.startswith("- "):
+                    indicator = indicator[2:]
+                if indicator:
+                    Dip_Indicator.objects.get_or_create(project_activity_id=dip_activity, indicator=indicator)
+
+        if not pd.isna(row['Expected Outcome']):
+            outcomes = row['Expected Outcome'].split('\n')  
+            for outcome in outcomes:
+                outcome = outcome.strip() 
+                if outcome.startswith("- "): 
+                    outcome = outcome[2:]
+                if outcome:
+                    Dip_expected_out_come.objects.get_or_create(project_activity_id=dip_activity, expected_out_come=outcome)
+
+        if not pd.isna(row['MOV']):
+            movs = row['MOV'].split('\n')
+            for single_mov in movs:
+                single_mov = single_mov.strip()
+                if single_mov.startswith("- "):
+                    single_mov = single_mov[2:]
+                if single_mov:
+                    Dip_mov.objects.get_or_create(project_activity_id=dip_activity, mov=single_mov)
+
+    return "Excel data imported successfully"
 
 @login_required(login_url='login')
 @admin_only
@@ -1219,6 +1280,8 @@ def index4(request,pk):
     user=0
     if user_belongs_to_group(request.user,'Project Manager'):
       user = 1
+    elif user_belongs_to_group(request.user,'HR Manager'):
+      user = 2
     else:
       user = 0
     project = get_object_or_404(Project_DIP, id=pk)
@@ -1606,6 +1669,8 @@ def complince_home(request,pk):
   user=0
   if user_belongs_to_group(request.user,'Project Manager'):
     user = 1
+  elif user_belongs_to_group(request.user,'HR Manager'):
+    user = 2
   else:
     user = 0
   project = get_object_or_404(Project_DIP, id=pk)
@@ -1622,11 +1687,29 @@ def project_clearance(request,pk):
   user=0
   if user_belongs_to_group(request.user,'Project Manager'):
     user = 1
+  elif user_belongs_to_group(request.user,'HR Manager'):
+    user = 2
   else:
     user = 0
   project = get_object_or_404(Project_DIP, id=pk) 
   month = datetime.today()
   pc = Monthly_Project_Clearance.objects.filter(project_id=project).filter(reporting_month=month.month)
+  if request.method == 'POST':
+            action = request.POST.get('action')
+            form = MPCForm(request.POST, instance=pc.first())
+            if form.is_valid():
+              data = form.save(commit=False)
+              if action == 'approve':
+                   data.is_approvedby_hr = True
+                   data.is_submited = False
+              elif action == 'reject':
+                 data.is_rejectedby_hr = True
+                 data.is_approvedby_hr = False
+                 data.is_submited = False
+              else:
+                  data.is_submited = True
+              data.save()
+              return redirect('myAPP:mpc-report', project.id)
   context= {
         'project':project,
         'user': user,
@@ -1648,6 +1731,7 @@ def add_project_clearance(request,pk):
             if form.is_valid():
                 data = form.save(commit=False)
                 data.project_id = project
+                data.reporting_month = datetime.today().month
                 data.save()
                 return redirect('myAPP:mpc-report', project.id)
             else:
@@ -1656,6 +1740,29 @@ def add_project_clearance(request,pk):
         'project':project,
         'user': user,
         'form':form
+  }
+  return render(request,'myAPP/add-monthly-clearance.html', context)
+
+def edit_project_clearance(request,pk):
+  user=0
+  if user_belongs_to_group(request.user,'Project Manager'):
+    user = 1
+  else:
+    user = 0
+  mpc = get_object_or_404(Monthly_Project_Clearance, id=pk)
+  project = get_object_or_404(Project_DIP, id=mpc.project_id.id)
+  form = MPCForm(instance=mpc)
+  if request.method == 'POST':
+            form = MPCForm(request.POST, instance=mpc)
+            if form.is_valid():
+                form.save()
+                return redirect('myAPP:mpc-report', project)
+            else:
+               form = MPCForm()  
+  context= {
+        'user': user,
+        'form':form,
+        'project':project
   }
   return render(request,'myAPP/add-monthly-clearance.html', context)
 
@@ -1817,6 +1924,8 @@ def governance_home(request,pk):
   user=0
   if user_belongs_to_group(request.user,'Project Manager'):
     user = 1
+  elif user_belongs_to_group(request.user,'HR Manager'):
+    user = 2
   else:
     user = 0
   project = get_object_or_404(Project_DIP, id=pk)
@@ -2140,59 +2249,6 @@ def add_leaving_station(request,pk):
   }
   return render(request,'myAPP/add-outstation-reqest.html', context)
 
-import pandas as pd
-from .models import Dip_details, Dip_Activities, Dip_Process, Dip_Indicator, Dip_expected_out_come, Dip_mov
-
-def import_excel_data(file_path):
-    list_of_projects = Project_DIP.objects.all()
-    df = pd.read_excel(file_path)
-    for index, row in df.iterrows():
-        dip_details, _ = Dip_details.objects.get_or_create(component=row['Components'], project_id=list_of_projects[0])
-
-        dip_activity, _ = Dip_Activities.objects.get_or_create(
-            project_detail_id=dip_details,
-            activity_name=row['Activities']
-        )
-        dip_activity.objectives = row['Objectives']
-        dip_activity.target_participants = row['Target Participants']
-        dip_activity.coverage = row['Coverage']
-        dip_activity.duration = row['Duration']
-        dip_activity.save()
-
-        # Create related objects Dip_Process, Dip_Indicator, Dip_expected_out_come, Dip_mov
-        if not pd.isna(row['Process']):
-            processes = row['Process'].split('\n')  
-            for process in processes:
-                process = process.strip()  
-                if process.startswith("- "):  # Remove the prefix
-                    process = process[2:]
-                if process:
-                    Dip_Process.objects.get_or_create(project_activity_id=dip_activity, process=process)
-
-        if not pd.isna(row['Indicator']):
-            indicators = row['Indicator'].split('\n')  
-            for indicator in indicators:
-                indicator = indicator.strip()  
-                if indicator.startswith("- "):
-                    indicator = indicator[2:]
-                if indicator:
-                    Dip_Indicator.objects.get_or_create(project_activity_id=dip_activity, indicator=indicator)
-
-        if not pd.isna(row['Expected Outcome']):
-            outcomes = row['Expected Outcome'].split('\n')  
-            for outcome in outcomes:
-                outcome = outcome.strip() 
-                if outcome.startswith("- "): 
-                    outcome = outcome[2:]
-                if outcome:
-                    Dip_expected_out_come.objects.get_or_create(project_activity_id=dip_activity, expected_out_come=outcome)
-
-        if not pd.isna(row['MOV']):
-            Dip_mov.objects.get_or_create(project_activity_id=dip_activity, mov=row['MOV'])
-
-    return "Excel data imported successfully"
-
-# import_excel_data(file_path = "/home/buddhiraj/Downloads/Sample CSV File - Sheet1.xlsx")
 
 
 

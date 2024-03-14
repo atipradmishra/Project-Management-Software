@@ -24,6 +24,52 @@
 				<li><a href="{% url 'myAPP:complince-home' project.id %}"><i class="fa-solid fa-copyright icon"></i>Compliance</a></li>
 				<li><a href="{% url 'myAPP:governance-home' project.id %}"><i class="fa-solid fa-circle-h icon"></i>Governance</a></li>
 			</ul>
+		{% elif user == 2 %}
+		<a href="{% url 'myAPP:hr-home' %}"><div class="brand"><i class='icon'><img src="{% static "images/main-logo.png" %}"></i></div></a>
+		<ul class="side-menu">
+			<li><a href="{%url 'myAPP:hr-home' %}" ><i class="fa-solid fa-house-chimney icon"></i> Dashboard</a></li>
+			<li class="divider" data-text="main">Main</li>
+			<li>
+				<a href="#"><i class="fa-brands fa-product-hunt icon"></i>Planning<i class='bx bx-chevron-right icon-right' ></i></a>
+				<ul class="side-dropdown">
+					{% for a in projects %}
+              			<a href="{% url 'myAPP:home' a.id %}"><li>{{ a.project_name }}</li></a>
+              		{% endfor %}
+				</ul>
+			</li>
+			<li>
+				<a href="#"><i class='bx bxs-report icon'></i>Reporting<i class='bx bx-chevron-right icon-right' ></i></a>
+				<ul class="side-dropdown">
+					{% for a in projects %}
+					<a href="{% url 'myAPP:manager-reporting' a.id %}"><li>{{ a.project_name }}</li></a>
+					{% endfor %}
+				</ul>
+			</li>
+			<li>
+				<a href="#"><i class="fa-solid fa-copyright icon"></i>Compliance<i class='bx bx-chevron-right icon-right' ></i></a>
+				<ul class="side-dropdown">
+					{% for a in projects %}
+					<a href="{% url 'myAPP:complince-home' a.id %}"><li>{{ a.project_name }}</li></a>
+					{% endfor %}
+				</ul>
+			</li>
+			<li>
+				<a href="#"><i class="fa-solid fa-circle-h icon"></i>Governance<i class='bx bx-chevron-right icon-right' ></i></a>
+				<ul class="side-dropdown">
+					{% for a in projects %}
+					<a href="{% url 'myAPP:governance-home' a.id %}"><li>{{ a.project_name }}</li></a>
+					{% endfor %}
+				</ul>
+			</li>
+			<li>
+				<a href="#"><i class="fa-solid fa-coins icon"></i>Finance<i class='bx bx-chevron-right icon-right' ></i></a>
+				<ul class="side-dropdown">
+					{% for a in projects %}
+					<a href="{% url 'myAPP:budget_requests' a.id %}"><li>{{ a.project_name }}</li></a>
+					{% endfor %}
+				</ul>
+			</li>
+			</ul>
 		{% else %}
 		<a href="{% url 'myAPP:masterhome'%}"><div class="brand"><i class='icon'><img src="{% static "images/main-logo.png" %}"></i></div></a>
 			<ul class="side-menu">

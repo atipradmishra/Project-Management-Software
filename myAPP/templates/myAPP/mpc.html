@@ -231,106 +231,230 @@
 </style>
 <div>
     {% if user == 1 %}
-    <h2 style='font-family:"Calibri", sans-serif;margin-left:20px;margin-top:30px'>Monthly Project Clearances</h2>
-    <div class="helpers" style='margin-left:20px;margin-top:10px'>
-      <img src="{% static 'images\main-logo.png' %}" style='float:right;margin-right: 10px;width:10%'></img>
-          <a href='{% url 'myAPP:add-mpc-report' project.id %}'><button class='butn'><i class="fa-solid fa-plus"></i> Add Monthly Project Clearance</button></a>
-          <button onclick="openPopup()" class='butn'><i class="fa fa-eye"></i> View</button>
-          <div id="popup" class="popup">
-          <div class="popup-content">
-            <span class="close" onclick="closePopup()">&times;</span>
-            <center><h2 style='font-family:"Calibri", sans-serif;'>{{ project.project_name }}</h1>
-            <h2 style='font-family:"Calibri", sans-serif;'><u>Monthly Project Clearances</u></h1></center>
-            <form method="POST" id="myForm">
-            {% csrf_token %}
-            <table id="views">
-                <thead>
-                    <tr>
-                        <th>Particulars</th>
-                        <th>Response</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for x in pc %}
-                    <td>Project Name</td>
-                    <td style="text-align:center;">{{ x.project_id.project_name }}</td>
-                    {% endfor %}
-                </tbody>
-                <tbody>
-                    {% for x in pc %}
-                    <td>Reporting Month</td>
-                    <td style="text-align:center;">{{ x.get_reporting_month_display }}</td>
-                    {% endfor %}
-                </tbody>
-                <tbody>
-                    {% for x in pc %}
-                    <td>Monthly Project Plan</td>
-                    <td style="text-align:center;">{% if x.monthly_project_plan == 1 %}Yes{% else %}No{% endif %}</td>
-                    {% endfor %}
-                </tbody>
-                <tbody>
-                    {% for x in pc %}
-                    <td>Individual Plan Updated in MIS</td>
-                    <td style="text-align:center;">{% if x.individual_plan_updated == 1 %}Yes{% else %}No{% endif %}</td>
-                    {% endfor %}
-                </tbody>
-                <tbody>
-                    {% for x in pc %}
-                    <td>Individual Worksheet Updated in MIS</td>
-                    <td style="text-align:center;">{% if x.individual_worksheet_updated == 1 %}Yes{% else %}No{% endif %}</td>
-                    {% endfor %}
-                </tbody>
-                <tbody>
-                    {% for x in pc %}
-                    <td>Monthly Progress Report Updated in MIS</td>
-                    <td style="text-align:center;">{% if x.monthly_progress_report_updated == 1 %}Yes{% else %}No{% endif %}</td>
-                    {% endfor %}
-                </tbody>
-                <tbody>
-                    {% for x in pc %}
-                    <td>Any Outstation Report?</td>
-                    <td style="text-align:center;">{% if x.outstation_report == 1 %}Yes{% else %}No{% endif %}</td>
-                    {% endfor %}
-                </tbody>
-                <tbody>
-                    {% for x in pc %}
-                    <td>Did you submit the Monthly Budget?</td>
-                    <td style="text-align:center;">{% if x.monthly_budget_submited == 1 %}Yes{% else %}No{% endif %}</td>
-                    {% endfor %}
-                </tbody>
-                <tbody>
-                    {% for x in pc %}
-                    <td>Did you complete the settlement?</td>
-                    <td style="text-align:center;">{% if x.settlement_completed == 1 %}Yes{% else %}No{% endif %}</td>
-                    {% endfor %}
-                </tbody>
-                <tbody>
-                    {% for x in pc %}
-                    <td>Did all project staff complete the required project compliances?</td>
-                    <td style="text-align:center;">{% if x.project_staff_completed_required_project_compliances == 1 %}Yes{% else %}No{% endif %}</td>
-                    {% endfor %}
-                </tbody>
-                <tbody>
-                    {% for x in pc %}
-                    <td>Are you recommend the release of the Salary for all project staff?</td>
-                    <td style="text-align:center;">{% if x.release_Salary_project_staff_recommend == 1 %}Yes{% else %}No{% endif %}</td>
-                    {% endfor %}
-                </tbody>
-                <tbody>
-                    {% for x in pc %}
-                    <td>If not, who is the staff and what is the reason</td>
-                    <td style="text-align:center;">{% if x.staff_reason == null %}N/A{% else %} {{ x.staff_reason }} {% endif %}</td>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <button class="btn button1" type="submit"><i class="fa fa-send-o"></i>Submit</button>
-          </form>
-          </div>
-          </div>
-          <button onclick="printPage()" class='butn'><i class="fa fa-print"></i> Print</button>
-          <button class='butn'><i class="fa-solid fa-filter"></i> Filter</button>
-          <a href="{% url 'myAPP:complince-home' project.pk %}" class='butn'><i class="fa-solid fa-left-long"></i> Back</a>
-    </div>
+      <h2 style='font-family:"Calibri", sans-serif;margin-left:20px;margin-top:30px'>Monthly Project Clearances</h2>
+      <div class="helpers" style='margin-left:20px;margin-top:10px'>
+        <img src="{% static 'images\main-logo.png' %}" style='float:right;margin-right: 10px;width:10%'></img>
+        <a href="{% url 'myAPP:complince-home' project.pk %}" class='butn'><i class="fa-solid fa-left-long"></i> Back</a>
+        {% if pc %}
+          {% if pc.first.is_submited == 0 %}
+            <a href='{% url 'myAPP:edit-mpc-report' pc.first.id %}'><button class='butn'><i class="fa fa-pencil" aria-hidden="true"></i> Edit Monthly Project Clearance</button></a>
+          {% else %}
+            <button class='butn'><i class="fa fa-check" aria-hidden="true"></i> Submited</button>
+          {% endif %}
+        {% else %}
+        <a href='{% url 'myAPP:add-mpc-report' project.id %}'><button class='butn'><i class="fa-solid fa-plus"></i> Add Monthly Project Clearance</button></a>
+        {% endif %}
+            <button onclick="openPopup()" class='butn'><i class="fa fa-eye"></i> View</button>
+            <div id="popup" class="popup">
+            <div class="popup-content">
+              <span class="close" onclick="closePopup()">&times;</span>
+              <center><h2 style='font-family:"Calibri", sans-serif;'>{{ project.project_name }}</h1>
+              <h2 style='font-family:"Calibri", sans-serif;'><u>Monthly Project Clearances</u></h1></center>
+              <form method="POST" id="myForm">
+              {% csrf_token %}
+              <table id="views">
+                  <thead>
+                      <tr>
+                          <th>Particulars</th>
+                          <th>Response</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% for x in pc %}
+                      <td>Project Name</td>
+                      <td style="text-align:center;">{{ x.project_id.project_name }}</td>
+                      {% endfor %}
+                  </tbody>
+                  <tbody>
+                      {% for x in pc %}
+                      <td>Reporting Month</td>
+                      <td style="text-align:center;">{{ x.get_reporting_month_display }}</td>
+                      {% endfor %}
+                  </tbody>
+                  <tbody>
+                      {% for x in pc %}
+                      <td>Monthly Project Plan</td>
+                      <td style="text-align:center;">{% if x.monthly_project_plan == 1 %}Yes{% else %}No{% endif %}</td>
+                      {% endfor %}
+                  </tbody>
+                  <tbody>
+                      {% for x in pc %}
+                      <td>Individual Plan Updated in MIS</td>
+                      <td style="text-align:center;">{% if x.individual_plan_updated == 1 %}Yes{% else %}No{% endif %}</td>
+                      {% endfor %}
+                  </tbody>
+                  <tbody>
+                      {% for x in pc %}
+                      <td>Individual Worksheet Updated in MIS</td>
+                      <td style="text-align:center;">{% if x.individual_worksheet_updated == 1 %}Yes{% else %}No{% endif %}</td>
+                      {% endfor %}
+                  </tbody>
+                  <tbody>
+                      {% for x in pc %}
+                      <td>Monthly Progress Report Updated in MIS</td>
+                      <td style="text-align:center;">{% if x.monthly_progress_report_updated == 1 %}Yes{% else %}No{% endif %}</td>
+                      {% endfor %}
+                  </tbody>
+                  <tbody>
+                      {% for x in pc %}
+                      <td>Any Outstation Report?</td>
+                      <td style="text-align:center;">{% if x.outstation_report == 1 %}Yes{% else %}No{% endif %}</td>
+                      {% endfor %}
+                  </tbody>
+                  <tbody>
+                      {% for x in pc %}
+                      <td>Did you submit the Monthly Budget?</td>
+                      <td style="text-align:center;">{% if x.monthly_budget_submited == 1 %}Yes{% else %}No{% endif %}</td>
+                      {% endfor %}
+                  </tbody>
+                  <tbody>
+                      {% for x in pc %}
+                      <td>Did you complete the settlement?</td>
+                      <td style="text-align:center;">{% if x.settlement_completed == 1 %}Yes{% else %}No{% endif %}</td>
+                      {% endfor %}
+                  </tbody>
+                  <tbody>
+                      {% for x in pc %}
+                      <td>Did all project staff complete the required project compliances?</td>
+                      <td style="text-align:center;">{% if x.project_staff_completed_required_project_compliances == 1 %}Yes{% else %}No{% endif %}</td>
+                      {% endfor %}
+                  </tbody>
+                  <tbody>
+                      {% for x in pc %}
+                      <td>Are you recommend the release of the Salary for all project staff?</td>
+                      <td style="text-align:center;">{% if x.release_Salary_project_staff_recommend == 1 %}Yes{% else %}No{% endif %}</td>
+                      {% endfor %}
+                  </tbody>
+                  <tbody>
+                      {% for x in pc %}
+                      <td>If not, who is the staff and what is the reason</td>
+                      <td style="text-align:center;">{% if x.staff_reason == null %}N/A{% else %} {{ x.staff_reason }} {% endif %}</td>
+                      {% endfor %}
+                  </tbody>
+              </table>
+              <button class="btn button1" type="submit"><i class="fa fa-send-o"></i>Submit</button>
+            </form>
+            </div>
+            </div>
+            <button onclick="printPage()" class='butn'><i class="fa fa-print"></i> Print</button>
+            <button class='butn'><i class="fa-solid fa-filter"></i> Filter</button>
+      </div>
+    {% elif user == 2 %}
+      <h2 style='font-family:"Calibri", sans-serif;margin-left:20px;margin-top:30px'>Monthly Project Clearances</h2>
+      <div class="helpers" style='margin-left:20px;margin-top:10px'>
+        <img src="{% static 'images\main-logo.png' %}" style='float:right;margin-right: 10px;width:10%'></img>
+        <a href="{% url 'myAPP:complince-home' project.pk %}" class='butn'><i class="fa-solid fa-left-long"></i> Back</a>
+        {% if pc %}
+          {% if pc.first.is_approvedby_hr == 1 %}
+            <button class='butn'><i class="fa fa-check" aria-hidden="true"></i> Approved</button>
+          {% endif %}
+        {% else %}
+        <a href='{% url 'myAPP:add-mpc-report' project.id %}'><button class='butn'><i class="fa-solid fa-plus"></i> Add Monthly Project Clearance</button></a>
+        {% endif %}
+            <button onclick="openPopup()" class='butn'><i class="fa fa-eye"></i> View</button>
+            <div id="popup" class="popup">
+            <div class="popup-content">
+              <span class="close" onclick="closePopup()">&times;</span>
+              <center><h2 style='font-family:"Calibri", sans-serif;'>{{ project.project_name }}</h1>
+              <h2 style='font-family:"Calibri", sans-serif;'><u>Monthly Project Clearances</u></h1></center>
+              <form method="POST" id="myForm">
+              {% csrf_token %}
+              <table id="views">
+                  <thead>
+                      <tr>
+                          <th>Particulars</th>
+                          <th>Response</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% for x in pc %}
+                      <td>Project Name</td>
+                      <td style="text-align:center;">{{ x.project_id.project_name }}</td>
+                      {% endfor %}
+                  </tbody>
+                  <tbody>
+                      {% for x in pc %}
+                      <td>Reporting Month</td>
+                      <td style="text-align:center;">{{ x.get_reporting_month_display }}</td>
+                      {% endfor %}
+                  </tbody>
+                  <tbody>
+                      {% for x in pc %}
+                      <td>Monthly Project Plan</td>
+                      <td style="text-align:center;">{% if x.monthly_project_plan == 1 %}Yes{% else %}No{% endif %}</td>
+                      {% endfor %}
+                  </tbody>
+                  <tbody>
+                      {% for x in pc %}
+                      <td>Individual Plan Updated in MIS</td>
+                      <td style="text-align:center;">{% if x.individual_plan_updated == 1 %}Yes{% else %}No{% endif %}</td>
+                      {% endfor %}
+                  </tbody>
+                  <tbody>
+                      {% for x in pc %}
+                      <td>Individual Worksheet Updated in MIS</td>
+                      <td style="text-align:center;">{% if x.individual_worksheet_updated == 1 %}Yes{% else %}No{% endif %}</td>
+                      {% endfor %}
+                  </tbody>
+                  <tbody>
+                      {% for x in pc %}
+                      <td>Monthly Progress Report Updated in MIS</td>
+                      <td style="text-align:center;">{% if x.monthly_progress_report_updated == 1 %}Yes{% else %}No{% endif %}</td>
+                      {% endfor %}
+                  </tbody>
+                  <tbody>
+                      {% for x in pc %}
+                      <td>Any Outstation Report?</td>
+                      <td style="text-align:center;">{% if x.outstation_report == 1 %}Yes{% else %}No{% endif %}</td>
+                      {% endfor %}
+                  </tbody>
+                  <tbody>
+                      {% for x in pc %}
+                      <td>Did you submit the Monthly Budget?</td>
+                      <td style="text-align:center;">{% if x.monthly_budget_submited == 1 %}Yes{% else %}No{% endif %}</td>
+                      {% endfor %}
+                  </tbody>
+                  <tbody>
+                      {% for x in pc %}
+                      <td>Did you complete the settlement?</td>
+                      <td style="text-align:center;">{% if x.settlement_completed == 1 %}Yes{% else %}No{% endif %}</td>
+                      {% endfor %}
+                  </tbody>
+                  <tbody>
+                      {% for x in pc %}
+                      <td>Did all project staff complete the required project compliances?</td>
+                      <td style="text-align:center;">{% if x.project_staff_completed_required_project_compliances == 1 %}Yes{% else %}No{% endif %}</td>
+                      {% endfor %}
+                  </tbody>
+                  <tbody>
+                      {% for x in pc %}
+                      <td>Are you recommend the release of the Salary for all project staff?</td>
+                      <td style="text-align:center;">{% if x.release_Salary_project_staff_recommend == 1 %}Yes{% else %}No{% endif %}</td>
+                      {% endfor %}
+                  </tbody>
+                  <tbody>
+                      {% for x in pc %}
+                      <td>If not, who is the staff and what is the reason</td>
+                      <td style="text-align:center;">{% if x.staff_reason == null %}N/A{% else %} {{ x.staff_reason }} {% endif %}</td>
+                      {% endfor %}
+                  </tbody>
+              </table>
+              {% if user == 2 %}
+                <form id="requestForm" method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" id="action">
+                  <button class="btn button1" onclick="setAction('approve')"><i class="fa fa-send-o"></i>Approve</button>
+                  <button class="btn button1" onclick="setAction('reject')"><i class="fa fa-send-o"></i>Reject</button>
+                </form>
+              {% else %}
+                <button class="btn button1" type="submit"><i class="fa fa-send-o"></i>Submit</button>
+              {% endif %}
+            </form>
+            </div>
+            </div>
+            <button onclick="printPage()" class='butn'><i class="fa fa-print"></i> Print</button>
+            <button class='butn'><i class="fa-solid fa-filter"></i> Filter</button>
+      </div>
     {% else %}
     <center><h2 style='font-family:"Calibri", sans-serif;margin-left:20px;'><u>Monthly Budget Requests</u></h2></center>
     <img src="{% static 'images\main-logo.png' %}" style='float:right;margin-right: 10px;width:10%'>
@@ -338,7 +462,7 @@
     <div id="successPopup" class="popup2">
       <img src="{% static 'images\tick.png' %}">
       <h2>Thank You!</h2>
-      <p style='font-size:20px'>Thanks!!!! Your Budget Request has been successfully submitted.</P>
+      <p style='font-size:20px'>Thanks!!!! Your Monthly Project Clearance has been successfully submitted.</P>
       <button type='button' onclick='submitForm()'>Ok</button>
     </div>   
   </div>
@@ -428,6 +552,9 @@
     </form>
 </div>
 <script>
+  function setAction(action) {
+    document.getElementById('action').value = action;
+}
     const form = document.getElementById('myForm');
   
     form.addEventListener('submit', function(event) {

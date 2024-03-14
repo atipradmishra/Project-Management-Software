@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.contrib.auth.models import User , Group , AbstractBaseUser
@@ -48,8 +49,6 @@ class TrackingYear(models.Model):
    name =  models.CharField(max_length=200)
    def __str__(self):
         return self.name
-   
-from datetime import datetime
 class Dip_details(models.Model):
    """
    This is the object for Component, Connected to a project.
@@ -68,7 +67,6 @@ class Dip_details(models.Model):
          return self.component
    def save(self, *args, **kwargs):
         project_month = self.project_id.start_date.month
-        print('project_month -- ',project_month)
         self.created_at = datetime.now()
 
         if project_month <= self.created_at.month:
@@ -107,6 +105,7 @@ class Dip_Activities(models.Model):
 class Activity_timeframe(models.Model):
    activity_id= models.ForeignKey("Dip_Activities", on_delete=models.CASCADE)   
    start_date = models.DateField()
+   tracking_year = models.ForeignKey(TrackingYear ,blank  =  True,null   =  True ,on_delete =   models.CASCADE)
    m1 = models.BooleanField() 
    m2 = models.BooleanField() 
    m3 = models.BooleanField() 
@@ -124,6 +123,21 @@ class Activity_timeframe(models.Model):
 
    def __str__(self):
         return self.activity_id.activity_name
+   
+   def save(self, *args, **kwargs):
+        project_month = self.start_date.month
+        self.created_at = datetime.now()
+
+        if project_month <= self.created_at.month:
+            tracking_year_name = f"Tracking Year of {self.created_at.year} - {self.created_at.year + 1}"
+        else:
+            tracking_year_name = f"Tracking Year of {self.created_at.year - 1} - {self.created_at.year }"
+
+        tracking_year, _   = TrackingYear.objects.get_or_create(name=tracking_year_name)
+        self.tracking_year = tracking_year
+
+        super().save(*args, **kwargs)
+
 
 class Activity_location(models.Model):
  activity_id= models.ForeignKey("Dip_Activities", on_delete=models.CASCADE)   
@@ -138,10 +152,6 @@ class Activity_location(models.Model):
 class Dip_Process(models.Model):
    project_activity_id= models.ForeignKey("Dip_Activities", on_delete=models.CASCADE)
    process = models.CharField(max_length=200)
-   def __str__(self):
-        return self.process
-
-
 
 class Dip_Indicator(models.Model):
    project_activity_id= models.ForeignKey("Dip_Activities", on_delete=models.CASCADE)
@@ -166,6 +176,8 @@ class Month_Plan(models.Model):
  main_Responsibility=models.CharField(max_length=200)
  supportive_Responsibility=models.CharField(max_length=200)
  result_Expected=models.CharField(max_length=200)
+ target=models.IntegerField(null=True,blank=True)
+ target_achived=models.IntegerField(null=True,blank=True)
  plan_remarks=models.CharField(max_length=200,null=True,blank=True)
  report_remarks=models.CharField(max_length=200,null=True,blank=True)
  achievements=models.CharField(max_length=200,null=True,blank=True)
@@ -330,6 +342,11 @@ class Monthly_Project_Clearance(models.Model):
  project_staff_completed_required_project_compliances = models.BooleanField()
  release_Salary_project_staff_recommend = models.BooleanField()
  staff_reason = models.CharField(max_length=500,null=True,blank=True)
+ is_submited = models.BooleanField(default=False)
+ is_approvedby_hr = models.BooleanField(default=False)
+ is_approvedby_ceo = models.BooleanField(default=False)
+ is_rejectedby_hr = models.BooleanField(default=False)
+ is_rejectedby_ceo = models.BooleanField(default=False)
  created_at = models.DateTimeField('created at', auto_now_add=True)
  updated_at = models.DateTimeField('updated at', auto_now=True)
 

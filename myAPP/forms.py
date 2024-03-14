@@ -190,9 +190,10 @@ class DipRemarkForm(ModelForm):
 class MonthlyachievementForm(ModelForm):
      class Meta:
         model = Month_Plan
-        fields = ['achievements']
+        fields = ['achievements','target_achived']
         widgets ={
-        'achievements' : forms.TextInput(attrs={'null' : 'True','id':"input1" ,'onkeyup':"capitalizeText('input1')"})
+        'achievements' : forms.TextInput(attrs={'null' : 'True','id':"input1" ,'onkeyup':"capitalizeText('input1')"}),
+        'target_achived' : forms.NumberInput(attrs={'null' : 'True'})
         }
 
 class MonthlyhighlightForm(ModelForm):
@@ -260,12 +261,13 @@ class MonthPlanForm(ModelForm):
         self.fields['activity_id'].queryset = Dip_Activities.objects.filter(project_detail_id__project_id = pk)
     class Meta:
         model = Month_Plan
-        fields = ['activity_id','strategy','duration','no_Of_Participants','location_Of_Activity','main_Responsibility','supportive_Responsibility','result_Expected'] 
+        fields = ['activity_id','strategy','duration','no_Of_Participants','target','location_Of_Activity','main_Responsibility','supportive_Responsibility','result_Expected'] 
         widgets = {
         'activity_id': forms.Select(choices=['test']),
         'strategy': forms.TextInput(attrs={'id':"input1" ,'onkeyup':"capitalizeText('input1')",'class':'form-control'}),
         'component': forms.TextInput(attrs={'id':"input2" ,'onkeyup':"capitalizeText('input2')",'class':'form-control'}),
         'duration': forms.TextInput(attrs={'id':"input3" ,'onkeyup':"capitalizeText('input3')",'class':'form-control'}),
+        'target': forms.TextInput(attrs={'class':'form-control'}),
         'no_Of_Participants': forms.TextInput(attrs={'id':"input4" ,'onkeyup':"capitalizeText('input4')",'class':'form-control'}),
         'location_Of_Activity': forms.TextInput(attrs={'id':"input5" ,'onkeyup':"capitalizeText('input5')",'class':'form-control'}),
         'main_Responsibility': forms.TextInput(attrs={'id':"input6" ,'onkeyup':"capitalizeText('input6')",'class':'form-control'}),
@@ -325,7 +327,7 @@ class MPCForm(ModelForm):
     release_Salary_project_staff_recommend = forms.BooleanField(required=False,initial=False,widget=forms.RadioSelect(choices=((True, 'Yes'), (False, 'No'))))
     class Meta:
         model = Monthly_Project_Clearance
-        fields = ['reporting_month','monthly_project_plan','individual_plan_updated','individual_worksheet_updated','monthly_progress_report_updated','outstation_report','monthly_budget_submited','settlement_completed','project_staff_completed_required_project_compliances','release_Salary_project_staff_recommend','staff_reason']
+        fields = ['monthly_project_plan','individual_plan_updated','individual_worksheet_updated','monthly_progress_report_updated','outstation_report','monthly_budget_submited','settlement_completed','project_staff_completed_required_project_compliances','release_Salary_project_staff_recommend','staff_reason','is_submited']
         widgets={
             'reporting_month': forms.Select(choices=[Monthly_Project_Clearance.MONTH_CHOICES]),
             'staff_reason': forms.TextInput(attrs={'class':'form-control','id':"input2" ,'onkeyup':"capitalizeText('input2')"}),
@@ -482,7 +484,7 @@ class DocumentForm(forms.ModelForm):
         model = Case_study
         fields = ['case_studies']
         widgets ={
-            'case_studies': forms.FileInput(attrs={'accept':'.pdf,.doc,.docx'})
+            'case_studies': forms.FileInput(attrs={'accept':'.pdf,.doc,.docx','multiple':'True'})
         }
 
 

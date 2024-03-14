@@ -278,8 +278,14 @@
   <div class="helpers" style='margin-left:20px;margin-top:10px'>
     <img src="{% static 'images\main-logo.png' %}" style='float:right;margin-right: 10px;width:10%'></img>
       {% if user == 1 %}
+      <a href="{% url 'myAPP:home' project.pk %}" class='butn'><i class="fa-solid fa-left-long"></i> Back</a>
         <button class='butn' id='add-more'><i class="fa-solid fa-plus"></i> Add Component</button>
-        <button onclick="upload()" class='butn'><input type="file" name="upload" id="upload"style="display: none;"><i class="fa-solid fa-cloud-arrow-up"></i> Upload</button>
+        <form id="upload-form" enctype="multipart/form-data" method="post" style="display: none;">
+          {% csrf_token %}
+          <input type="file" name="excel_file" id="excel_file" accept=".xlsx,.xls" style="display: none;">
+          <button type="submit" style="display: none;">Upload</button>
+      </form>
+      <button onclick="upload()" class='butn'><i class="fa-solid fa-cloud-arrow-up"></i> Upload</button>
         <button onclick="openPopup()" class='butn'><i class="fa fa-eye"></i> View</button>
         <button class='butn'><i class="fa-solid fa-filter"></i> Filter</button>
         <div id="popup" class="popup">
@@ -365,7 +371,6 @@
         </div>
         </div>
         <button onclick="printPage()" class='butn'><i class="fa fa-print"></i> Print</button>
-        <a href="{% url 'myAPP:home' project.pk %}" class='butn'><i class="fa-solid fa-left-long"></i> Back</a>
       {% else %}
         <a href="{% url 'myAPP:home' project.pk %}" class='butn'>Back</a>
       {% endif %}
@@ -602,17 +607,43 @@
 </script>
 <script>
   function upload() {
-    document.getElementById('upload').click();
-  }
-  document.getElementById('upload').addEventListener('change', function(event) {
-    const input = event.target;
-    if (input.files && input.files[0]) {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        document.querySelector('.profile-pic').src = e.target.result;
-      };
-      reader.readAsDataURL(input.files[0]);
+    // Trigger the click event on the hidden file input
+    document.getElementById('excel_file').click();
+}
+
+// Listen for the change event on the file input
+document.getElementById('excel_file').addEventListener('change', function() {
+    // If a file is selected, submit the form
+    if (this.files.length > 0) {
+        document.getElementById('upload-form').submit();
     }
+});
+  document.getElementById('upload-form').addEventListener('submit', function(event) {
+      event.preventDefault();
+      var formData = new FormData(this);
+      fetch(this.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+              'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+          },
+      })
+      .then(response => {
+          if (response.ok) {
+              return response.json();
+          } else {
+              throw new Error('Network response was not ok.');
+          }
+      })
+      .then(data => {
+          // Handle success
+          console.log('Success:', data);
+      })
+      .catch(error => {
+          // Handle error
+          console.error('Error:', error);
+      });
   });
 </script>
+  
 {% endblock  %}
