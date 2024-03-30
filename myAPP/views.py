@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 import pandas as pd
 from .models import *
-from .forms import ActivityAproveForm, ActivityMatrixAproveForm, ActivityMatrixCeoForm, Ad_clerance_Form, AmRemarkForm, AppraisalForm, AssetForm, CategoryForm, CeoAproveForm, DipActivitiesForm, DipComponentForm, DipIndicatorForm, DipMovForm, DipOutcomeForm, DipProcessForm, DipRemarkForm, DipUpdateForm, DocumentForm, EditProfileForm, EditUserForm, EventPlanAproveForm, EventRemarkForm, LeaveForm, LeaverequestForm, LocationCountForm, MPCForm, MonthlyBudgetRequestForm, MonthlyLeaveForm, MonthlyPlanAproveForm, MonthlyReportUpdateForm, MonthlyachievementForm, MonthlybacklogForm, MonthlyhighlightForm, MscForm, OutstationForm, PlanRemarkForm, ProjectForm, ReportAproveForm, ReportRemarkForm, TimeFrameForm, WeekOneForm, WeekTwoForm, WeeklyReportForm, MonthPlanForm,eventForm, pr_clerance_Form, pr_clerance_activity_Form
+from .forms import ActivityAproveForm, ActivityMatrixAproveForm, ActivityMatrixCeoForm, Ad_clerance_Form, AmRemarkForm, AppraisalForm, AssetForm, CategoryForm, CeoAproveForm, DipActivitiesForm, DipComponentForm, DipIndicatorForm, DipMovForm, DipOutcomeForm, DipProcessForm, DipRemarkForm, DipUpdateForm, DocumentForm, EditProfileForm, EditUserForm, EventPlanAproveForm, EventRemarkForm, LeaveForm, LeaverequestForm, LocationCountForm, MPCForm, MonthlyBudgetRequestForm, MonthlyLeaveForm, MonthlyPlanAproveForm, MonthlyReportUpdateForm, MonthlyachievementForm, MonthlybacklogForm, MonthlyhighlightForm, MscForm, OutstationForm, PlanRemarkForm, ProjectForm, ReportAproveForm, ReportRemarkForm, TimeFrameForm, WeekOneForm, WeekTwoForm, WeeklyReportForm, MonthPlanForm,eventForm, mscAproveForm, pr_clerance_Form, pr_clerance_activity_Form
 from django.contrib import messages
 from .forms import  CreateUserForm
 from .decorators import admin_only, allowed_users, unauthenticated_user
@@ -23,6 +23,9 @@ from django.conf import settings
 from django.core.files.storage import default_storage
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from openpyxl import Workbook
+from openpyxl.styles import PatternFill, Font
+from openpyxl.utils.dataframe import dataframe_to_rows
 
 
 def user_belongs_to_group(user, group_name):
@@ -452,6 +455,71 @@ def import_excel_data(file_path,pk):
                     Dip_mov.objects.get_or_create(project_activity_id=dip_activity, mov=single_mov)
 
     return "Excel data imported successfully"
+
+def export_to_excel(request,pk, file_path='myAPP/static/dip.xlsx'):
+    project_instance = get_object_or_404(Project_DIP, id=pk)
+    data = []
+
+    dip_details_qs = Dip_details.objects.filter(project_id=project_instance)
+    for dip_detail in dip_details_qs:
+        dip_activity_qs = Dip_Activities.objects.filter(project_detail_id=dip_detail)
+        for dip_activity in dip_activity_qs:
+            processes = Dip_Process.objects.filter(project_activity_id=dip_activity).values_list('process', flat=True)
+            indicators = Dip_Indicator.objects.filter(project_activity_id=dip_activity).values_list('indicator', flat=True)
+            expected_outcomes = Dip_expected_out_come.objects.filter(project_activity_id=dip_activity).values_list('expected_out_come', flat=True)
+            movs = Dip_mov.objects.filter(project_activity_id=dip_activity).values_list('mov', flat=True)
+
+            processes = ['- ' + process if process and not process.startswith('- ') else process for process in processes]
+            indicators = ['- ' + indicator if indicator and not indicator.startswith('- ') else indicator for indicator in indicators]
+            expected_outcomes = ['- ' + outcome if outcome and not outcome.startswith('- ') else outcome for outcome in expected_outcomes]
+            movs = ['- ' + mov if mov and not mov.startswith('- ') else mov for mov in movs]
+
+            data.append([
+                dip_detail.component,
+                dip_activity.activity_name,
+                dip_activity.objectives,
+                dip_activity.target_participants,
+                dip_activity.coverage,
+                dip_activity.duration,
+                '\n'.join(processes),
+                '\n'.join(indicators),
+                '\n'.join(expected_outcomes),
+                '\n'.join(movs)
+            ])
+
+    # Create DataFrame
+    df = pd.DataFrame(data, columns=[
+        'Components',
+        'Activities',
+        'Objectives',
+        'Target Participants',
+        'Coverage',
+        'Duration',
+        'Process',
+        'Indicator',
+        'Expected Outcome',
+        'MOV'
+    ])
+
+    wb = Workbook()
+    ws = wb.active
+
+    # Write column headers
+    for col_idx, col_name in enumerate(df.columns, 1):
+        ws.cell(row=1, column=col_idx, value=col_name)
+        ws.cell(row=1, column=col_idx).font = Font(bold=True)
+
+    fill_white = PatternFill(start_color='FFFFFF', end_color='FFFFFF', fill_type='solid')
+    fill_grey = PatternFill(start_color='D3D3D3', end_color='D3D3D3', fill_type='solid')
+    for i, col in enumerate(df.columns, 1):
+        fill = fill_white if i % 2 == 0 else fill_grey
+        for row in range(2, len(df) + 2):
+            ws.cell(row=row, column=i, value=df.iloc[row - 2, i - 1]).fill = fill
+
+    wb.save(file_path)
+
+    return "Excel exported successfully"
+
 
 @login_required(login_url='login')
 @admin_only
@@ -1854,11 +1922,44 @@ def msc(request,pk):
   user=0
   if user_belongs_to_group(request.user,'Project Manager'):
     user = 1
+  elif user_belongs_to_group(request.user,'HR Manager'):
+      user = 2
   else:
     user = 0
-  project = get_object_or_404(Project_DIP, id=pk) 
-  msc = Monthly_staff_clearance.objects.filter(project_id=project) 
-  date = datetime.today()
+  project = get_object_or_404(Project_DIP, id=pk)
+  date = datetime.today() 
+  msc = Monthly_staff_clearance.objects.filter(project_id=project , month = date.month, year = date.year)
+  
+  if request.method == 'POST':
+      submited=request.POST.getlist('selected_activities')
+      for x in submited:
+        ms = Monthly_staff_clearance.objects.get(id=x)
+        form = mscAproveForm(request.POST,instance=ms)
+        if form.is_valid():
+          data = form.save(commit=False)
+          if user == 1:
+            data.is_submited = True
+            data.is_rejectedby_hr = False
+            data.is_rejectedby_ceo = False
+          elif user == 2:
+              data.is_submited = False
+              data.is_approvedby_hr = True
+        
+          data.save()
+
+
+      ms = Monthly_staff_clearance.objects.filter(is_submited = 1, project_id =  project, month = date.month, year = date.year)
+      for a in ms:
+          ac = Monthly_staff_clearance.objects.get(id=a.id)
+          if a.is_approvedby_hr == False:
+            form2 =  mscAproveForm(request.POST,instance=ac)
+            if form2.is_valid():
+                data = form2.save(commit=False)
+                data.is_submited = False
+                data.is_rejectedby_hr = True
+                data.save()          
+
+      return redirect('myAPP:msc',project.id)
   context= {
         'project':project,
         'user': user,
@@ -1866,6 +1967,7 @@ def msc(request,pk):
         'date': date
   }
   return render(request,'myAPP/msc.html', context)
+
 
 @login_required(login_url='login')
 def add_msc(request,pk):
@@ -1910,7 +2012,7 @@ def update_msc(request,pk):
                 form.save()
                 return redirect('myAPP:msc', project.id)
             else:
-               form = LeaveForm()  
+               form = MscForm()  
   context= {
         'project':project,
         'user': user,

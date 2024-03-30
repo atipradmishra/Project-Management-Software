@@ -374,6 +374,11 @@ class MscForm(ModelForm):
               'any_other': forms.TextInput(attrs={'id':"input1" ,'onkeyup':"capitalizeText('input1')"}),
               'leave_taken_this_month': forms.DateInput(attrs={'type' :"date"}),
         }
+class mscAproveForm(ModelForm):
+     class Meta:
+        model = Monthly_staff_clearance
+        fields = ['is_submited','is_approvedby_hr','is_approvedby_ceo','is_rejectedby_hr','is_rejectedby_ceo']
+
 
 class LeaverequestForm(ModelForm):
     class Meta:

@@ -238,8 +238,6 @@
 					<input type="password" name="password" id='password' placeholder="Password" required/><br><br>
 					<select name="projectname" id="projectname" >
 						<option value = 'null'>------------------</option>
-						<option value = 'master' class='master'>HR Manager</option>
-						<option value = 'finance' class='master'>Finance Manager</option>
 						{% for project in projects %}
 							<option value = {{project.id}}>{{project.project_name}}</option>
 						{% endfor %}

@@ -280,6 +280,7 @@
       {% if user == 1 %}
       <a href="{% url 'myAPP:home' project.pk %}" class='butn'><i class="fa-solid fa-left-long"></i> Back</a>
         <button class='butn' id='add-more'><i class="fa-solid fa-plus"></i> Add Component</button>
+        <a class='butn' href="{% url 'myAPP:dip-download' project.pk %}"><i class="fa-solid fa-download"></i> Download Format</a>
         <form id="upload-form" enctype="multipart/form-data" method="post" style="display: none;">
           {% csrf_token %}
           <input type="file" name="excel_file" id="excel_file" accept=".xlsx,.xls" style="display: none;">
