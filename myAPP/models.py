@@ -143,7 +143,7 @@ class Activity_timeframe(models.Model):
 class Activity_location(models.Model):
  activity_id= models.ForeignKey("Dip_Activities", on_delete=models.CASCADE)   
  location_name=models.CharField(max_length=200)
- count= models.IntegerField()
+ count= models.CharField(max_length=50,null=True,blank=True)
  created_at = models.DateTimeField('created at', auto_now_add=True)
  updated_at = models.DateTimeField('updated at', auto_now=True)  
   

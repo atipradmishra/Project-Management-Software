@@ -363,10 +363,6 @@ def add_DIP_Details(request,pk):
       )
       formset = MyFirstModelFormSet
       if request.method == 'POST':
-        excel_file = request.FILES['excel_file']
-        # Assuming the project ID is passed as a GET parameter
-        if excel_file:
-            import_excel_data(excel_file, project.id)
         formset = MyFirstModelFormSet(request.POST)
         if formset.is_valid():
          for form in formset:
@@ -374,7 +370,12 @@ def add_DIP_Details(request,pk):
                 my_first_model.Project_DIP = Project_DIP
                 my_first_model.project_id = project
                 my_first_model.save()
-         return redirect('myAPP:add_DIP_Details',project.id) 
+         return redirect('myAPP:add_DIP_Details',project.id)
+        elif 'excel_file' in request.FILES:     
+          excel_file = request.FILES['excel_file']
+          # Assuming the project ID is passed as a GET parameter
+          if excel_file is not None:
+            import_excel_data(excel_file, project.id) 
         else:
             print(formset.errors)
         if request.method == 'POST' and not formset.is_valid():
